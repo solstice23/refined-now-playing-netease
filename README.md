@@ -1,4 +1,5 @@
-# refined-now-playing-netease
+# Refined Now Playing
+
 一个美化网易云音乐播放界面的 [BetterNCM](https://github.com/MicroCBer/BetterNCM) 插件
 
 # 安装
