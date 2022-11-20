@@ -1,0 +1,12 @@
+{
+    "manifest_version": 1,
+    "version": "0.0.1",
+    "name": "RefinedNowPlaying",
+    "injects": {
+        "Main": [
+            {
+                "file": "main.js"
+            }
+        ]
+    }
+}
