@@ -12,7 +12,7 @@ const extraCSS = `
 	#cd-bg-blur {
 		display: block;
 		width: 100%;
-		height: 100%;
+		height: calc(100% + 72px);
 		background-position: center;
 		background-repeat: no-repeat;
 		background-size: cover;
@@ -22,7 +22,7 @@ const extraCSS = `
 		position: absolute;
 		left: 0;
 		top: 0;
-		transform: scale(1.1);
+		transform: scale(1.28);
 	}
 	.g-single-track .content {
 		flex: 0;
@@ -274,8 +274,19 @@ const extraCSS = `
 		opacity: .8;
 	}
 	.m-playlrc .word .text p {
-		transition: all .5s ease-out;
+		transition: all .5s cubic-bezier(.5,0,.14,1);
 		transition-delay: 0.2s;
+	}
+	.m-playlrc > article > .central-line-block:not(.invisible) + div .j-line p {
+		transition-delay: 0s !important;
+	}
+	.m-playlrc .supplier, .m-playlrc .noword{
+		opacity: 0;
+		transition: opacity .5s ease !important;
+		transition-delay: 0s !important;
+	}
+	.m-playlrc:hover .supplier, .m-playlrc:hover .noword{
+		opacity: 1;
 	}
 	body.mq-playing .g-hd .m-leftbox {
 		opacity: 0;
@@ -345,6 +356,12 @@ const extraCSS = `
 		background: #00000033;
 		backdrop-filter: blur(36px) brightness(0.8);
 		border-radius: 16px;
+	}
+	.g-single-track .g-singlec-ct .n-single .mn .lyric .cnt > div:first-child:not(.inf) {
+		display: none;
+	}
+	.g-singlec-live {
+		display: none;
 	}
 `;
 
@@ -453,10 +470,7 @@ WaitForElement("#main-player, .m-pinfo", (dom) => {
 });
 const main = () => {
 	InjectCSS(extraCSS);
-	
-	//mutation observer for body
 	const bodyObserver = new MutationObserver((mutations) => {
-		// if .g-single is added to body
 		if (document.querySelector('.g-single:not(.patched)')) {
 			InjectHTML('div', '', document.querySelector('.g-single'), (dom) => {
 				dom.id = 'cd-bg-blur';				
@@ -467,7 +481,6 @@ const main = () => {
 		updateCDImage();
 		
 	}).observe(document.body, { childList: true });
-
 	
 	new MutationObserver((mutations) => {
 		updateCDImage();
