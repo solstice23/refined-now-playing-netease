@@ -1,0 +1,149 @@
+<input id="rnp-settings" class="open" type="checkbox"></input>
+<div id="rnp-settings-menu">
+	<div class="rnp-checkbox-wrapper">
+		<input id="rectangle-cover" type="checkbox" class="rnp-checkbox">
+		<label for="rectangle-cover" class="rnp-checkbox-label">方形专辑封面</label>
+	</div>
+	<div class="rnp-checkbox-wrapper">
+		<input id="lyric-blur" type="checkbox" class="rnp-checkbox">
+		<label for="lyric-blur" class="rnp-checkbox-label">歌词模糊效果</label>
+	</div>
+	<div class="rnp-checkbox-wrapper">
+		<input id="use-notosans" type="checkbox" class="rnp-checkbox">
+		<label for="use-notosans" class="rnp-checkbox-label">思源黑体</label>
+	</div>
+	<span class="rnp-checkbox-note">需要电脑中有此字体</span>
+	<!--<div class="rnp-checkbox-wrapper">
+		<input id="use-notosans" type="checkbox" class="rnp-checkbox">
+		<label for="use-notosans" class="rnp-checkbox-label">三角形效果</label>
+	</div>-->
+</div>
+
+
+<style>
+	.rnp-checkbox-wrapper .rnp-checkbox {
+		appearance: none;
+		background-color: #dfe1e433;
+		border-radius: 72px;
+		border-style: none;
+		flex-shrink: 0;
+		height: 20px;
+		margin: 0;
+		position: relative;
+		width: 30px;
+	}
+	.rnp-checkbox-wrapper .rnp-checkbox::before {
+		bottom: -6px;
+		content: "";
+		left: -6px;
+		position: absolute;
+		right: -6px;
+		top: -6px;
+	}
+	.rnp-checkbox-wrapper .rnp-checkbox,
+	.rnp-checkbox-wrapper .rnp-checkbox::after {
+		transition: all 100ms ease-out;
+	}
+	.rnp-checkbox-wrapper .rnp-checkbox::after {
+		background-color: #fff;
+		border-radius: 50%;
+		content: "";
+		height: 14px;
+		left: 3px;
+		position: absolute;
+		top: 3px;
+		width: 14px;
+	}
+	.rnp-checkbox-wrapper input[type=checkbox] {
+		cursor: pointer;
+	}
+	.rnp-checkbox-wrapper .rnp-checkbox:hover {
+		background-color: #c9cbcd33;
+		transition-duration: 0s;
+	}
+	.rnp-checkbox-wrapper .rnp-checkbox:checked {
+		background-color: #6e79d699;
+	}
+	.rnp-checkbox-wrapper .rnp-checkbox:checked::after {
+		background-color: #fff;
+		left: 13px;
+	}
+	.rnp-checkbox-wrapper :focus:not(.focus-visible) {
+		outline: 0;
+	}
+	.rnp-checkbox-wrapper .rnp-checkbox:checked:hover {
+		background-color: #535db399;
+	}
+
+	#rnp-settings-menu {
+		position: fixed;
+		z-index: 10;
+		right: 30px;
+		top: 100px;
+		font-size: 16px;
+		backdrop-filter: blur(30px);
+		background: #00000022;
+		padding: 16px 20px;
+		border-radius: 10px;
+		transition: all .3s ease;
+		transform: translateY(-10px);
+		opacity: 0;
+		pointer-events: none;
+	}
+	.rnp-checkbox-wrapper {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		margin-bottom: 15px;
+	}
+	.rnp-checkbox-label {
+		padding-left: 10px;
+		cursor: pointer;
+		margin-right: 2px;
+	}
+	.rnp-checkbox-wrapper:last-child {
+		margin-bottom: 0;
+	}
+	.rnp-checkbox-note {
+		opacity: .5;
+		font-size: 12px;
+		padding-left: 40px;
+		display: block;
+		margin-top: -10px;
+		margin-bottom: 10px;
+	}
+	.rnp-checkbox-wrapper:last-of-type + .rnp-checkbox-note {
+		margin-bottom: 0;
+	}
+
+	#rnp-settings {
+		appearance: none;
+		position: fixed;
+		right: 30px;
+		top: 65px;
+		background-color: transparent;
+		border: none;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3C!--! Font Awesome Pro 6.2.1 by %40fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons  Inc. --%3E%3Cpath d='M192 64L160 0H128L96 64 64 0H48C21.5 0 0 21.5 0 48V256H384V48c0-26.5-21.5-48-48-48H224L192 64zM0 288v32c0 35.3 28.7 64 64 64h64v64c0 35.3 28.7 64 64 64s64-28.7 64-64V384h64c35.3 0 64-28.7 64-64V288H0zM192 464c-8.8 0-16-7.2-16-16s7.2-16 16-16s16 7.2 16 16s-7.2 16-16 16z'/%3E%3C/svg%3E");
+		background-repeat: no-repeat;
+		background-size: contain;
+		filter: invert(1);
+		width: 20px;
+		height: 20px;
+		color: transparent;
+		opacity: .2;
+		transition: opacity .3s ease;
+		cursor: pointer;
+		z-index: 9;
+	}
+	#rnp-settings:checked {
+		opacity: 1;
+	}
+	#rnp-settings:hover {
+		opacity: .7;
+	}
+	#rnp-settings:checked + #rnp-settings-menu {
+		pointer-events: all;
+		opacity: 1;
+		transform: none;
+	}
+</style>
