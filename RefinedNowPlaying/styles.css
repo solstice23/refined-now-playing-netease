@@ -13,7 +13,7 @@
 	filter: blur(36px) brightness(0.45);
 	opacity: 1;
 	pointer-events: none;
-	position: absolute;
+	/*position: absolute;*/
 	left: 0;
 	top: 0;
 	transform: scale(1.28);
@@ -351,7 +351,7 @@ body.mq-playing #main-player > .spk,
 body.mq-playing #main-player > .listenTogether,
 body.mq-playing #main-player > .list {
 	opacity: 0;
-	transition: opacity .3s ease;
+	transition: opacity .3s ease, background .3s ease;
 }
 body.bottombar-hover .m-pinfo .btn:not(.btn-love),
 body.bottombar-hover #main-player>*:not(.f-cp, .prg, time),
@@ -369,12 +369,19 @@ body.mq-playing-scroll #main-player>.list {
 }
 body.mq-playing .m-pinfo .btn-love {
 	border-color: transparent;
-	transition: border-color .3s ease;
+	transition: border-color .3s ease, background-color .3s ease;
 }
 body.bottombar-hover .btn-love,
 body.mq-playing-scroll .btn-love {
 	border-color: rgba(255, 255, 255, 0.1) !important;
-	transition: border-color .3s ease;
+}
+svg.labelVip.labelVip.labelVip {
+	fill: transparent;
+	opacity: 0;
+	transition: opacity .3s ease;
+}
+.m-pinfo .btn:hover .labelVip {
+	opacity: 1;
 }
 body.mq-playing .m-player .prg:not(:hover) .track {
     background-color: rgba(var(--accent-color-rgb), 0.1);
@@ -436,6 +443,10 @@ body.mq-playing .m-player .prg-spk .has::before {
 body.mq-playing .m-player .prg-spk .ctrl {
     background-color: var(--accent-color);
 }
+body.mq-playing .m-player .brt .brttext.vip {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
 
 
 section#auto-id-08OXGV5zDKD5O8Vo * {
@@ -446,10 +457,19 @@ body.mq-playing .m-playlist {
 	backdrop-filter: blur(36px) brightness(0.8);
 	border-radius: 16px;
 }
-body.mq-playing .m-playlist li.z-play .col-2 .tit, .m-playlist li.z-pause .col-2 .tit, .m-playlist li.z-play .col-4 a, .m-playlist li.z-pause .col-4 a {
+body.mq-playing .m-playlist li.z-play .col-2 .tit,
+body.mq-playing .m-playlist li.z-pause .col-2 .tit,
+body.mq-playing .m-playlist li.z-play .col-4 a,
+body.mq-playing .m-playlist li.z-pause .col-4 a {
     color: var(--accent-color) !important;
 }
-body.mq-playing .m-playlist li::before, .m-playlist .ico-mv, .m-playlist .ico-sq, .u-micn-sq, .SpriteIcon_hires, .SpriteIcon_originalSong, .SpriteIcon_dolby {
+body.mq-playing .m-playlist li::before,
+body.mq-playing .m-playlist .ico-mv,
+body.mq-playing .m-playlist .ico-sq,
+body.mq-playing .u-micn-sq,
+body.mq-playing .SpriteIcon_hires,
+body.mq-playing .SpriteIcon_originalSong,
+body.mq-playing .SpriteIcon_dolby {
     background: var(--accent-color);
     opacity: .5;
 }
@@ -459,7 +479,11 @@ body.mq-playing .m-playlist li::before, .m-playlist .ico-mv, .m-playlist .ico-sq
 .g-singlec-live {
 	display: none;
 }
-body.mq-playing .m-player .word.z-light svg, .m-player .type:hover svg, .m-player .btnc-prv:hover svg, .m-player .btnc-nxt:hover svg, .m-player .word:hover svg {
+body.mq-playing .m-player .word.z-light svg,
+body.mq-playing .m-player .type:hover svg,
+body.mq-playing .m-player .btnc-prv:hover svg,
+body.mq-playing .m-player .btnc-nxt:hover svg,
+body.mq-playing .m-player .word:hover svg {
     fill: var(--accent-color);
 }
 

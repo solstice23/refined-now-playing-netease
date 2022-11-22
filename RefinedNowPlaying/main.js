@@ -5,11 +5,6 @@ const loadFile = async (path) => {
     return await betterncm.fs.readFileText(fullPath);
 }
 
-const getCurrentCDImage = () => {
-	const cdImage = document.querySelector('.n-single .cdimg img');
-	return cdImage.src;
-}
-
 const injectCSS = (css) => {
 	const style = document.createElement('style');
 	style.innerHTML = css;
@@ -113,7 +108,6 @@ const normalizeColor = ([r, g, b]) => {
 }
 
 const calcWhiteShadeColor = ([r, g, b]) => {
-	console.log(r,g,b);
 	const mix = (a, b, p) => Math.round(a * (1 - p) + b * p);
 	return [r, g, b].map((c) => mix(c, 255, 0.6));
 }
@@ -127,11 +121,19 @@ const updateAccentColor = ([r, g, b]) => {
 }
 
 
+const getCurrentCDImage = () => {
+	const cdImage = document.querySelector('.n-single .cdimg img');
+	return cdImage.src;
+}
+var lastCDImage = '';
 const updateCDImage = () => {
 	if (!document.querySelector('.g-single')) {
 		return;
 	}
 	const cdImage = getCurrentCDImage();
+	if (cdImage == lastCDImage) {
+		return;
+	}
 	const cdBgBlur = document.querySelector('#cd-bg-blur');
 	if (cdBgBlur.style.backgroundImage !== `url(${cdImage})`) {
 		cdBgBlur.style.backgroundImage = `url(${cdImage})`;
@@ -148,6 +150,9 @@ const updateCDImage = () => {
 			});
 		}
 	} catch {}
+	finally {
+		lastCDImage = cdImage;
+	}
 }
 
 var lastTitle = "";
