@@ -70,7 +70,6 @@ const rgb2Hsl = ([r, g, b]) => {
 	}
 	return [h, s, l];
 }
-
 const hsl2Rgb = ([h, s, l]) => {
 	let r, g, b;
 
@@ -93,7 +92,6 @@ const hsl2Rgb = ([h, s, l]) => {
 	}
 	return [r * 255, g * 255, b * 255];
 }
-
 const normalizeColor = ([r, g, b]) => {
 	const mix = (a, b, p) => Math.round(a * (1 - p) + b * p);
 

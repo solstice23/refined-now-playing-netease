@@ -62,7 +62,37 @@
 .g-singlec-comment,
 .g-singlec-comment-detail,
 .g-singlec-comment-top {
-	display: none;
+    font-size: 0;
+    background: #00000022 !important;
+    color: transparent;
+    backdrop-filter: blur(36px);
+    opacity: 0 !important;
+    border: none !important;
+    min-width: 36px;
+    width: 36px;
+	pointer-events: none !important;
+}
+.g-singlec-comment-top {
+    transform: translateX(148px) !important;
+}
+body.mq-playing-scroll .g-singlec-comment,
+body.mq-playing-scroll .g-singlec-comment-detail,
+body.mq-playing-scroll .g-singlec-comment-top {
+	pointer-events: auto !important;
+    opacity: .8 !important;
+}
+body.mq-playing-scroll .g-singlec-comment:hover,
+body.mq-playing-scroll .g-singlec-comment-detail:hover,
+body.mq-playing-scroll .g-singlec-comment-top:hover {
+    opacity: 1 !important;
+}
+.g-singlec-comment-detail.z-show {
+    padding: 0;
+    left: unset;
+    right: calc(26% - -6px - 148px);
+}
+.g-singlec-comment-detail.z-show svg {
+    margin: 0;
 }
 .g-single-track .g-singlec-ct .n-single .mn .head .inf .title h1 {
 	font-size: clamp(45px, 5vh, 600px);
@@ -305,21 +335,21 @@ body.mq-playing .m-player .prg .has {
 	background: #ffffff88;
 }
 body.mq-playing .m-player .prg .ctrl::before,
-.m-player .prg .ctrl::after {
+body.mq-playing .m-player .prg .ctrl::after {
 	background: #fff;
 }
-.m-pinfo .zoom {
+body.mq-playing .m-pinfo .zoom {
 	display: none;
 }
-.m-pinfo .btns {
+body.mq-playing .m-pinfo .btns {
 	left: 16px;
 }
-.m-pinfo .btn:not(.btn-love),
-#main-player>*:not(.f-cp, .prg, time),
-#main-player>.audioEffect,
-#main-player>.spk,
-#main-player>.listenTogether,
-#main-player>.list {
+body.mq-playing .m-pinfo .btn:not(.btn-love),
+body.mq-playing #main-player > *:not(.f-cp, .prg, time),
+body.mq-playing #main-player > .audioEffect,
+body.mq-playing #main-player > .spk,
+body.mq-playing #main-player > .listenTogether,
+body.mq-playing #main-player > .list {
 	opacity: 0;
 	transition: opacity .3s ease;
 }
@@ -337,7 +367,7 @@ body.mq-playing-scroll #main-player>.listenTogether,
 body.mq-playing-scroll #main-player>.list {
 	opacity: 1;
 }
-.m-pinfo .btn-love {
+body.mq-playing .m-pinfo .btn-love {
 	border-color: transparent;
 	transition: border-color .3s ease;
 }
@@ -433,14 +463,16 @@ body.mq-playing .m-player .word.z-light svg, .m-player .type:hover svg, .m-playe
     fill: var(--accent-color);
 }
 
-body.mq-playing .s-fc2, body.mq-playing .s-fc2:hover {
+body.mq-playing .s-fc2,
+body.mq-playing .s-fc2:hover {
     color: var(--accent-color);
 }
 
 body.mq-playing .s-fc2:hover {
     filter: brightness(1.1);
 }
-body.mq-playing .m-player .btnc svg, .m-player .btnp svg {
+body.mq-playing .m-player .btnc svg,
+body.mq-playing .m-player .btnp svg {
     fill: var(--accent-color-white-shade);
 }
 
