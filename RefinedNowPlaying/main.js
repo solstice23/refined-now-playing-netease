@@ -22,11 +22,21 @@ const injectHTML = (type, html, parent, fun = (dom) => {}) => {
 
 	parent.appendChild(dom);
 }
+var loadedJs = {};
+const loadJsOnce = async (path) => {
+	if (loadedJs[path]) {
+		return;
+	}
+	loadedJs[path] = true;
+	const js = await loadFile(path);
+	const script = document.createElement('script');
+	script.innerHTML = js;
+	document.body.appendChild(script);
+}
 const waitForElement = (selector, fun) => {
 	selector = selector.split(',');
 	let done = true;
 	let interval = setInterval(() => {
-		console.log(selector);
 		for (s of selector) {
 			if (!document.querySelector(s)) {
 				done = false;
@@ -41,6 +51,84 @@ const waitForElement = (selector, fun) => {
 	}, 100);
 }
 
+const rgb2Hsl = ([r, g, b]) => {
+	r /= 255, g /= 255, b /= 255;
+	const max = Math.max(r, g, b), min = Math.min(r, g, b);
+	let h, s, l = (max + min) / 2;
+
+	if (max == min) {
+		h = s = 0; // achromatic
+	} else {
+		const d = max - min;
+		s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+		switch (max) {
+			case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+			case g: h = (b - r) / d + 2; break;
+			case b: h = (r - g) / d + 4; break;
+		}
+		h /= 6;
+	}
+	return [h, s, l];
+}
+
+const hsl2Rgb = ([h, s, l]) => {
+	let r, g, b;
+
+	if (s == 0) {
+		r = g = b = l; // achromatic
+	} else {
+		const hue2rgb = (p, q, t) => {
+			if (t < 0) t += 1;
+			if (t > 1) t -= 1;
+			if (t < 1 / 6) return p + (q - p) * 6 * t;
+			if (t < 1 / 2) return q;
+			if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+			return p;
+		}
+		const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+		const p = 2 * l - q;
+		r = hue2rgb(p, q, h + 1 / 3);
+		g = hue2rgb(p, q, h);
+		b = hue2rgb(p, q, h - 1 / 3);
+	}
+	return [r * 255, g * 255, b * 255];
+}
+
+const normalizeColor = ([r, g, b]) => {
+	const mix = (a, b, p) => Math.round(a * (1 - p) + b * p);
+
+	const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+	if (luminance < 60) {
+		[r, g, b] = [r, g, b].map((c) => mix(c, 255, 0.3 * (1 - luminance / 60)));
+	} else if (luminance > 180) {
+		[r, g, b] = [r, g, b].map((c) => mix(c, 0, 0.5 * ((luminance - 180) / 76)));
+	}
+
+	let [h, s, l] = rgb2Hsl([r, g, b]);
+
+	s = Math.max(0.3, Math.min(0.8, s));
+	l = Math.max(0.5, Math.min(0.8, l));
+
+	[r, g, b] = hsl2Rgb([h, s, l]);
+
+	return [r, g, b];
+}
+
+const calcWhiteShadeColor = ([r, g, b]) => {
+	console.log(r,g,b);
+	const mix = (a, b, p) => Math.round(a * (1 - p) + b * p);
+	return [r, g, b].map((c) => mix(c, 255, 0.6));
+}
+
+const updateAccentColor = ([r, g, b]) => {
+	const [r1, g1, b1] = normalizeColor([r, g, b]);
+	document.body.style.setProperty('--accent-color', `rgb(${r1}, ${g1}, ${b1})`);
+	document.body.style.setProperty('--accent-color-rgb', `${r1}, ${g1}, ${b1}`);
+	const [r2, g2, b2] = calcWhiteShadeColor([r1, g1, b1]);
+	document.body.style.setProperty('--accent-color-white-shade', `rgb(${calcWhiteShadeColor([r2, g2, b2])})`);
+}
+
+
 const updateCDImage = () => {
 	if (!document.querySelector('.g-single')) {
 		return;
@@ -50,6 +138,18 @@ const updateCDImage = () => {
 	if (cdBgBlur.style.backgroundImage !== `url(${cdImage})`) {
 		cdBgBlur.style.backgroundImage = `url(${cdImage})`;
 	}
+
+    try {
+		const colorThief = new ColorThief();
+		const img = document.querySelector('.n-single .cdimg img');
+		if (img.complete) {
+			updateAccentColor(colorThief.getColor(img));
+		} else {
+			image.addEventListener('load', function() {
+				updateAccentColor(colorThief.getColor(img));
+			});
+		}
+	} catch {}
 }
 
 var lastTitle = "";
@@ -173,7 +273,9 @@ const addSettingsMenu = async () => {
 };
 
 const main = async () => {
+	loadJsOnce("libs/color-thief.umd.js");
 	injectCSS(await loadFile("styles.css"));
+
 
 	const bodyObserver = new MutationObserver((mutations) => {
 		if (document.querySelector('.g-single:not(.patched)')) {

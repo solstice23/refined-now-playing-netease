@@ -346,19 +346,102 @@ body.mq-playing-scroll .btn-love {
 	border-color: rgba(255, 255, 255, 0.1);
 	transition: border-color .3s ease;
 }
+body.mq-playing .m-player .prg:not(:hover) .track {
+    background-color: rgba(var(--accent-color-rgb), 0.1);
+}
+body.mq-playing .m-player .prg:not(:hover) .has {
+    background: rgba(var(--accent-color-rgb), 0.53333);
+}
+body.mq-playing .m-player .prg:not(:hover) .download {
+    background: rgba(var(--accent-color-rgb), 0.1);
+}
+body.mq-playing .m-player .prg:not(:hover) .ctrl::before, .m-player .prg .ctrl::after {
+    background: var(--accent-color);
+}
+body.mq-playing .m-player .prg *{
+    border-radius: 10px !important;
+}
+body.mq-playing .m-player .btnc svg,
+body.mq-playing .m-player .btnp svg,
+body.mq-playing .m-player .type svg,
+body.mq-playing .m-player .word svg {
+    opacity: .5;
+    transition: opacity .3s ease, fill .2s ease;
+}
+body.mq-playing .m-player .type svg,
+body.mq-playing .m-player .word svg {
+    opacity: 0;
+}
+body.bottombar-hover .m-player .btnc svg,
+body.bottombar-hover .m-player .btnp svg,
+body.bottombar-hover .m-player .type svg,
+body.bottombar-hover .m-player .word svg,
+body.mq-playing-scroll .m-player .btnc svg,
+body.mq-playing-scroll .m-player .btnp svg,
+body.mq-playing-scroll .m-player .type svg,
+body.mq-playing-scroll .m-player .word svg {
+    opacity: 1;
+}
+body.mq-playing .m-player .btnp {
+    transition: background-color .25s ease;
+}
+body.mq-playing .m-player .prg-spk {
+    box-shadow: none;
+    background: #00000015;
+    backdrop-filter: blur(36px);
+    border-radius: 100px;
+}
+body.mq-playing .m-player .prg-spk::before {
+    display: none;
+}
+body.mq-playing .m-player .prg-spk::after {
+    display: none;
+}
+body.mq-playing .m-player .prg-spk .track::before {
+    background: rgba(var(--accent-color-rgb), 0.1);
+}
+body.mq-playing .m-player .prg-spk .has::before {
+    background: var(--accent-color);
+}
+body.mq-playing .m-player .prg-spk .ctrl {
+    background-color: var(--accent-color);
+}
+
+
 section#auto-id-08OXGV5zDKD5O8Vo * {
 	color: #fff !important;
 }
-.m-playlist {
-	background: #00000033;
+body.mq-playing .m-playlist {
+	background: #00000022;
 	backdrop-filter: blur(36px) brightness(0.8);
 	border-radius: 16px;
+}
+body.mq-playing .m-playlist li.z-play .col-2 .tit, .m-playlist li.z-pause .col-2 .tit, .m-playlist li.z-play .col-4 a, .m-playlist li.z-pause .col-4 a {
+    color: var(--accent-color) !important;
+}
+body.mq-playing .m-playlist li::before, .m-playlist .ico-mv, .m-playlist .ico-sq, .u-micn-sq, .SpriteIcon_hires, .SpriteIcon_originalSong, .SpriteIcon_dolby {
+    background: var(--accent-color);
+    opacity: .5;
 }
 .g-single-track .g-singlec-ct .n-single .mn .lyric .cnt > div:first-child:not(.inf) {
 	display: none;
 }
 .g-singlec-live {
 	display: none;
+}
+body.mq-playing .m-player .word.z-light svg, .m-player .type:hover svg, .m-player .btnc-prv:hover svg, .m-player .btnc-nxt:hover svg, .m-player .word:hover svg {
+    fill: var(--accent-color);
+}
+
+body.mq-playing .s-fc2, body.mq-playing .s-fc2:hover {
+    color: var(--accent-color);
+}
+
+body.mq-playing .s-fc2:hover {
+    filter: brightness(1.1);
+}
+body.mq-playing .m-player .btnc svg, .m-player .btnp svg {
+    fill: var(--accent-color-white-shade);
 }
 
 
