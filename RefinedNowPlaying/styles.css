@@ -373,7 +373,7 @@ body.mq-playing .m-pinfo .btn-love {
 }
 body.bottombar-hover .btn-love,
 body.mq-playing-scroll .btn-love {
-	border-color: rgba(255, 255, 255, 0.1);
+	border-color: rgba(255, 255, 255, 0.1) !important;
 	transition: border-color .3s ease;
 }
 body.mq-playing .m-player .prg:not(:hover) .track {
@@ -519,4 +519,12 @@ body.rectangle-cover .g-single-track .g-singlec-ct .n-single .sd {
 body.use-notosans .g-single-track .g-singlec-ct .n-single .mn .lyric,
 body.use-notosans .n-single .head * {
     font-family: 'Source Han Sans CN', 'noto sans', '思源黑体' !important;
+}
+
+
+body.hide-comments .g-single-track .g-bd2 {
+    display: none;
+}
+body.hide-comments .g-singlec-ct {
+    overflow-y: hidden;
 }

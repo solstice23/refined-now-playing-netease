@@ -241,10 +241,12 @@ const addSettingsMenu = async () => {
 		const rectangleCover = document.querySelector('#rectangle-cover');
 		const lyricBlur = document.querySelector('#lyric-blur');
 		const useNotosans = document.querySelector('#use-notosans');
+		const hideComments = document.querySelector('#hide-comments');
 
 		rectangleCover.checked = getSetting('rectangle-cover', true);
 		lyricBlur.checked = getSetting('lyric-blur', false);
 		useNotosans.checked = getSetting('use-notosans', false);
+		hideComments.checked = getSetting('hide-comments', false);
 
 		rectangleCover.addEventListener('change', () => {
 			setSetting('rectangle-cover', rectangleCover.checked);
@@ -258,10 +260,15 @@ const addSettingsMenu = async () => {
 			setSetting('use-notosans', useNotosans.checked);
 			addOrRemoveGlobalClassByOption('use-notosans', useNotosans.checked);
 		});
+		hideComments.addEventListener('change', () => {
+			setSetting('hide-comments', hideComments.checked);
+			addOrRemoveGlobalClassByOption('hide-comments', hideComments.checked);
+		});
 
 		addOrRemoveGlobalClassByOption('rectangle-cover', rectangleCover.checked);
 		addOrRemoveGlobalClassByOption('lyric-blur', lyricBlur.checked);
 		addOrRemoveGlobalClassByOption('use-notosans', useNotosans.checked);
+		addOrRemoveGlobalClassByOption('hide-comments', hideComments.checked);
 	}
 	const settingsMenu = document.createElement('div');
 	settingsMenu.id = 'settings-menu';
