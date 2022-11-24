@@ -107,17 +107,21 @@ const normalizeColor = ([r, g, b]) => {
 	return [r, g, b];
 }
 
-const calcWhiteShadeColor = ([r, g, b]) => {
+const calcWhiteShadeColor = ([r, g, b], p = 0.50) => {
 	const mix = (a, b, p) => Math.round(a * (1 - p) + b * p);
-	return [r, g, b].map((c) => mix(c, 255, 0.6));
+	return [r, g, b].map((c) => mix(c, 255, p));
 }
 
 const updateAccentColor = ([r, g, b]) => {
-	const [r1, g1, b1] = normalizeColor([r, g, b]);
+	[r, g, b] = normalizeColor([r, g, b]);
+	const [r1, g1, b1] = calcWhiteShadeColor([r, g, b], 0.2);
 	document.body.style.setProperty('--accent-color', `rgb(${r1}, ${g1}, ${b1})`);
 	document.body.style.setProperty('--accent-color-rgb', `${r1}, ${g1}, ${b1}`);
-	const [r2, g2, b2] = calcWhiteShadeColor([r1, g1, b1]);
+	const [r2, g2, b2] = calcWhiteShadeColor([r, g, b]);
 	document.body.style.setProperty('--accent-color-white-shade', `rgb(${calcWhiteShadeColor([r2, g2, b2])})`);
+	const [r3, g3, b3] = calcWhiteShadeColor([r, g, b], 0.3);
+	document.body.style.setProperty('--accent-color-lyric-shade', `rgb(${calcWhiteShadeColor([r3, g3, b3])})`);
+	document.body.style.setProperty('--accent-color-lyric-shade-rgb', `${r3}, ${g3}, ${b3}`);
 }
 
 
@@ -281,6 +285,8 @@ const addSettingsMenu = async () => {
 	document.querySelector('.g-single').appendChild(settingsMenu);
 	initSettings();
 };
+
+		
 
 const main = async () => {
 	loadJsOnce("libs/color-thief.umd.js");
