@@ -288,7 +288,7 @@ const addSettingsMenu = async () => {
 
 		
 
-const main = async () => {
+plugin.onLoad(async () => {
 	loadJsOnce("libs/color-thief.umd.js");
 	injectCSS(await loadFile("styles.css"));
 
@@ -310,5 +310,4 @@ const main = async () => {
 		updateCDImage();
 		recalculateTitleSize();
 	}).observe(document.body, { childList: true , subtree: true, attributes: true, attributeFilter: ['src']});
-}
-await main();
+});
