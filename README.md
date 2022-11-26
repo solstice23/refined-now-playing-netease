@@ -17,9 +17,13 @@ https://user-images.githubusercontent.com/23134847/202904157-74c344c9-a3de-44d4-
 
 ![screenshot2](screenshot2.png)
 
+![screenshot2](screenshot3.png)
+
 # TODO
 
 - [x] 自定义菜单
 - [x] 方形封面
 - [x] 歌词模糊
+- [ ] 渐变背景
+- [ ] 主题色切换开关
 - [ ] 适配亮色主题

@@ -10,19 +10,29 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    filter: brightness(0.45);
     opacity: 1;
     pointer-events: none;
     position: fixed;
     left: 0;
     top: 0;
+    overflow: hidden;
+	transition: left 0.3s ease, top 0.3s ease, width 0.3s ease, height 0.3s ease, border-radius 0.3s ease;
+}
+#cd-bg-blur::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    opacity: var(--bg-dim, 0.55);
+    pointer-events: none;
 }
 #cd-bg-blur::after {
 	content: "";
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	backdrop-filter: blur(36px);
+	backdrop-filter: blur(var(--bg-blur, 36px));
 	pointer-events: none;
 }
 .g-single-track .content {
@@ -609,4 +619,23 @@ body.hide-comments .g-single-track .g-bd2 {
 }
 body.hide-comments .g-singlec-ct {
     overflow-y: hidden;
+}
+
+
+
+body.partial-bg #cd-bg-blur {
+    left: 30px;
+    top: 60px;
+    width: calc(100% - 60px);
+    height: calc(100% - 133px);
+    border-radius: 16px;
+	opacity: var(--bg-opacity, 1);
+}
+body.partial-bg #rnp-settings {
+    right: 50px;
+    top: 85px;
+}
+body.partial-bg #rnp-settings-menu {
+    right: 50px;
+    top: 120px;
 }

@@ -246,38 +246,73 @@ const addOrRemoveGlobalClassByOption = (className, optionValue) => {
 }
 
 const addSettingsMenu = async () => {
+	const sliderEnhance = (slider) => {
+		slider.addEventListener("input", e => {
+			const value = e.target.value;
+			const min = e.target.min;
+			const max = e.target.max;
+			const percent = (value - min) / (max - min);
+			const bg = `linear-gradient(90deg, rgb(var(--accent-color-rgb)) ${percent * 100}%, #dfe1e422 ${percent * 100}%)`;
+			e.target.style.background = bg;
+
+			console.log(value, e.target.getAttribute("default"), value == e.target.getAttribute("default")); 
+			if (value != e.target.getAttribute("default")) {
+				e.target.parentElement.classList.add("changed");
+			} else {
+				e.target.parentElement.classList.remove("changed");
+			}				
+		});
+		slider.parentElement.querySelector(".rnp-slider-reset").addEventListener("click", e => {
+			const slider = e.target.parentElement.parentElement.querySelector(".rnp-slider");
+			slider.value = slider.getAttribute("default");
+			slider.dispatchEvent(new Event("input"));
+			slider.dispatchEvent(new Event("change"));
+		});
+		slider.dispatchEvent(new Event("input"));
+	}
+	const bindCheckboxToClass = (checkbox, className, defaultValue = false) => {
+		checkbox.checked = getSetting(checkbox.id, defaultValue);
+		checkbox.addEventListener("change", e => {
+			setSetting(checkbox.id, e.target.checked);
+			addOrRemoveGlobalClassByOption(className, e.target.checked);
+		});
+		addOrRemoveGlobalClassByOption(className, checkbox.checked);
+	}
+	const bindSliderToCSSVariable = (slider, variable, defalutValue = 0, event = 'input', mapping = (x) => { return x }) => {
+		slider.value = getSetting(slider.id, defalutValue);
+		slider.dispatchEvent(new Event("input"));
+		slider.addEventListener(event, e => {
+			const value = e.target.value;
+			document.body.style.setProperty(variable, mapping(value));
+		});
+		slider.addEventListener("change", e => {
+			setSetting(slider.id, e.target.value);
+		});
+		document.body.style.setProperty(variable, mapping(slider.value));
+		sliderEnhance(slider);
+	}
+
 	const initSettings = () => {
 		const rectangleCover = document.querySelector('#rectangle-cover');
 		const lyricBlur = document.querySelector('#lyric-blur');
 		const useNotosans = document.querySelector('#use-notosans');
 		const hideComments = document.querySelector('#hide-comments');
+		const partialBg = document.querySelector('#partial-bg');
 
-		rectangleCover.checked = getSetting('rectangle-cover', true);
-		lyricBlur.checked = getSetting('lyric-blur', false);
-		useNotosans.checked = getSetting('use-notosans', false);
-		hideComments.checked = getSetting('hide-comments', false);
+		bindCheckboxToClass(rectangleCover, 'rectangle-cover', true);
+		bindCheckboxToClass(lyricBlur, 'lyric-blur', true);
+		bindCheckboxToClass(useNotosans, 'use-notosans', false);
+		bindCheckboxToClass(hideComments, 'hide-comments', false);
+		bindCheckboxToClass(partialBg, 'partial-bg', false);
+		
 
-		rectangleCover.addEventListener('change', () => {
-			setSetting('rectangle-cover', rectangleCover.checked);
-			addOrRemoveGlobalClassByOption('rectangle-cover', rectangleCover.checked);
-		});
-		lyricBlur.addEventListener('change', () => {
-			setSetting('lyric-blur', lyricBlur.checked);
-			addOrRemoveGlobalClassByOption('lyric-blur', lyricBlur.checked);
-		});
-		useNotosans.addEventListener('change', () => {
-			setSetting('use-notosans', useNotosans.checked);
-			addOrRemoveGlobalClassByOption('use-notosans', useNotosans.checked);
-		});
-		hideComments.addEventListener('change', () => {
-			setSetting('hide-comments', hideComments.checked);
-			addOrRemoveGlobalClassByOption('hide-comments', hideComments.checked);
-		});
+		const bgBlur = document.querySelector('#bg-blur');
+		const bgDim = document.querySelector('#bg-dim');
+		const bgOpacity = document.querySelector('#bg-opacity');
 
-		addOrRemoveGlobalClassByOption('rectangle-cover', rectangleCover.checked);
-		addOrRemoveGlobalClassByOption('lyric-blur', lyricBlur.checked);
-		addOrRemoveGlobalClassByOption('use-notosans', useNotosans.checked);
-		addOrRemoveGlobalClassByOption('hide-comments', hideComments.checked);
+		bindSliderToCSSVariable(bgBlur, '--bg-blur', 36, 'change', (x) => { return x + 'px' });
+		bindSliderToCSSVariable(bgDim, '--bg-dim', 55, 'input', (x) => { return x / 100 });
+		bindSliderToCSSVariable(bgOpacity, '--bg-opacity', 0, 'input', (x) => { return 1 - x / 100 });
 	}
 	const settingsMenu = document.createElement('div');
 	settingsMenu.id = 'settings-menu';

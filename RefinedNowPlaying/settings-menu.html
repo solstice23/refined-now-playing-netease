@@ -1,21 +1,44 @@
 <input id="rnp-settings" class="open" type="checkbox"></input>
 <div id="rnp-settings-menu">
-	<div class="rnp-checkbox-wrapper">
-		<input id="rectangle-cover" type="checkbox" class="rnp-checkbox">
-		<label for="rectangle-cover" class="rnp-checkbox-label">方形专辑封面</label>
+	<div class="rnp-group">
+		<div class="rnp-group-title">常规</div>
+		<div class="rnp-checkbox-wrapper">
+			<input id="rectangle-cover" type="checkbox" class="rnp-checkbox">
+			<label for="rectangle-cover" class="rnp-checkbox-label">方形专辑封面</label>
+		</div>
+		<div class="rnp-checkbox-wrapper">
+			<input id="lyric-blur" type="checkbox" class="rnp-checkbox">
+			<label for="lyric-blur" class="rnp-checkbox-label">歌词模糊效果</label>
+		</div>
+		<div class="rnp-checkbox-wrapper">
+			<input id="use-notosans" type="checkbox" class="rnp-checkbox">
+			<label for="use-notosans" class="rnp-checkbox-label">思源黑体</label>
+		</div>
+		<span class="rnp-checkbox-note">需要电脑中有此字体</span>
+		<div class="rnp-checkbox-wrapper">
+			<input id="hide-comments" type="checkbox" class="rnp-checkbox">
+			<label for="hide-comments" class="rnp-checkbox-label">隐藏评论区</label>
+		</div>
 	</div>
-	<div class="rnp-checkbox-wrapper">
-		<input id="lyric-blur" type="checkbox" class="rnp-checkbox">
-		<label for="lyric-blur" class="rnp-checkbox-label">歌词模糊效果</label>
-	</div>
-	<div class="rnp-checkbox-wrapper">
-		<input id="use-notosans" type="checkbox" class="rnp-checkbox">
-		<label for="use-notosans" class="rnp-checkbox-label">思源黑体</label>
-	</div>
-	<span class="rnp-checkbox-note">需要电脑中有此字体</span>
-	<div class="rnp-checkbox-wrapper">
-		<input id="hide-comments" type="checkbox" class="rnp-checkbox">
-		<label for="hide-comments" class="rnp-checkbox-label">隐藏评论区</label>
+
+	<div class="rnp-group">
+		<div class="rnp-group-title">背景</div>
+		<div class="rnp-slider-wrapper">
+			<label for="bg-blur" class="rnp-slider-label">模糊<button class="rnp-slider-reset"></button></label>
+			<input id="bg-blur" type="range" class="rnp-slider" min="0" max="100" value="36" default="36">
+		</div>
+		<div class="rnp-slider-wrapper">
+			<label for="bg-dim" class="rnp-slider-label">暗化<button class="rnp-slider-reset"></button></label>
+			<input id="bg-dim" type="range" class="rnp-slider" min="0" max="100" value="55" default="55">
+		</div>
+		<div class="rnp-slider-wrapper bg-opacity">
+			<label for="bg-opacity" class="rnp-slider-label">透明度<button class="rnp-slider-reset"></button></label>
+			<input id="bg-opacity" type="range" class="rnp-slider" min="0" max="100" value="0" default="0">
+		</div>
+		<div class="rnp-checkbox-wrapper">
+			<input id="partial-bg" type="checkbox" class="rnp-checkbox">
+			<label for="partial-bg" class="rnp-checkbox-label">局部背景</label>
+		</div>
 	</div>
 </div>
 
@@ -74,22 +97,6 @@
 	.rnp-checkbox-wrapper .rnp-checkbox:checked:hover {
 		background-color: var(--accent-color);
 	}
-
-	#rnp-settings-menu {
-		position: fixed;
-		z-index: 10;
-		right: 30px;
-		top: 100px;
-		font-size: 16px;
-		backdrop-filter: blur(30px);
-		background: #00000022;
-		padding: 16px 20px;
-		border-radius: 10px;
-		transition: all .3s ease;
-		transform: translateY(-10px);
-		opacity: 0;
-		pointer-events: none;
-	}
 	.rnp-checkbox-wrapper {
 		display: flex;
 		flex-direction: row;
@@ -116,6 +123,90 @@
 		margin-bottom: 0;
 	}
 
+
+	.rnp-slider-wrapper {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		margin-bottom: 15px;
+		position: relative;
+		padding-bottom: 4px;
+		height: 38px;
+		overflow: hidden;
+		transition: all .3s ease;
+	}
+	.rnp-slider-label {
+		margin-bottom: 8px;
+	}
+	.rnp-slider {
+		-webkit-appearance: none;
+		background-color: #dfe1e422;
+		border-radius: 20px;
+		width: 100%;
+		height: 8px;
+	}
+	.rnp-slider::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		width: 10px;
+		height: 10px;
+		background: #fff;
+		cursor: pointer;
+		border-radius: 10px;
+		transition: all .2s ease;
+	}
+	.rnp-slider::-webkit-slider-thumb:hover {
+		-webkit-appearance: none;
+		width: 8px;
+		height: 16px;
+		cursor: pointer;
+	}
+	.rnp-slider-reset {
+		width: 8px;
+		height: 8px;
+		border-radius: 10px;
+		border: none;
+		opacity: .3;
+		margin-left: 6px;
+		transform: translateY(-1px);
+		background-color: #fff;
+		transition: background-color .2s ease, opacity .2s ease;
+	}
+	.rnp-slider-reset:hover {
+		opacity: 1;
+		background-color: var(--accent-color);
+	}
+	.rnp-slider-wrapper:not(.changed) .rnp-slider-reset {
+		opacity: 0;
+		pointer-events: none;
+	}
+
+
+
+	#rnp-settings-menu {
+		position: fixed;
+		z-index: 10;
+		right: 30px;
+		top: 100px;
+		font-size: 16px;
+		backdrop-filter: blur(30px);
+		background: #00000022;
+		padding: 16px 20px;
+		border-radius: 10px;
+		transition: all .3s ease;
+		transform: translateY(-10px);
+		opacity: 0;
+		pointer-events: none;
+		display: flex;
+		gap: 20px;
+	}
+
+	.rnp-group-title {
+		margin-bottom: 15px;
+		font-size: 17px;
+		opacity: .6;
+		font-weight: bold;
+	}
+
 	#rnp-settings {
 		appearance: none;
 		position: fixed;
@@ -131,7 +222,7 @@
 		height: 20px;
 		color: transparent;
 		opacity: 0;
-		transition: opacity .3s ease;
+		transition: opacity .3s ease, top .3s ease, right .3s ease;
 		cursor: pointer;
 		z-index: 9;
 	}
@@ -148,5 +239,16 @@
 		pointer-events: all;
 		opacity: 1;
 		transform: none;
+	}
+</style>
+
+
+<style>
+	body:not(.partial-bg) .bg-opacity {
+		opacity: 0;
+		height: 0;
+		padding-bottom: 0;
+		margin-bottom: 0;
+		pointer-events: none;
 	}
 </style>
