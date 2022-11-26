@@ -52,7 +52,7 @@ const rgb2Hsl = ([r, g, b]) => {
 	let h, s, l = (max + min) / 2;
 
 	if (max == min) {
-		h = s = 0; // achromatic
+		h = s = 0;
 	} else {
 		const d = max - min;
 		s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
@@ -69,7 +69,7 @@ const hsl2Rgb = ([h, s, l]) => {
 	let r, g, b;
 
 	if (s == 0) {
-		r = g = b = l; // achromatic
+		r = g = b = l;
 	} else {
 		const hue2rgb = (p, q, t) => {
 			if (t < 0) t += 1;
