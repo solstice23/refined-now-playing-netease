@@ -88,6 +88,10 @@ const hsl2Rgb = ([h, s, l]) => {
 	return [r * 255, g * 255, b * 255];
 }
 const normalizeColor = ([r, g, b]) => {
+	if (Math.max(r, g, b) - Math.min(r, g, b) < 5) {
+		return [150, 150, 150];
+	}
+
 	const mix = (a, b, p) => Math.round(a * (1 - p) + b * p);
 
 	const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
@@ -125,6 +129,109 @@ const updateAccentColor = ([r, g, b]) => {
 }
 
 
+const calcLuminance = (color) => {
+	let [r, g, b] = color.map((c) => c / 255);
+	[r, g, b] = [r, g, b].map((c) => {
+		if (c <= 0.03928) {
+			return c / 12.92;
+		}
+		return Math.pow((c + 0.055) / 1.055, 2.4);
+	});
+	return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+const rgb2Lab = (color) => {
+	let [r, g, b] = color.map((c) => c / 255);
+	[r, g, b] = [r, g, b].map((c) => {
+		if (c <= 0.03928) {
+			return c / 12.92;
+		}
+		return Math.pow((c + 0.055) / 1.055, 2.4);
+	});
+	[r, g, b] = [r, g, b].map((c) => c * 100);
+	const x = r * 0.4124 + g * 0.3576 + b * 0.1805;
+	const y = r * 0.2126 + g * 0.7152 + b * 0.0722;
+	const z = r * 0.0193 + g * 0.1192 + b * 0.9505;
+	const xyz2Lab = (c) => {
+		if (c > 0.008856) {
+			return Math.pow(c, 1 / 3);
+		}
+		return 7.787 * c + 16 / 116;
+	}
+	const L = 116 * xyz2Lab(y / 100) - 16;
+	const A = 500 * (xyz2Lab(x / 95.047) - xyz2Lab(y / 100));
+	const B = 200 * (xyz2Lab(y / 100) - xyz2Lab(z / 108.883));
+	return [L, A, B];
+}
+
+const calcColorDifference = (color1, color2) => {
+	const [L1, A1, B1] = rgb2Lab(color1);
+	const [L2, A2, B2] = rgb2Lab(color2);
+	const deltaL = L1 - L2;
+	const deltaA = A1 - A2;
+	const deltaB = B1 - B2;
+	return Math.sqrt(deltaL * deltaL + deltaA * deltaA + deltaB * deltaB);
+}
+
+function getGradientFromPalette(palette) {
+	palette = palette.sort((a, b) => {
+		return calcLuminance(a) - calcLuminance(b);
+	});
+	palette = palette.slice(palette.length / 2 - 3, palette.length / 2 + 3);
+
+
+	let differences = new Array(6);
+	for(let i = 0; i < differences.length; i++){
+		differences[i] = new Array(6).fill(0);
+	}
+	for (let i = 0; i < palette.length; i++) {
+		for (let j = i + 1; j < palette.length; j++) {
+			differences[i][j] = calcColorDifference(palette[i], palette[j]);
+			differences[j][i] = differences[i][j];
+		}
+	}
+
+	let used = new Array(6).fill(false);
+	let min = 10000000, ansSeq = [];
+	const dfs = (depth, seq = [], currentMax = -1) => {
+		if (depth === 6) {
+			if (currentMax < min) {
+				min = currentMax;
+				ansSeq = seq;
+			}
+			return;
+		}
+		for (let i = 0; i < 6; i++) {
+			if (used[i]) continue;
+			used[i] = true;
+			dfs(depth + 1, seq.concat(i), Math.max(currentMax, differences[seq[depth - 1]][i]));
+			used[i] = false;
+		}
+	}
+	for (let i = 0; i < 6; i++) {
+		used[i] = true;
+		dfs(1, [i]);
+		used[i] = false;
+	}
+	
+	let colors = [];
+	for (let i of ansSeq) {
+		colors.push(palette[ansSeq[i]]);
+	}
+	let ans = 'linear-gradient(-45deg,'; 
+	for (let i = 0; i < colors.length; i++) {
+		ans += `rgb(${colors[i][0]}, ${colors[i][1]}, ${colors[i][2]})`;
+		if (i !== colors.length - 1) {
+			ans += ',';
+		}
+	}
+	ans += ')';
+	return ans;
+}
+const updateGradientBackground = (palette) => {
+	document.body.style.setProperty('--gradient-bg', getGradientFromPalette(palette));
+}
+
 const getCurrentCDImage = () => {
 	const cdImage = document.querySelector('.n-single .cdimg img');
 	return cdImage.src;
@@ -143,14 +250,17 @@ const updateCDImage = () => {
 		cdBgBlur.style.backgroundImage = `url(${cdImage})`;
 	}
 
+	const colorThief = new ColorThief();
+
     try {
-		const colorThief = new ColorThief();
 		const img = document.querySelector('.n-single .cdimg img');
 		if (img.complete) {
 			updateAccentColor(colorThief.getColor(img));
+			updateGradientBackground(colorThief.getPalette(img));
 		} else {
 			img.addEventListener('load', function() {
 				updateAccentColor(colorThief.getColor(img));
+				updateGradientBackground(colorThief.getPalette(img));
 			});
 		}
 	} catch {}

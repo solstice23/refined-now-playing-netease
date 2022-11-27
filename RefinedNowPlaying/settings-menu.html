@@ -27,7 +27,7 @@
 
 	<div class="rnp-group">
 		<div class="rnp-group-title">背景</div>
-		<div class="rnp-slider-wrapper">
+		<div class="rnp-slider-wrapper bg-blur">
 			<label for="bg-blur" class="rnp-slider-label">模糊<button class="rnp-slider-reset"></button></label>
 			<input id="bg-blur" type="range" class="rnp-slider" min="0" max="100" value="36" default="36">
 		</div>
@@ -248,7 +248,8 @@
 
 
 <style>
-	body:not(.partial-bg) .bg-opacity {
+	body:not(.partial-bg) .bg-opacity,
+	body.gradient-bg .bg-blur{
 		opacity: 0;
 		height: 0;
 		padding-bottom: 0;
