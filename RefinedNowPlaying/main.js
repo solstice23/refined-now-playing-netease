@@ -117,11 +117,11 @@ const updateAccentColor = ([r, g, b]) => {
 	const [r1, g1, b1] = calcWhiteShadeColor([r, g, b], 0.2);
 	document.body.style.setProperty('--accent-color', `rgb(${r1}, ${g1}, ${b1})`);
 	document.body.style.setProperty('--accent-color-rgb', `${r1}, ${g1}, ${b1}`);
-	const [r2, g2, b2] = calcWhiteShadeColor([r, g, b]);
-	document.body.style.setProperty('--accent-color-white-shade', `rgb(${calcWhiteShadeColor([r2, g2, b2])})`);
-	const [r3, g3, b3] = calcWhiteShadeColor([r, g, b], 0.3);
-	document.body.style.setProperty('--accent-color-lyric-shade', `rgb(${calcWhiteShadeColor([r3, g3, b3])})`);
-	document.body.style.setProperty('--accent-color-lyric-shade-rgb', `${r3}, ${g3}, ${b3}`);
+	const [r2, g2, b2] = calcWhiteShadeColor([r, g, b], 0.3);
+	document.body.style.setProperty('--accent-color-shade-1', `rgb(${calcWhiteShadeColor([r2, g2, b2])})`);
+	document.body.style.setProperty('--accent-color-shade-1-rgb', `${r2}, ${g2}, ${b2}`);
+	const [r3, g3, b3] = calcWhiteShadeColor([r, g, b], 0.45);
+	document.body.style.setProperty('--accent-color-shade-2', `rgb(${calcWhiteShadeColor([r3, g3, b3])})`);
 }
 
 
@@ -149,7 +149,7 @@ const updateCDImage = () => {
 		if (img.complete) {
 			updateAccentColor(colorThief.getColor(img));
 		} else {
-			image.addEventListener('load', function() {
+			img.addEventListener('load', function() {
 				updateAccentColor(colorThief.getColor(img));
 			});
 		}
@@ -252,10 +252,9 @@ const addSettingsMenu = async () => {
 			const min = e.target.min;
 			const max = e.target.max;
 			const percent = (value - min) / (max - min);
-			const bg = `linear-gradient(90deg, rgb(var(--accent-color-rgb)) ${percent * 100}%, #dfe1e422 ${percent * 100}%)`;
+			const bg = `linear-gradient(90deg, var(--accent-color) ${percent * 100}%, #dfe1e422 ${percent * 100}%)`;
 			e.target.style.background = bg;
 
-			console.log(value, e.target.getAttribute("default"), value == e.target.getAttribute("default")); 
 			if (value != e.target.getAttribute("default")) {
 				e.target.parentElement.classList.add("changed");
 			} else {
@@ -295,12 +294,14 @@ const addSettingsMenu = async () => {
 	const initSettings = () => {
 		const rectangleCover = document.querySelector('#rectangle-cover');
 		const lyricBlur = document.querySelector('#lyric-blur');
+		const enableAccentColor = document.querySelector('#enable-accent-color');
 		const useNotosans = document.querySelector('#use-notosans');
 		const hideComments = document.querySelector('#hide-comments');
 		const partialBg = document.querySelector('#partial-bg');
 
 		bindCheckboxToClass(rectangleCover, 'rectangle-cover', true);
 		bindCheckboxToClass(lyricBlur, 'lyric-blur', true);
+		bindCheckboxToClass(enableAccentColor, 'enable-accent-color', true);
 		bindCheckboxToClass(useNotosans, 'use-notosans', false);
 		bindCheckboxToClass(hideComments, 'hide-comments', false);
 		bindCheckboxToClass(partialBg, 'partial-bg', false);

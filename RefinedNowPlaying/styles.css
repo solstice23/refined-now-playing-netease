@@ -306,7 +306,7 @@ body.mq-playing-scroll .n-single .sd .together-text {
 }
 .m-playlrc .word .text .z-crt p {
 	font-size: 1.3rem !important;
-	color: var(--accent-color-lyric-shade);
+	color: var(--accent-color-shade-1);
 }
 .m-playlrc .word .j-line:not(.z-crt) p{
     font-size: 1.05rem;
@@ -345,15 +345,16 @@ body.mq-playing .g-hd:hover .m-leftbox {
 body.mq-playing #main-player {
 	background: transparent;
 }
-body.mq-playing:not(.mq-playing-scroll) #main-player {
+body.mq-playing:not(.mq-playing-scroll) #main-player,
+body.mq-playing.partial-bg #main-player {
 	border: none;
 }
 body.mq-playing .m-player .prg .has {
-	background: rgba(var(--accent-color-lyric-shade-rgb), 0.8);
+	background: rgba(var(--accent-color-shade-1-rgb), 0.8);
 }
 body.mq-playing .m-player .prg .ctrl::before,
 body.mq-playing .m-player .prg .ctrl::after {
-	background: var(--accent-color-lyric-shade);
+	background: var(--accent-color-shade-1);
 }
 body.mq-playing .m-player .prg-ply .ctrl {
 	width: 8px;
@@ -442,7 +443,7 @@ body.mq-playing .m-player .prg:not(:hover) .track {
     background-color: rgba(var(--accent-color-rgb), 0.1);
 }
 body.mq-playing .m-player .prg .track {
-    background-color: rgba(var(--accent-color-lyric-shade-rgb), 0.25);
+    background-color: rgba(var(--accent-color-shade-1-rgb), 0.25);
 }
 body.mq-playing .m-player .prg:not(:hover) .has {
     background: rgba(var(--accent-color-rgb), 0.53333);
@@ -517,9 +518,6 @@ body.mq-playing .m-player .brt .brttext.vip {
 }
 
 
-section#auto-id-08OXGV5zDKD5O8Vo * {
-	color: #fff !important;
-}
 body.mq-playing .m-playlist {
 	background: #00000022;
 	backdrop-filter: blur(36px) brightness(0.8);
@@ -565,7 +563,7 @@ body.mq-playing .s-fc2:hover {
 }
 body.mq-playing .m-player .btnc svg,
 body.mq-playing .m-player .btnp svg {
-    fill: var(--accent-color-white-shade);
+    fill: var(--accent-color-shade-2);
 }
 
 
@@ -638,4 +636,20 @@ body.partial-bg #rnp-settings {
 body.partial-bg #rnp-settings-menu {
     right: 50px;
     top: 120px;
+}
+
+
+body:not(.enable-accent-color) {
+	--accent-color: #fff !important;
+	--accent-color-rgb: 255, 255, 255 !important;
+	--accent-color-shade-1: #fff !important;
+	--accent-color-shade-1-rgb: 255, 255, 255 !important;
+	--accent-color-shade-2: #fff !important;
+	--accent-color-shade-2-rgb: 255, 255, 255 !important;
+}
+body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
+    background-color: #ec4141;
+}
+body:not(.enable-accent-color) #rnp-settings-menu {
+	--accent-color: #ffffff55;
 }
