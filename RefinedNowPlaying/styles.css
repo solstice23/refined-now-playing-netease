@@ -27,6 +27,9 @@
     opacity: var(--bg-dim, 0.55);
     pointer-events: none;
 }
+body.gradient-bg #cd-bg-blur::before {
+    opacity: var(--bg-dim-for-gradient-bg, 0.45);
+}
 #cd-bg-blur::after {
 	content: "";
 	position: absolute;
@@ -665,7 +668,7 @@ body.gradient-bg #cd-bg-blur {
 body.gradient-bg #cd-bg-blur::after {
 	filter: none !important;
 }
-body.gradient-bg.gradient-bg-animated #cd-bg-blur {
+body.gradient-bg.gradient-bg-dynamic #cd-bg-blur {
 	animation: bg-gradient-animation 120s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
 }
 @keyframes bg-gradient-animation {

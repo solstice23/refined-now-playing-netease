@@ -177,8 +177,11 @@ function getGradientFromPalette(palette) {
 	palette = palette.sort((a, b) => {
 		return calcLuminance(a) - calcLuminance(b);
 	});
-	palette = palette.slice(palette.length / 2 - 3, palette.length / 2 + 3);
-
+	palette = palette.slice(palette.length / 2 - 4, palette.length / 2 + 4);
+	palette = palette.sort((a, b) => {
+		return rgb2Hsl(b)[1] - rgb2Hsl(a)[1];
+	});
+	palette = palette.slice(0, 6);
 
 	let differences = new Array(6);
 	for(let i = 0; i < differences.length; i++){
@@ -400,6 +403,32 @@ const addSettingsMenu = async () => {
 		document.body.style.setProperty(variable, mapping(slider.value));
 		sliderEnhance(slider);
 	}
+	const bindSelectGroupToClasses = (selectGroup, defaultValue, mapping = (x) => { return x }) => {
+		const buttons = selectGroup.querySelectorAll(".rnp-select-group-btn");
+		buttons.forEach(button => {
+			button.addEventListener("click", e => {
+				const value = e.target.getAttribute("value");
+				buttons.forEach(button => {
+					button.classList.remove("selected");
+					document.body.classList.remove(mapping(button.getAttribute("value")));
+				});
+				e.target.classList.add("selected");
+				document.body.classList.add(mapping(value));
+				setSetting(selectGroup.id, value);
+			});
+		});
+		const value = getSetting(selectGroup.id, defaultValue);
+		buttons.forEach(button => {
+			if (button.getAttribute("value") == value) {
+				button.classList.add("selected");
+				document.body.classList.add(mapping(value));
+			} else {
+				button.classList.remove("selected");
+				document.body.classList.remove(mapping(button.getAttribute("value")));
+			}
+		});
+	}
+
 
 	const initSettings = () => {
 		const rectangleCover = document.querySelector('#rectangle-cover');
@@ -408,6 +437,7 @@ const addSettingsMenu = async () => {
 		const useNotosans = document.querySelector('#use-notosans');
 		const hideComments = document.querySelector('#hide-comments');
 		const partialBg = document.querySelector('#partial-bg');
+		const gradientBgDynamic = document.querySelector('#gradient-bg-dynamic');
 
 		bindCheckboxToClass(rectangleCover, 'rectangle-cover', true);
 		bindCheckboxToClass(lyricBlur, 'lyric-blur', true);
@@ -415,15 +445,21 @@ const addSettingsMenu = async () => {
 		bindCheckboxToClass(useNotosans, 'use-notosans', false);
 		bindCheckboxToClass(hideComments, 'hide-comments', false);
 		bindCheckboxToClass(partialBg, 'partial-bg', false);
+		bindCheckboxToClass(gradientBgDynamic, 'gradient-bg-dynamic', true);
 		
 
 		const bgBlur = document.querySelector('#bg-blur');
 		const bgDim = document.querySelector('#bg-dim');
+		const bgDimForGradientBg = document.querySelector('#bg-dim-for-gradient-bg');
 		const bgOpacity = document.querySelector('#bg-opacity');
 
 		bindSliderToCSSVariable(bgBlur, '--bg-blur', 36, 'change', (x) => { return x + 'px' });
 		bindSliderToCSSVariable(bgDim, '--bg-dim', 55, 'input', (x) => { return x / 100 });
+		bindSliderToCSSVariable(bgDimForGradientBg, '--bg-dim-for-gradient-bg', 45, 'input', (x) => { return x / 100 });
 		bindSliderToCSSVariable(bgOpacity, '--bg-opacity', 0, 'input', (x) => { return 1 - x / 100 });
+
+		const bgType = document.querySelector('#bg-type');
+		bindSelectGroupToClasses(bgType, 'album', (x) => { return x == 'gradient' ? 'gradient-bg' : 'album-bg' }); 
 	}
 	const settingsMenu = document.createElement('div');
 	settingsMenu.id = 'settings-menu';

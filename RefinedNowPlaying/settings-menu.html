@@ -27,13 +27,28 @@
 
 	<div class="rnp-group">
 		<div class="rnp-group-title">背景</div>
+		<div class="rnp-select-group-wrapper">
+			<label for="bg-type" class="rnp-select-group-label">类型</label>
+			<div class="rnp-select-group" id="bg-type">
+				<button class="rnp-select-group-btn" value="album">专辑图</button>
+				<button class="rnp-select-group-btn selected" value="gradient">渐变</button>
+			</div>
+		</div>
+		<div class="rnp-checkbox-wrapper gradient-bg-dynamic" style="--estimated-height: 20px;">
+			<input id="gradient-bg-dynamic" type="checkbox" class="rnp-checkbox">
+			<label for="gradient-bg-dynamic" class="rnp-checkbox-label">动态渐变</label>
+		</div>
 		<div class="rnp-slider-wrapper bg-blur">
 			<label for="bg-blur" class="rnp-slider-label">模糊<button class="rnp-slider-reset"></button></label>
 			<input id="bg-blur" type="range" class="rnp-slider" min="0" max="100" value="36" default="36">
 		</div>
-		<div class="rnp-slider-wrapper">
+		<div class="rnp-slider-wrapper bg-dim" style="transition: all 0s;">
 			<label for="bg-dim" class="rnp-slider-label">暗化<button class="rnp-slider-reset"></button></label>
 			<input id="bg-dim" type="range" class="rnp-slider" min="0" max="100" value="55" default="55">
+		</div>
+		<div class="rnp-slider-wrapper bg-dim-for-gradient-bg" style="transition: all 0s;"> <!-- 渐变背景 独立的暗化值 -->
+			<label for="bg-dim-for-gradient-bg" class="rnp-slider-label">暗化<button class="rnp-slider-reset"></button></label>
+			<input id="bg-dim-for-gradient-bg" type="range" class="rnp-slider" min="0" max="100" value="45" default="45">
 		</div>
 		<div class="rnp-slider-wrapper bg-opacity">
 			<label for="bg-opacity" class="rnp-slider-label">透明度<button class="rnp-slider-reset"></button></label>
@@ -106,6 +121,8 @@
 		flex-direction: row;
 		align-items: center;
 		margin-bottom: 15px;
+		transition: all .3s ease;
+		height: var(--estimated-height, unset);
 	}
 	.rnp-checkbox-label {
 		padding-left: 10px;
@@ -184,6 +201,43 @@
 		pointer-events: none;
 	}
 
+	.rnp-select-group-wrapper {
+		display: flex;
+		flex-direction: column;
+		margin-bottom: 15px;
+	}
+	.rnp-select-group-label {
+		margin-right: 10px;
+		margin-bottom: 10px;
+	}
+	.rnp-select-group {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		align-content: stretch;
+		flex: 1;
+		gap: 1px;
+	}
+	.rnp-select-group-btn {
+		flex: 1;
+		background-color: #dfe1e433;
+		border: none;
+		border-radius: 0;
+		padding-top: 4px;
+		padding-bottom: 4px;
+		transition: background-color .3s ease;
+	}
+	.rnp-select-group-btn:first-child {
+		border-radius: 6px 0 0 6px;
+	}
+	.rnp-select-group-btn:last-child {
+		border-radius: 0 6px 6px 0;
+	}
+	.rnp-select-group-btn.selected {
+		background-color: var(--accent-color);
+		font-weight: bold;
+	}
+
 
 
 	#rnp-settings-menu {
@@ -249,7 +303,10 @@
 
 <style>
 	body:not(.partial-bg) .bg-opacity,
-	body.gradient-bg .bg-blur{
+	body.gradient-bg .bg-blur,
+	body:not(.gradient-bg) .gradient-bg-dynamic,
+	body:not(.gradient-bg) .bg-dim-for-gradient-bg,
+	body.gradient-bg .bg-dim{
 		opacity: 0;
 		height: 0;
 		padding-bottom: 0;

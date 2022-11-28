@@ -1,6 +1,6 @@
 {
     "manifest_version": 1,
-    "version": "0.3",
+    "version": "0.4",
     "name": "RefinedNowPlaying",
     "injects": {
         "Main": [
