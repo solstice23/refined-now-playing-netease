@@ -1,3 +1,6 @@
+body{
+	filter: none;
+}
 .n-single .cdin,
 .n-single .cdimg {
 	width: 95%;
