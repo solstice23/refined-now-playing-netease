@@ -1,5 +1,5 @@
-body{
-	filter: none;
+body {
+	filter: none !important;
 }
 .n-single .cdin,
 .n-single .cdimg {
