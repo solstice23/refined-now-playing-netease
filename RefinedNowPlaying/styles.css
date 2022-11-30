@@ -408,7 +408,7 @@ body.mq-playing-scroll #main-player>.audioEffect,
 body.mq-playing-scroll #main-player>.spk,
 body.mq-playing-scroll #main-player>.listenTogether,
 body.mq-playing-scroll #main-player>.list {
-	opacity: 1;
+	opacity: 0.9999999; /* Tricky fix for incompatibility with other themes */
 }
 body.mq-playing .m-pinfo .btn-love {
 	border-color: transparent;
