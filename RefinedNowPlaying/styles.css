@@ -317,6 +317,9 @@ body.mq-playing-scroll .n-single .sd .together-text {
 .m-playlrc .word .j-line:not(.z-crt) p{
     font-size: 1.05rem;
 }
+.m-playlrc .j-line.J-line-matchedscroll {
+	color: var(--accent-color-shade-2) !important;
+}
 .m-playlrc .word .text .z-crt p:not(:last-child) {
 	margin-bottom: 10px !important;
 }
