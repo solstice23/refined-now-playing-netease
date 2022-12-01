@@ -436,6 +436,7 @@ const addSettingsMenu = async () => {
 		const enableAccentColor = document.querySelector('#enable-accent-color');
 		const useNotosans = document.querySelector('#use-notosans');
 		const hideComments = document.querySelector('#hide-comments');
+		const lyricBreakWord = document.querySelector('#lyric-break-word');
 		const partialBg = document.querySelector('#partial-bg');
 		const gradientBgDynamic = document.querySelector('#gradient-bg-dynamic');
 
@@ -444,6 +445,7 @@ const addSettingsMenu = async () => {
 		bindCheckboxToClass(enableAccentColor, 'enable-accent-color', true);
 		bindCheckboxToClass(useNotosans, 'use-notosans', false);
 		bindCheckboxToClass(hideComments, 'hide-comments', false);
+		bindCheckboxToClass(lyricBreakWord, 'lyric-break-word', true);
 		bindCheckboxToClass(partialBg, 'partial-bg', false);
 		bindCheckboxToClass(gradientBgDynamic, 'gradient-bg-dynamic', true);
 		
@@ -468,6 +470,18 @@ const addSettingsMenu = async () => {
 	initSettings();
 };
 
+const removeNbspFromLyrics = (dom) => {
+	if (dom.childElementCount == 0) {
+		if (!dom.innerHTML.includes('&nbsp;')) {
+			return;
+		}
+		dom.innerHTML = dom.innerHTML.replace(/&nbsp;/g, ' ');
+	} else {
+		dom.querySelectorAll('.lyric-next-p').forEach(node => {
+			removeNbspFromLyrics(node);
+		});
+	}
+}
 		
 
 plugin.onLoad(async () => {
@@ -491,5 +505,15 @@ plugin.onLoad(async () => {
 	new MutationObserver((mutations) => {
 		updateCDImage();
 		recalculateTitleSize();
-	}).observe(document.body, { childList: true , subtree: true, attributes: true, attributeFilter: ['src']});
+		mutations.forEach(mutation => {
+			mutation.addedNodes.forEach(node => {
+				if (node.classList && node.classList.contains('j-line')) {
+					removeNbspFromLyrics(node);
+				}
+			});
+			if (mutation.target && mutation.target.classList.contains('lyric-next-p')) {
+				removeNbspFromLyrics(mutation.target);
+			}
+		});
+	}).observe(document.body, { childList: true , subtree: true, attributes: true, characterData: true, attributeFilter: ['src']});
 });

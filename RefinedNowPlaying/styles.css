@@ -691,3 +691,8 @@ body.gradient-bg.gradient-bg-dynamic #cd-bg-blur {
 		background-position: 0% 0%
 	}
 }
+
+
+body:not(.lyric-break-word) .m-playlrc .word .text .z-crt p {
+    word-break: break-all;
+}
