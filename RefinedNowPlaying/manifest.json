@@ -1,7 +1,10 @@
 {
     "manifest_version": 1,
-    "version": "0.4",
     "name": "RefinedNowPlaying",
+    "author": "solstice23",
+    "description": "重新设计的正在播放页面",
+    "preview": "preview.jpg",
+    "version": "0.4.1",
     "injects": {
         "Main": [
             {
