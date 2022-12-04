@@ -320,6 +320,28 @@ const recalculateTitleSize = (forceRefresh = false) => {
 		}
 	`;
 }
+const verticalAlignMiddleController = document.createElement('style');
+verticalAlignMiddleController.innerHTML = '';
+document.head.appendChild(verticalAlignMiddleController);
+const recalculateVerticalAlignMiddleOffset = () => {
+	if (!document.body.classList.contains('vertical-align-middle')) {
+		return;
+	}
+	if (!document.querySelector('.g-single')) {
+		return;
+	}
+	const page_height = document.querySelector('.g-single .g-singlec-ct').clientHeight;
+	const inner_height = document.querySelector('.g-single .content').clientHeight;
+	const offset = ( page_height - parseInt(getComputedStyle(document.querySelector(".g-single-track .content")).bottom) - inner_height ) - (page_height / 2 - inner_height / 2 );
+	verticalAlignMiddleController.innerHTML = `
+		body.vertical-align-middle .g-single-track .g-singlec-ct .n-single .sd,
+		body.vertical-align-middle .g-single-track .g-singlec-ct .n-single .mn .head {
+			transform: translateY(-${offset}px);
+		}
+	`; 
+	console.log(offset);
+}
+
 window.addEventListener('resize', () => {
 	recalculateTitleSize(true);
 });
@@ -460,7 +482,9 @@ const addSettingsMenu = async () => {
 		bindSliderToCSSVariable(bgDimForGradientBg, '--bg-dim-for-gradient-bg', 45, 'input', (x) => { return x / 100 });
 		bindSliderToCSSVariable(bgOpacity, '--bg-opacity', 0, 'input', (x) => { return 1 - x / 100 });
 
+		const verticalAlign = document.querySelector('#vertical-align');
 		const bgType = document.querySelector('#bg-type');
+		bindSelectGroupToClasses(verticalAlign, 'bottom', (x) => { return 'vertical-align-' + x });
 		bindSelectGroupToClasses(bgType, 'album', (x) => { return x == 'gradient' ? 'gradient-bg' : 'album-bg' }); 
 	}
 	const settingsMenu = document.createElement('div');
@@ -505,13 +529,14 @@ plugin.onLoad(async () => {
 	new MutationObserver((mutations) => {
 		updateCDImage();
 		recalculateTitleSize();
+		recalculateVerticalAlignMiddleOffset();
 		mutations.forEach(mutation => {
 			mutation.addedNodes.forEach(node => {
 				if (node.classList && node.classList.contains('j-line')) {
 					removeNbspFromLyrics(node);
 				}
 			});
-			if (mutation.target && mutation.target.classList.contains('lyric-next-p')) {
+			if (mutation?.target?.classList && mutation.target.classList.contains('lyric-next-p')) {
 				removeNbspFromLyrics(mutation.target);
 			}
 		});
