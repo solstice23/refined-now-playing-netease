@@ -55,9 +55,6 @@ body.gradient-bg #cd-bg-blur::before {
 .g-single-track .g-bd2 {
 	max-width: min(1500px, 80%);
 }
-.g-singlec-ct {
-	scroll-snap-type: y proximity;
-}
 .n-single {
 	height: 100%;
 	max-height: unset;
