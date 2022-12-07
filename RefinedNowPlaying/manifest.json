@@ -5,7 +5,7 @@
     "author_links": ["https://github.com/solstice23"],
     "description": "重新设计的正在播放页面",
     "preview": "preview.png",
-    "version": "0.5.2",
+    "version": "0.5.3",
     "requirements": [],
     "betterncm_version": "^0.2.5",
     "injects": {

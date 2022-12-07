@@ -339,7 +339,6 @@ const recalculateVerticalAlignMiddleOffset = () => {
 			transform: translateY(-${offset}px);
 		}
 	`; 
-	console.log(offset);
 }
 
 window.addEventListener('resize', () => {

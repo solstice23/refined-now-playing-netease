@@ -342,11 +342,14 @@ body.mq-playing .g-hd .m-leftbox {
 	opacity: 0;
 	transition: opacity .3s ease;
 }
+body.mq-playing .g-hd:hover .m-leftbox {
+	opacity: 1;
+}
 body.mq-playing .g-hd .m-sch {
 	display: none;
 }
-body.mq-playing .g-hd:hover .m-leftbox {
-	opacity: 1;
+body.mq-playing-fullscreen .g-hd .m-leftbox {
+	opacity: 1 !important;
 }
 body.mq-playing #main-player {
 	background: transparent;
