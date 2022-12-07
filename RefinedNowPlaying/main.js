@@ -344,6 +344,7 @@ const recalculateVerticalAlignMiddleOffset = () => {
 
 window.addEventListener('resize', () => {
 	recalculateTitleSize(true);
+	recalculateVerticalAlignMiddleOffset();
 });
 
 waitForElement("#main-player, .m-pinfo", (dom) => {
