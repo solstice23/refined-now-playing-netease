@@ -307,6 +307,9 @@ body.mq-playing-scroll .n-single .sd .together-text {
 .n-single .sd .together-head .face-2 {
 	margin-left: 15px;
 }
+.cnt.m-playlrc .word .text {
+	overscroll-behavior: contain;
+}
 .m-playlrc .word .text .z-crt p {
 	font-size: 1.3rem !important;
 	color: var(--accent-color-shade-1);
