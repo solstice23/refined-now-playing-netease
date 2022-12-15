@@ -1,7 +1,7 @@
 <input id="rnp-settings" class="open" type="checkbox"></input>
 <div id="rnp-settings-menu">
 	<div class="rnp-group">
-		<div class="rnp-group-title">常规</div>
+		<div class="rnp-group-title">外观</div>
 		<div class="rnp-select-group-wrapper">
 			<label for="vertical-align" class="rnp-select-group-label">专辑封面及标题</label>
 			<div class="rnp-select-group" id="vertical-align">
@@ -26,15 +26,6 @@
 			<label for="use-notosans" class="rnp-checkbox-label">思源黑体</label>
 		</div>
 		<span class="rnp-checkbox-note">需要电脑中有此字体</span>
-		<div class="rnp-checkbox-wrapper">
-			<input id="hide-comments" type="checkbox" class="rnp-checkbox">
-			<label for="hide-comments" class="rnp-checkbox-label">隐藏评论区</label>
-		</div>
-		<div class="rnp-checkbox-wrapper">
-			<input id="lyric-break-word" type="checkbox" class="rnp-checkbox">
-			<label for="lyric-break-word" class="rnp-checkbox-label">优化歌词断行</label>
-		</div>
-		<span class="rnp-checkbox-note">不在单词内部断行</span>
 	</div>
 
 	<div class="rnp-group">
@@ -70,6 +61,31 @@
 			<input id="partial-bg" type="checkbox" class="rnp-checkbox">
 			<label for="partial-bg" class="rnp-checkbox-label">局部背景</label>
 		</div>
+	</div>
+
+	
+	<div class="rnp-group">
+		<div class="rnp-group-title">杂项</div>
+		<div class="rnp-checkbox-wrapper">
+			<input id="hide-comments" type="checkbox" class="rnp-checkbox">
+			<label for="hide-comments" class="rnp-checkbox-label">隐藏评论区</label>
+		</div>
+		<div class="rnp-checkbox-wrapper">
+			<input id="lyric-break-word" type="checkbox" class="rnp-checkbox">
+			<label for="lyric-break-word" class="rnp-checkbox-label">优化歌词断行</label>
+		</div>
+		<span class="rnp-checkbox-note">不在单词内部断行</span>
+		<div class="rnp-slider-wrapper album-size with-ticks">
+			<label for="album-size" class="rnp-slider-label">专辑封面清晰度<button class="rnp-slider-reset"></button></label>
+			<input id="album-size" type="range" class="rnp-slider" min="200" max="800" value="200" default="200" step="200">
+			<div class="rnp-slider-ticks">
+				<div class="rnp-slider-tick">200</div>
+				<div class="rnp-slider-tick">400</div>
+				<div class="rnp-slider-tick">600</div>
+				<div class="rnp-slider-tick">800</div>
+			</div>
+		</div>
+		<span class="rnp-slider-note">可能带来更慢的加载速度</span>
 	</div>
 </div>
 
@@ -212,6 +228,37 @@
 		opacity: 0;
 		pointer-events: none;
 	}
+	.rnp-slider-wrapper.with-ticks:hover {
+		height: 48px;
+	}
+	.rnp-slider-ticks {
+		display: flex;
+		width: 100%;
+		align-content: center;
+		align-items: center;
+		justify-content: space-between;
+		margin-top: 5px;
+	}
+	.rnp-slider-tick {
+		font-size: 12px;
+		opacity: 0;
+		transition: all .3s ease;
+	}
+	.rnp-slider-wrapper.with-ticks:hover .rnp-slider-tick {
+		opacity: 0.5;
+	}
+	.rnp-slider-note {
+		opacity: .5;
+		font-size: 12px;
+		display: block;
+		margin-top: -10px;
+		margin-bottom: 10px;
+	}
+	.rnp-checkbox-wrapper:last-of-type + .rnp-slider-note {
+		margin-bottom: 0;
+	}
+
+
 
 	.rnp-select-group-wrapper {
 		display: flex;

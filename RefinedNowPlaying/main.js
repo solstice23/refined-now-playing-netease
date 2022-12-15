@@ -216,12 +216,12 @@ function getGradientFromPalette(palette) {
 		dfs(1, [i]);
 		used[i] = false;
 	}
-	
+
 	let colors = [];
 	for (let i of ansSeq) {
 		colors.push(palette[ansSeq[i]]);
 	}
-	let ans = 'linear-gradient(-45deg,'; 
+	let ans = 'linear-gradient(-45deg,';
 	for (let i = 0; i < colors.length; i++) {
 		ans += `rgb(${colors[i][0]}, ${colors[i][1]}, ${colors[i][2]})`;
 		if (i !== colors.length - 1) {
@@ -295,7 +295,7 @@ const recalculateTitleSize = (forceRefresh = false) => {
 	testDiv.style.whiteSpace = 'nowrap';
 	testDiv.innerText = text;
 	document.body.appendChild(testDiv);
-	
+
 	const maxThreshold = Math.max(Math.min(document.body.clientHeight * 0.05, 60), 45);
 	const minThreshold = 24;
 	const targetWidth = (document.body.clientWidth / 2 - 50) * 0.95;
@@ -338,7 +338,7 @@ const recalculateVerticalAlignMiddleOffset = () => {
 		body.vertical-align-middle .g-single-track .g-singlec-ct .n-single .mn .head {
 			transform: translateY(-${offset}px);
 		}
-	`; 
+	`;
 }
 
 window.addEventListener('resize', () => {
@@ -394,7 +394,7 @@ const addSettingsMenu = async () => {
 				e.target.parentElement.classList.add("changed");
 			} else {
 				e.target.parentElement.classList.remove("changed");
-			}				
+			}
 		});
 		slider.parentElement.querySelector(".rnp-slider-reset").addEventListener("click", e => {
 			const slider = e.target.parentElement.parentElement.querySelector(".rnp-slider");
@@ -423,6 +423,19 @@ const addSettingsMenu = async () => {
 			setSetting(slider.id, e.target.value);
 		});
 		document.body.style.setProperty(variable, mapping(slider.value));
+		sliderEnhance(slider);
+	}
+	const bindSliderToFunction = (slider, func, defalutValue = 0, event = 'input', mapping = (x) => { return x }) => {
+		slider.value = getSetting(slider.id, defalutValue);
+		slider.dispatchEvent(new Event("input"));
+		slider.addEventListener(event, e => {
+			const value = e.target.value;
+			func(mapping(value));
+		});
+		slider.addEventListener("change", e => {
+			setSetting(slider.id, e.target.value);
+		});
+		func(mapping(slider.value));
 		sliderEnhance(slider);
 	}
 	const bindSelectGroupToClasses = (selectGroup, defaultValue, mapping = (x) => { return x }) => {
@@ -470,22 +483,31 @@ const addSettingsMenu = async () => {
 		bindCheckboxToClass(lyricBreakWord, 'lyric-break-word', true);
 		bindCheckboxToClass(partialBg, 'partial-bg', false);
 		bindCheckboxToClass(gradientBgDynamic, 'gradient-bg-dynamic', true);
-		
+
 
 		const bgBlur = document.querySelector('#bg-blur');
 		const bgDim = document.querySelector('#bg-dim');
 		const bgDimForGradientBg = document.querySelector('#bg-dim-for-gradient-bg');
 		const bgOpacity = document.querySelector('#bg-opacity');
+		const albumSize = document.querySelector('#album-size');
 
 		bindSliderToCSSVariable(bgBlur, '--bg-blur', 36, 'change', (x) => { return x + 'px' });
 		bindSliderToCSSVariable(bgDim, '--bg-dim', 55, 'input', (x) => { return x / 100 });
 		bindSliderToCSSVariable(bgDimForGradientBg, '--bg-dim-for-gradient-bg', 45, 'input', (x) => { return x / 100 });
 		bindSliderToCSSVariable(bgOpacity, '--bg-opacity', 0, 'input', (x) => { return 1 - x / 100 });
+		bindSliderToFunction(albumSize, (x) => {
+			window.albumSize = x;
+			const currentSrc = document.querySelector('.n-single .cdimg img').src;
+			const newSrc = currentSrc.replace(/thumbnail=\d+y\d+/g, `thumbnail=${window.albumSize}y${window.albumSize}`);
+			if (currentSrc != newSrc) {
+				document.querySelector('.n-single .cdimg img').src = newSrc;
+			}
+		}, 200, 'change', (x) => { return x == 200 ? 210 : x });
 
 		const verticalAlign = document.querySelector('#vertical-align');
 		const bgType = document.querySelector('#bg-type');
 		bindSelectGroupToClasses(verticalAlign, 'bottom', (x) => { return 'vertical-align-' + x });
-		bindSelectGroupToClasses(bgType, 'album', (x) => { return x == 'gradient' ? 'gradient-bg' : 'album-bg' }); 
+		bindSelectGroupToClasses(bgType, 'album', (x) => { return x == 'gradient' ? 'gradient-bg' : 'album-bg' });
 	}
 	const settingsMenu = document.createElement('div');
 	settingsMenu.id = 'settings-menu';
@@ -506,7 +528,24 @@ const removeNbspFromLyrics = (dom) => {
 		});
 	}
 }
-		
+
+// intercept src setter of HTMLImageElement
+const _src = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+Object.defineProperty(HTMLImageElement.prototype, 'src', {
+	get: function() {
+		return _src.get.call(this);
+	},
+	set: function(src) {
+		var element = this;
+		if (element.classList.contains('j-flag')) {
+			if (!window.albumSize) {
+				window.albumSize = 210;
+			}
+			src = src.replace(/thumbnail=\d+y\d+/g, `thumbnail=${window.albumSize}y${window.albumSize}`);
+		}
+		return _src.set.call(this, src);
+	}
+});
 
 plugin.onLoad(async () => {
 	loadJsOnce("libs/color-thief.umd.js");
@@ -516,16 +555,16 @@ plugin.onLoad(async () => {
 	const bodyObserver = new MutationObserver((mutations) => {
 		if (document.querySelector('.g-single:not(.patched)')) {
 			injectHTML('div', '', document.querySelector('.g-single'), (dom) => {
-				dom.id = 'cd-bg-blur';				
+				dom.id = 'cd-bg-blur';
 			});
 			addSettingsMenu();
 			updateCDImage();
 			document.querySelector('.g-single').classList.add('patched');
 		}
 		updateCDImage();
-		
+
 	}).observe(document.body, { childList: true });
-	
+
 	new MutationObserver((mutations) => {
 		updateCDImage();
 		recalculateTitleSize();
