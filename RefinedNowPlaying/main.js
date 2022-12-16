@@ -536,7 +536,7 @@ Object.defineProperty(HTMLImageElement.prototype, 'src', {
 		return _src.get.call(this);
 	},
 	set: function(src) {
-		var element = this;
+		let element = this;
 		if (element.classList.contains('j-flag')) {
 			if (!window.albumSize) {
 				window.albumSize = 210;
