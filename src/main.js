@@ -1,6 +1,7 @@
 import ColorThief from 'colorthief';
 import './styles.scss';
 import settingsMenuHTML from './settings-menu.html';
+import './settings-menu.scss';
 
 let pluginPath;
 const loadFile = async (path) => {
