@@ -1,0 +1,19 @@
+{
+    "manifest_version": 1,
+    "name": "RefinedNowPlaying",
+    "author": "solstice23",
+    "author_links": ["https://github.com/solstice23"],
+    "description": "重新设计的正在播放页面",
+    "preview": "preview.png",
+    "version": "0.6.1",
+    "type": "extension",
+    "requirements": [],
+    "betterncm_version": "^0.2.5",
+    "injects": {
+        "Main": [
+            {
+                "file": "main.js"
+            }
+        ]
+    }
+}

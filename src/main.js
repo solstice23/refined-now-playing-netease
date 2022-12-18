@@ -1,6 +1,10 @@
-const that = this;
+import ColorThief from 'colorthief';
+import './styles.scss';
+import settingsMenuHTML from './settings-menu.html';
+
+let pluginPath;
 const loadFile = async (path) => {
-	let fullPath = that.pluginPath + '/' + path;
+	let fullPath = pluginPath + '/' + path;
 	fullPath = fullPath.replace(/\\/g, '/');
     return await betterncm.fs.readFileText(fullPath);
 }
@@ -32,14 +36,14 @@ const waitForElement = (selector, fun) => {
 	selector = selector.split(',');
 	let done = true;
 	let interval = setInterval(() => {
-		for (s of selector) {
+		for (const s of selector) {
 			if (!document.querySelector(s)) {
 				done = false;
 			}
 		}
 		if (done) {
 			clearInterval(interval);
-			for (s of selector) {
+			for (const s of selector) {
 				fun.call(this, document.querySelector(s));
 			}
 		}
@@ -511,7 +515,7 @@ const addSettingsMenu = async () => {
 	}
 	const settingsMenu = document.createElement('div');
 	settingsMenu.id = 'settings-menu';
-	settingsMenu.innerHTML = await loadFile('settings-menu.html');
+	settingsMenu.innerHTML = settingsMenuHTML;
 	document.querySelector('.g-single').appendChild(settingsMenu);
 	initSettings();
 };
@@ -547,10 +551,8 @@ Object.defineProperty(HTMLImageElement.prototype, 'src', {
 	}
 });
 
-plugin.onLoad(async () => {
-	loadJsOnce("libs/color-thief.umd.js");
-	injectCSS(await loadFile("styles.css"));
-
+plugin.onLoad(async (p) => {
+	pluginPath = p.pluginPath;
 
 	const bodyObserver = new MutationObserver((mutations) => {
 		if (document.querySelector('.g-single:not(.patched)')) {
@@ -580,4 +582,14 @@ plugin.onLoad(async () => {
 			}
 		});
 	}).observe(document.body, { childList: true , subtree: true, attributes: true, characterData: true, attributeFilter: ['src']});
+});
+
+plugin.onConfig((tools) => {
+	console.log(tools);
+	return dom("div", {},
+		dom("span", { innerHTML: "打开正在播放界面以调整设置 " , style: { fontSize: "18px" } }),
+		tools.makeBtn("打开", async () => {
+			document.querySelector("a[data-action='max']").click();
+		})
+	);
 });
