@@ -6,6 +6,9 @@
 	margin-bottom: 15px;
 	transition: all .3s ease;
 	height: var(--estimated-height, unset);
+	input[type=checkbox] {
+		cursor: pointer;
+	}
 	.rnp-checkbox {
 		appearance: none;
 		background-color: #dfe1e433;
@@ -36,21 +39,18 @@
 			width: 14px;
 			transition: all 100ms ease-out;
 		}
-		input[type=checkbox] {
-			cursor: pointer;
-		}
-		.rnp-checkbox:hover {
+		&:hover {
 			background-color: #c9cbcd33;
 			transition-duration: 0s;
 		}
-		.rnp-checkbox:checked {
-			background-color: var(--accent-color);
+		&:checked {
+			background-color: var(--rnp-accent-color);
 			&::after {
 				background-color: #fff;
 				left: 13px;
 			}
 			&:hover {
-				background-color: var(--accent-color);
+				background-color: var(--rnp-accent-color);
 			}
 		}
 	}
@@ -59,20 +59,20 @@
 		cursor: pointer;
 		margin-right: 2px;
 	}
-	.rnp-checkbox-note {
-		opacity: .5;
-		font-size: 12px;
-		padding-left: 40px;
-		display: block;
-		margin-top: -10px;
-		margin-bottom: 10px;
-	}
 	&:last-of-type + .rnp-checkbox-note {
 		margin-bottom: 0;
 	}
 	&:last-child {
 		margin-bottom: 0;
 	}
+}
+.rnp-checkbox-note {
+	opacity: .5;
+	font-size: 12px;
+	padding-left: 40px;
+	display: block;
+	margin-top: -10px;
+	margin-bottom: 10px;
 }
 
 .rnp-slider-wrapper {
@@ -124,7 +124,7 @@
 }
 .rnp-slider-reset:hover {
 	opacity: 1;
-	background-color: var(--accent-color);
+	background-color: var(--rnp-accent-color);
 }
 .rnp-slider-wrapper:not(.changed) .rnp-slider-reset {
 	opacity: 0;
@@ -195,7 +195,7 @@
 	border-radius: 0 6px 6px 0;
 }
 .rnp-select-group-btn.selected {
-	background-color: var(--accent-color);
+	background-color: var(--rnp-accent-color);
 	font-weight: bold;
 }
 
