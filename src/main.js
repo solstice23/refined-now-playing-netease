@@ -412,6 +412,19 @@ plugin.onLoad(async (p) => {
 			}
 		});
 	}).observe(document.body, { childList: true , subtree: true, attributes: true, characterData: true, attributeFilter: ['src']});
+
+	// Fix incomptibility with light theme
+	const lightThemeFixStyle = document.createElement('link');
+	lightThemeFixStyle.rel = 'stylesheet';
+	document.head.appendChild(lightThemeFixStyle);
+	new MutationObserver(() => {
+		if (document.body.classList.contains('mq-playing')) {
+			lightThemeFixStyle.href = 'orpheus://orpheus/style/res/less/default/css/skin.ls.css';
+		} else {
+			lightThemeFixStyle.href = '';
+		}
+	}).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+	
 });
 
 plugin.onConfig((tools) => {
