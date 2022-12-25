@@ -376,6 +376,9 @@ Object.defineProperty(HTMLImageElement.prototype, 'src', {
 				window.albumSize = 210;
 			}
 			src = src.replace(/thumbnail=\d+y\d+/g, `thumbnail=${window.albumSize}y${window.albumSize}`);
+			if (src.startsWith('data:image/gif;')) {
+				src = `orpheus://cache/?https://p1.music.126.net/UeTuwE7pvjBpypWLudqukA==/3132508627578625.jpg`;
+			}
 		}
 		return _src.set.call(this, src);
 	}
