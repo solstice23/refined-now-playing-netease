@@ -36,8 +36,8 @@ const loadJsOnce = async (path) => {
 }
 const waitForElement = (selector, fun) => {
 	selector = selector.split(',');
-	let done = true;
 	let interval = setInterval(() => {
+		let done = true;
 		for (const s of selector) {
 			if (!document.querySelector(s)) {
 				done = false;
@@ -422,12 +422,15 @@ plugin.onLoad(async (p) => {
 	document.head.appendChild(lightThemeFixStyle);
 	new MutationObserver(() => {
 		if (document.body.classList.contains('mq-playing')) {
-			lightThemeFixStyle.href = 'orpheus://orpheus/style/res/less/default/css/skin.ls.css';
+			if (lightThemeFixStyle.href != 'orpheus://orpheus/style/res/less/default/css/skin.ls.css') {
+				lightThemeFixStyle.href = 'orpheus://orpheus/style/res/less/default/css/skin.ls.css';
+			}
 		} else {
-			lightThemeFixStyle.href = '';
+			if (lightThemeFixStyle.href != '') {
+				lightThemeFixStyle.href = '';
+			}
 		}
 	}).observe(document.body, { attributes: true, attributeFilter: ['class'] });
-	
 });
 
 plugin.onConfig((tools) => {
