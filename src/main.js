@@ -276,7 +276,7 @@ const addSettingsMenu = async () => {
 		func(mapping(slider.value));
 		sliderEnhance(slider);
 	}
-	const bindSelectGroupToClasses = (selectGroup, defaultValue, mapping = (x) => { return x }) => {
+	const bindSelectGroupToClasses = (selectGroup, defaultValue, mapping = (x) => { return x }, afterClick = () => {}) => {
 		const buttons = selectGroup.querySelectorAll(".rnp-select-group-btn");
 		buttons.forEach(button => {
 			button.addEventListener("click", e => {
@@ -300,6 +300,7 @@ const addSettingsMenu = async () => {
 				document.body.classList.remove(mapping(button.getAttribute("value")));
 			}
 		});
+		afterClick();
 	}
 
 
@@ -344,7 +345,7 @@ const addSettingsMenu = async () => {
 
 		const verticalAlign = document.querySelector('#vertical-align');
 		const bgType = document.querySelector('#bg-type');
-		bindSelectGroupToClasses(verticalAlign, 'bottom', (x) => { return 'vertical-align-' + x });
+		bindSelectGroupToClasses(verticalAlign, 'bottom', (x) => { return 'vertical-align-' + x }, () => { recalculateVerticalAlignMiddleOffset() });
 		bindSelectGroupToClasses(bgType, 'album', (x) => { return x == 'gradient' ? 'gradient-bg' : 'album-bg' });
 	}
 	const settingsMenu = document.createElement('div');
