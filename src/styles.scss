@@ -74,7 +74,7 @@ body {
 		margin-left: 50px;
 	}
 	.g-singlec-ct .n-single .mn { // song info container
-		width: 90%;
+		width: 50vw;
 		display: flex;
 		position: static;
 		flex: 0;
@@ -165,7 +165,7 @@ body {
 			position: absolute;
 			left: 50vw;
 			width: 40%;
-			bottom: 20vh;
+			bottom: 10vh;
 			height: 50vh;
 			overflow: visible;
 			z-index: -1;
@@ -176,7 +176,6 @@ body {
 	.head .title h1 .name {
 		white-space: nowrap;
 		max-width: unset;
-		animation: none;
 	}
 	.mn .head .inf .title h1 .tag-wrap {
 		display: inline-block;
