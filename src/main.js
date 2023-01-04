@@ -147,6 +147,11 @@ const recalculateTitleSize = (forceRefresh = false) => {
 	}
 	let fontSize = l - 1;
 	fontSize = Math.max(Math.min(fontSize, maxThreshold), minThreshold);
+	
+	const titleName = document.querySelector('.g-single .g-singlec-ct .n-single .mn .head .inf .title .name');
+    	if (fontSize == minThreshold) titleName.classList.add('a-wordsLoop');
+    	else titleName.classList.remove('a-wordsLoop');
+	
 	document.body.removeChild(testDiv);
 	titleSizeController.innerHTML = `
 		.g-single .g-singlec-ct .n-single .mn .head .inf .title h1 {
