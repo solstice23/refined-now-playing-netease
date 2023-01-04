@@ -8,6 +8,7 @@
     "version": "0.6.5",
     "type": "extension",
     "requirements": [],
+    "incompatible": ["Apple-Musiclike-lyrics"],
     "betterncm_version": ">=0.2.5",
     "injects": {
         "Main": [
