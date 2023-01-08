@@ -21,11 +21,6 @@
 			<input id="enable-accent-color" type="checkbox" class="rnp-checkbox">
 			<label for="enable-accent-color" class="rnp-checkbox-label">沉浸主题色</label>
 		</div>
-		<div class="rnp-checkbox-wrapper">
-			<input id="use-notosans" type="checkbox" class="rnp-checkbox">
-			<label for="use-notosans" class="rnp-checkbox-label">思源黑体</label>
-		</div>
-		<span class="rnp-checkbox-note">需要电脑中有此字体</span>
 	</div>
 
 	<div class="rnp-group">
@@ -61,6 +56,24 @@
 			<input id="partial-bg" type="checkbox" class="rnp-checkbox">
 			<label for="partial-bg" class="rnp-checkbox-label">局部背景</label>
 		</div>
+	</div>
+
+	
+	<div class="rnp-group">
+		<div class="rnp-group-title">字体</div>
+		<div class="rnp-slider-wrapper">
+			<label for="font-size-lyric" class="rnp-slider-label">歌词大小<button class="rnp-slider-reset"></button></label>
+			<input id="font-size-lyric" type="range" class="rnp-slider" min="0.8" max="2.2" step="0.01" value="1.05" default="1.05">
+		</div>
+		<div class="rnp-slider-wrapper" style="transition: all 0s;">
+			<label for="font-size-lyric-current" class="rnp-slider-label">歌词大小 (当前)<button class="rnp-slider-reset"></button></label>
+			<input id="font-size-lyric-current" type="range" class="rnp-slider" min="0.8" max="2.2" step="0.01" value="1.3" default="1.3">
+		</div>
+		<div class="rnp-checkbox-wrapper">
+			<input id="use-notosans" type="checkbox" class="rnp-checkbox">
+			<label for="use-notosans" class="rnp-checkbox-label">思源黑体</label>
+		</div>
+		<span class="rnp-checkbox-note">需要电脑中有此字体</span>
 	</div>
 
 	

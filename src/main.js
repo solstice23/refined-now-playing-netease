@@ -250,7 +250,7 @@ const addSettingsMenu = async () => {
 		});
 		addOrRemoveGlobalClassByOption(className, checkbox.checked);
 	}
-	const bindSliderToCSSVariable = (slider, variable, defalutValue = 0, event = 'input', mapping = (x) => { return x }) => {
+	const bindSliderToCSSVariable = (slider, variable, defalutValue = 0, event = 'input', mapping = (x) => { return x }, addClassWhenAdjusting = '') => {
 		slider.value = getSetting(slider.id, defalutValue);
 		slider.dispatchEvent(new Event("input"));
 		slider.addEventListener(event, e => {
@@ -260,10 +260,18 @@ const addSettingsMenu = async () => {
 		slider.addEventListener("change", e => {
 			setSetting(slider.id, e.target.value);
 		});
+		if (addClassWhenAdjusting) {
+			slider.addEventListener("mousedown", e => {
+				document.body.classList.add(addClassWhenAdjusting);
+			});
+			slider.addEventListener("mouseup", e => {
+				document.body.classList.remove(addClassWhenAdjusting);
+			});
+		}
 		document.body.style.setProperty(variable, mapping(slider.value));
 		sliderEnhance(slider);
 	}
-	const bindSliderToFunction = (slider, func, defalutValue = 0, event = 'input', mapping = (x) => { return x }) => {
+	const bindSliderToFunction = (slider, func, defalutValue = 0, event = 'input', mapping = (x) => { return x }, addClassWhenAdjusting = '') => {
 		slider.value = getSetting(slider.id, defalutValue);
 		slider.dispatchEvent(new Event("input"));
 		slider.addEventListener(event, e => {
@@ -273,6 +281,15 @@ const addSettingsMenu = async () => {
 		slider.addEventListener("change", e => {
 			setSetting(slider.id, e.target.value);
 		});
+		if (addClassWhenAdjusting) {
+			slider.addEventListener("mousedown", e => {
+				document.body.classList.add(addClassWhenAdjusting);
+			});
+			slider.addEventListener("mouseup", e => {
+				document.body.classList.remove(addClassWhenAdjusting);
+			});
+		}
+
 		func(mapping(slider.value));
 		sliderEnhance(slider);
 	}
@@ -329,6 +346,8 @@ const addSettingsMenu = async () => {
 		const bgDimForGradientBg = document.querySelector('#bg-dim-for-gradient-bg');
 		const bgOpacity = document.querySelector('#bg-opacity');
 		const albumSize = document.querySelector('#album-size');
+		const fontSizeLyric = document.querySelector('#font-size-lyric');
+		const fontSizeLyricCurrent = document.querySelector('#font-size-lyric-current');
 
 		bindSliderToCSSVariable(bgBlur, '--bg-blur', 36, 'change', (x) => { return x + 'px' });
 		bindSliderToCSSVariable(bgDim, '--bg-dim', 55, 'input', (x) => { return x / 100 });
@@ -342,6 +361,14 @@ const addSettingsMenu = async () => {
 				document.querySelector('.n-single .cdimg img').src = newSrc;
 			}
 		}, 200, 'change', (x) => { return x == 200 ? 210 : x });
+		bindSliderToCSSVariable(fontSizeLyric, '--font-size-lyric', 1.05, 'input', (x) => {
+			if (fontSizeLyricCurrent.value < x) {
+				fontSizeLyricCurrent.value = x;
+				fontSizeLyricCurrent.dispatchEvent(new Event("input"));
+			}
+			return x + 'rem';
+		}, 'adjusting-lyric-size');
+		bindSliderToCSSVariable(fontSizeLyricCurrent, '--font-size-lyric-current', 1.3, 'input', (x) => { return x + 'rem' }, 'adjusting-lyric-size');
 
 		const verticalAlign = document.querySelector('#vertical-align');
 		const bgType = document.querySelector('#bg-type');

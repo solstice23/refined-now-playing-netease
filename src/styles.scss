@@ -322,17 +322,17 @@ body:not(.mq-playing), body.mq-playing-scroll {
 	overscroll-behavior: contain;
 }
 .m-playlrc .word .text .z-crt p {
-	font-size: 1.3rem !important;
+	font-size: var(--font-size-lyric-current, 1.3rem) !important;
 	color: var(--rnp-accent-color-shade-1);
 }
 .m-playlrc .word .j-line:not(.z-crt) p{
-    font-size: 1.05rem;
+    font-size: var(--font-size-lyric, 1.05rem);
 }
 .m-playlrc .j-line.J-line-matchedscroll {
 	color: var(--rnp-accent-color-shade-2) !important;
 }
 .m-playlrc .word .text .z-crt p:not(:last-child) {
-	margin-bottom: 10px !important;
+	margin-bottom: calc(10px * var(--font-size-lyric-current, 1.3rem) / 1.3rem) !important;
 }
 .m-playlrc .word .text .z-crt p.translated {
 	opacity: .8;
@@ -340,6 +340,7 @@ body:not(.mq-playing), body.mq-playing-scroll {
 .m-playlrc .word .text p {
 	transition: all .5s cubic-bezier(.5,0,.14,1);
 	transition-delay: 0.2s;
+	line-height: 1.45 !important;
 }
 .m-playlrc > article > .central-line-block:not(.invisible) + div .j-line p {
 	transition-delay: 0s !important;
@@ -347,6 +348,10 @@ body:not(.mq-playing), body.mq-playing-scroll {
 .m-playlrc .supplier, .m-playlrc .noword{
 	opacity: 0;
 	transition: opacity .5s ease !important;
+	transition-delay: 0s !important;
+}
+body.adjusting-lyric-size .m-playlrc .word .text p {
+	transition: none !important;
 	transition-delay: 0s !important;
 }
 .m-playlrc:hover .supplier, .m-playlrc:hover .noword{
@@ -603,7 +608,7 @@ body.mq-playing .m-player .btnp svg {
 
 
 
-body.lyric-blur {
+body.lyric-blur:not(.adjusting-lyric-size) {
 	.m-playlrc .word .j-line:not(.z-crt) {
 		filter: blur(4px);
 	}
