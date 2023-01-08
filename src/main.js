@@ -147,6 +147,8 @@ const recalculateTitleSize = (forceRefresh = false) => {
 	}
 	let fontSize = l - 1;
 	fontSize = Math.max(Math.min(fontSize, maxThreshold), minThreshold);
+	testDiv.style.fontSize = `${fontSize}px`;
+	const width = testDiv.clientWidth;
 	document.body.removeChild(testDiv);
 	titleSizeController.innerHTML = `
 		.g-single .g-singlec-ct .n-single .mn .head .inf .title h1 {
@@ -183,6 +185,46 @@ window.addEventListener('resize', () => {
 	recalculateTitleSize(true);
 	recalculateVerticalAlignMiddleOffset();
 });
+
+const moveTags = () => {
+	const titleBase = document.querySelector(".g-single-track .g-singlec-ct .n-single .mn .head .inf .title");
+	if (!titleBase) {
+		return;
+	}
+	const tags = titleBase.querySelector("h1 > .name > .tag-wrap");
+	if (!tags) {
+		return;
+	}
+	const existingTags = titleBase.querySelector("h1 > .tag-wrap");
+	if (existingTags) {
+		existingTags.remove();
+	}
+	titleBase.querySelector("h1").appendChild(tags);
+}
+const calcTitleScroll = () => {
+	moveTags();
+	const titleContainer = document.querySelector('.g-single .g-singlec-ct .n-single .mn .head .inf .title .name');
+	if (!titleContainer) {
+		return;
+	}
+	if ((titleContainer?.firstChild?.nodeType ?? 0 ) === 3) {
+		const titleInner = document.createElement('div');
+		titleInner.classList.add('name-inner');
+		titleInner.innerHTML = titleContainer.innerHTML;
+		titleContainer.innerHTML = '';
+		titleContainer.appendChild(titleInner);
+	}
+	const containerWidth = titleContainer.clientWidth;
+	const innerWidth = titleContainer.querySelector('.name-inner').clientWidth;
+	console.log(containerWidth, innerWidth);
+	if (containerWidth < innerWidth) {
+		titleContainer.classList.add('scroll');
+	} else {
+		titleContainer.classList.remove('scroll');
+	}
+	titleContainer.style.setProperty('--scroll-offset', `${innerWidth - containerWidth}px`);
+	titleContainer.style.setProperty('--scroll-speed', `${(innerWidth - containerWidth) / 30}s`);
+}
 
 waitForElement("#main-player, .m-pinfo", (dom) => {
 	dom.addEventListener('mouseenter', () => {
@@ -435,6 +477,7 @@ plugin.onLoad(async (p) => {
 	new MutationObserver((mutations) => {
 		updateCDImage();
 		recalculateTitleSize();
+		calcTitleScroll();
 		recalculateVerticalAlignMiddleOffset();
 		mutations.forEach(mutation => {
 			mutation.addedNodes.forEach(node => {

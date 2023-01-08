@@ -87,10 +87,55 @@ body {
 			text-align: left;
 			height: auto;
 			margin-bottom: 10px;
-			overflow: hidden;
+			// overflow: hidden;
 			h1 {
 				font-size: clamp(45px, 5vh, 600px);
+				width: 100%;
 				max-width: unset;
+				.name {
+					.name-inner {
+						width: max-content;
+					}
+					&.scroll{
+						animation-name: title-mask;
+						animation-duration: var(--scroll-speed);
+						animation-direction: alternate;
+						animation-iteration-count: infinite;
+						animation-timing-function: linear;
+						&:hover {
+							animation-play-state: paused;
+							.name-inner {
+								animation-play-state: paused;
+							}
+						}
+						.name-inner {
+							animation-name: title-scroll;
+							animation-duration: var(--scroll-speed);
+							animation-direction: alternate;
+							animation-iteration-count: infinite;
+							animation-timing-function: linear;
+						}
+					}
+					@keyframes title-scroll {
+						0%, 5% {
+							transform: translateX(0);
+						}
+						95%, 100% {
+							transform: translateX(calc(0px - var(--scroll-offset)));
+						}
+					}
+					@keyframes title-mask {
+						0% {
+							-webkit-mask-image: linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 5%, rgba(255, 255, 255, 1) 95%, rgba(0, 0, 0, 0) 100%);
+						}
+						10%, 90% {
+							-webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 1) 5%, rgba(255, 255, 255, 1) 95%, rgba(0, 0, 0, 0) 100%);
+						}
+						100% {
+							-webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 1) 5%, rgba(255, 255, 255, 1) 95%, rgba(255, 255, 255, 1) 100%);
+						}
+					}
+				}
 			}
 		}
 		.head .inf .info ul {
@@ -159,7 +204,6 @@ body {
 		}
 		.head .inf {
 			max-width: unset;
-			-webkit-mask-image: linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 95%, rgba(0, 0, 0, 0) 100%);
 		}
 		.lyric {
 			position: absolute;
@@ -175,16 +219,25 @@ body {
 .g-single-track .g-singlec-ct .n-single {
 	.head .title h1 .name {
 		white-space: nowrap;
-		max-width: unset;
+		max-width: calc(100% - 10px);
 		animation: none;
+		overflow: hidden;
 	}
 	.mn .head .inf .title h1 .tag-wrap {
 		display: inline-block;
 		opacity: 0;
 		transition: opacity .3s ease;
 		vertical-align: bottom;
+		position: absolute;
+		font-size: 35px;
+		top: calc(-35px - 1em * 0.1);
+		left: 3px;
+		user-select: none;
 	}
 	.mn .head .inf:hover .title h1 .tag-wrap {
+		opacity: 0.4;
+	}
+	.mn .head .inf:hover .title h1 .tag-wrap:hover {
 		opacity: 0.8;
 	}
 	.mn .head .inf .title h1 .tag-wrap svg {
