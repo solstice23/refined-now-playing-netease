@@ -62,6 +62,7 @@ const updateAccentColor = ([r, g, b]) => {
 	document.body.style.setProperty('--rnp-accent-color-shade-1-rgb', `${r2}, ${g2}, ${b2}`);
 	const [r3, g3, b3] = calcWhiteShadeColor([r, g, b], 0.45);
 	document.body.style.setProperty('--rnp-accent-color-shade-2', `rgb(${calcWhiteShadeColor([r3, g3, b3])})`);
+	document.body.style.setProperty('--rnp-accent-color-shade-2-rgb', `${r3}, ${g3}, ${b3}`);
 }
 
 
@@ -461,6 +462,8 @@ Object.defineProperty(HTMLImageElement.prototype, 'src', {
 plugin.onLoad(async (p) => {
 	pluginPath = p.pluginPath;
 
+	document.body.classList.add('refined-now-playing');
+
 	const bodyObserver = new MutationObserver((mutations) => {
 		if (document.querySelector('.g-single:not(.patched)')) {
 			injectHTML('div', '', document.querySelector('.g-single'), (dom) => {
@@ -509,7 +512,6 @@ plugin.onLoad(async (p) => {
 });
 
 plugin.onConfig((tools) => {
-	console.log(tools);
 	return dom("div", {},
 		dom("span", { innerHTML: "打开正在播放界面以调整设置 " , style: { fontSize: "18px" } }),
 		tools.makeBtn("打开", async () => {

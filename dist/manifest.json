@@ -5,10 +5,9 @@
     "author_links": ["https://github.com/solstice23"],
     "description": "重新设计的正在播放页面",
     "preview": "preview.jpg",
-    "version": "0.7.0",
+    "version": "0.7.1",
     "type": "extension",
     "requirements": [],
-    "incompatible": ["Apple-Musiclike-lyrics"],
     "betterncm_version": ">=0.2.5",
     "injects": {
         "Main": [
