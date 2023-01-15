@@ -261,10 +261,6 @@ body:hover #rnp-settings {
 }
 
 
-
-
-
-
 body:not(.partial-bg) .bg-opacity,
 body.gradient-bg .bg-blur,
 body:not(.gradient-bg) .gradient-bg-dynamic,
@@ -275,4 +271,35 @@ body.gradient-bg .bg-dim{
 	padding-bottom: 0;
 	margin-bottom: 0;
 	pointer-events: none;
+}
+
+
+body:not(.applemusic-like-lyrics) .only-visible-with-amll {
+	display: none;
+}
+body.applemusic-like-lyrics {
+	#rnp-settings-menu {
+		padding-bottom: 50px;
+		&::before {
+			content: '检测到 Apple Music-Like Lyrics, 一些选项将不可用';
+			position: absolute;
+			bottom: 15px;
+			font-size: 16px;
+			opacity: .6;
+		}
+		.incompatible-with-amll {
+			opacity: .1;
+			pointer-events: none;
+			overflow: hidden;
+		}
+	}
+	&.use-amll-bg {
+		#rnp-settings-menu {
+			.use-amll-bg ~ * {
+				opacity: .1;
+				pointer-events: none;
+				overflow: hidden;
+			}
+		}
+	}
 }

@@ -169,7 +169,10 @@ const recalculateVerticalAlignMiddleOffset = () => {
 	}
 	const page_height = document.querySelector('.g-single .g-singlec-ct').clientHeight;
 	const inner_height = document.querySelector('.g-single .content').clientHeight;
-	const offset = ( page_height - parseInt(getComputedStyle(document.querySelector(".g-single-track .content")).bottom) - inner_height ) - (page_height / 2 - inner_height / 2 );
+	let offset = ( page_height - parseInt(getComputedStyle(document.querySelector(".g-single-track .content")).bottom) - inner_height ) - (page_height / 2 - inner_height / 2 );
+	if (document.body.classList.contains('applemusic-like-lyrics')) {
+		offset -= 120;
+	}
 	verticalAlignMiddleController.innerHTML = `
 		body.vertical-align-middle .g-single-track .g-singlec-ct .n-single .sd,
 		body.vertical-align-middle .g-single-track .g-singlec-ct .n-single .mn .head {
@@ -217,7 +220,13 @@ const calcTitleScroll = () => {
 	}
 	const containerWidth = titleContainer.clientWidth;
 	const innerWidth = titleContainer.querySelector('.name-inner').clientWidth;
-	console.log(containerWidth, innerWidth);
+	if (containerWidth < innerWidth && innerWidth - containerWidth < 20) {
+		titleSizeController.innerHTML = `
+			.g-single .g-singlec-ct .n-single .mn .head .inf .title h1 {
+				font-size: ${titleSizeController.innerHTML.match(/font-size: (\d+)px/)[1] - 1}px !important;
+			}
+		`;
+	}
 	if (containerWidth < innerWidth) {
 		titleContainer.classList.add('scroll');
 	} else {
@@ -373,6 +382,7 @@ const addSettingsMenu = async () => {
 		const lyricBreakWord = document.querySelector('#lyric-break-word');
 		const partialBg = document.querySelector('#partial-bg');
 		const gradientBgDynamic = document.querySelector('#gradient-bg-dynamic');
+		const useAMLLBg = document.querySelector('#use-amll-bg');
 
 		bindCheckboxToClass(rectangleCover, 'rectangle-cover', true);
 		bindCheckboxToClass(lyricBlur, 'lyric-blur', true);
@@ -382,6 +392,7 @@ const addSettingsMenu = async () => {
 		bindCheckboxToClass(lyricBreakWord, 'lyric-break-word', true);
 		bindCheckboxToClass(partialBg, 'partial-bg', false);
 		bindCheckboxToClass(gradientBgDynamic, 'gradient-bg-dynamic', true);
+		bindCheckboxToClass(useAMLLBg, 'use-amll-bg', true);
 
 
 		const bgBlur = document.querySelector('#bg-blur');
@@ -459,6 +470,15 @@ Object.defineProperty(HTMLImageElement.prototype, 'src', {
 	}
 });
 
+const compatibleWithAppleMusicLikeLyrics = () => {
+	const nsingle = document.querySelector('#applemusic-like-lyrics-view + .n-single');
+	if (!nsingle) {
+		return;
+	}
+	//document.querySelector('#applemusic-like-lyrics-view').prepend(nsingle);
+	document.body.classList.add('applemusic-like-lyrics');
+}
+
 plugin.onLoad(async (p) => {
 	pluginPath = p.pluginPath;
 
@@ -474,7 +494,7 @@ plugin.onLoad(async (p) => {
 			document.querySelector('.g-single').classList.add('patched');
 		}
 		updateCDImage();
-
+		compatibleWithAppleMusicLikeLyrics();
 	}).observe(document.body, { childList: true });
 
 	new MutationObserver((mutations) => {

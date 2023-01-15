@@ -1,3 +1,6 @@
+.g-single {
+	
+}
 body {
 	filter: none !important;
 }
@@ -153,7 +156,8 @@ body {
 			height: auto;
 			line-height: 2;
 			margin-top: -5px;
-			overflow: visible;
+			max-width: 100%;
+			overflow: hidden;
 			&:not(:has(*)) {
 				height: 0 !important;
 			}
@@ -738,11 +742,11 @@ body.partial-bg {
 }
 
 
-body:not(.enable-accent-color) {
-	--rnp-accent-color: #fff !important;
-	--rnp-accent-color-rgb: 255, 255, 255 !important;
-	--rnp-accent-color-shade-1: #fff !important;
-	--rnp-accent-color-shade-1-rgb: 255, 255, 255 !important;
+body:not(.enable-accent-color), body:not([style*='--rnp-accent-color']) {
+	--rnp-accent-color: #aaa !important;
+	--rnp-accent-color-rgb: 170, 170, 170 !important;
+	--rnp-accent-color-shade-1: #eee !important;
+	--rnp-accent-color-shade-1-rgb: 238, 238, 238 !important;
 	--rnp-accent-color-shade-2: #fff !important;
 	--rnp-accent-color-shade-2-rgb: 255, 255, 255 !important;
 	#rnp-settings-menu {
@@ -788,4 +792,50 @@ body.gradient-bg.gradient-bg-dynamic #cd-bg-blur {
 
 body:not(.lyric-break-word) .m-playlrc .word .text .z-crt p {
     word-break: break-all;
+}
+
+body.applemusic-like-lyrics {
+	.g-single {
+		.g-single-track .n-single {
+			display: block !important;
+			height: 0;
+			width: 0;
+			overflow: visible;
+			margin-top: -90px;
+			margin-bottom: 220px;
+		}
+		.n-single .mn .lyric {
+			display: none;
+		}
+		.n-single .mn {
+			width: 45vw;
+		}
+		.head .inf .info .alias {
+			max-width: 45vw;
+		}
+		.n-single .mn .head .inf .title h1 .tag-wrap svg {
+			width: 100% !important;
+			height: 100% !important;
+		}
+		#applemusic-like-lyrics-view .am-music-info {
+			opacity: 0;
+			pointer-events: none;
+		}
+		#applemusic-like-lyrics-view .am-lyric-dots > * {
+			box-shadow: none;
+		}
+	}
+	&.enable-accent-color {
+		.g-single {
+			--applemusic-like-lyrics-font-color: var(--rnp-accent-color-shade-1, white);
+		}
+	}
+	&:not(.use-amll-bg) {
+		.am-lyric-background {
+			display: none;
+		}
+	}
+	&.mq-playing-scroll #main-player {
+		backdrop-filter: blur(100px);
+	}
 }
