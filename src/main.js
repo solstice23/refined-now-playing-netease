@@ -162,11 +162,15 @@ verticalAlignMiddleController.innerHTML = '';
 document.head.appendChild(verticalAlignMiddleController);
 const recalculateVerticalAlignMiddleOffset = () => {
 	if (!document.body.classList.contains('vertical-align-middle')) {
+		
+	console.log('q111');
 		return;
 	}
 	if (!document.querySelector('.g-single')) {
+		console.log('q222');
 		return;
 	}
+	console.log('recalculateVerticalAlignMiddleOffset');
 	const page_height = document.querySelector('.g-single .g-singlec-ct').clientHeight;
 	const inner_height = document.querySelector('.g-single .content').clientHeight;
 	let offset = ( page_height - parseInt(getComputedStyle(document.querySelector(".g-single-track .content")).bottom) - inner_height ) - (page_height / 2 - inner_height / 2 );
@@ -357,6 +361,7 @@ const addSettingsMenu = async () => {
 				e.target.classList.add("selected");
 				document.body.classList.add(mapping(value));
 				setSetting(selectGroup.id, value);
+				afterClick();
 			});
 		});
 		const value = getSetting(selectGroup.id, defaultValue);
@@ -369,7 +374,6 @@ const addSettingsMenu = async () => {
 				document.body.classList.remove(mapping(button.getAttribute("value")));
 			}
 		});
-		afterClick();
 	}
 
 
