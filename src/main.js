@@ -162,12 +162,9 @@ verticalAlignMiddleController.innerHTML = '';
 document.head.appendChild(verticalAlignMiddleController);
 const recalculateVerticalAlignMiddleOffset = () => {
 	if (!document.body.classList.contains('vertical-align-middle')) {
-		
-	console.log('q111');
 		return;
 	}
 	if (!document.querySelector('.g-single')) {
-		console.log('q222');
 		return;
 	}
 	console.log('recalculateVerticalAlignMiddleOffset');
