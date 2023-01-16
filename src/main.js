@@ -70,42 +70,48 @@ const updateGradientBackground = (palette) => {
 	document.body.style.setProperty('--gradient-bg', getGradientFromPalette(palette));
 }
 
-const getCurrentCDImage = () => {
-	const cdImage = document.querySelector('.n-single .cdimg img');
-	return cdImage.src;
-}
+const colorThief = new ColorThief();
 var lastCDImage = '';
 const updateCDImage = () => {
 	if (!document.querySelector('.g-single')) {
 		return;
 	}
-	const cdImage = getCurrentCDImage();
-	if (cdImage == lastCDImage) {
+	
+	const imgDom = document.querySelector('.n-single .cdimg img');
+	if (!imgDom) {
 		return;
 	}
+
 	const cdBgBlur = document.querySelector('#cd-bg-blur');
-	if (cdBgBlur.style.backgroundImage !== `url(${cdImage})`) {
-		cdBgBlur.style.backgroundImage = `url(${cdImage})`;
+	const realCD = document.querySelector('.n-single .cdimg');
+
+	const update = () => {
+		const cdImage = imgDom.src;
+		if (cdImage == lastCDImage) {
+			return;
+		}
+		if (cdBgBlur.style.backgroundImage !== `url(${cdImage})`) {
+			cdBgBlur.style.backgroundImage = `url(${cdImage})`;
+			realCD.style.backgroundImage = `url(${cdImage})`;
+		}
+		lastCDImage = cdImage;
+		updateAccentColor(colorThief.getColor(imgDom));
+		updateGradientBackground(colorThief.getPalette(imgDom));
 	}
 
-	const colorThief = new ColorThief();
-
-    try {
-		const img = document.querySelector('.n-single .cdimg img');
-		if (img.complete) {
-			updateAccentColor(colorThief.getColor(img));
-			updateGradientBackground(colorThief.getPalette(img));
-		} else {
-			img.addEventListener('load', function() {
-				updateAccentColor(colorThief.getColor(img));
-				updateGradientBackground(colorThief.getPalette(img));
-			});
-		}
-	} catch {}
-	finally {
-		lastCDImage = cdImage;
+	if (imgDom.complete) {
+		update();
+		realCD.classList.remove('loading');
+	} else {
+		realCD.classList.add('loading');
 	}
 }
+waitForElement('.n-single .cdimg img', (dom) => {
+	dom.addEventListener('load', updateCDImage);
+	new MutationObserver(updateCDImage).observe(dom, {attributes: true, attributeFilter: ['src']});
+});
+	
+
 
 var lastTitle = "";
 const titleSizeController = document.createElement('style');
@@ -491,15 +497,12 @@ plugin.onLoad(async (p) => {
 				dom.id = 'cd-bg-blur';
 			});
 			addSettingsMenu();
-			updateCDImage();
 			document.querySelector('.g-single').classList.add('patched');
 		}
-		updateCDImage();
 		compatibleWithAppleMusicLikeLyrics();
 	}).observe(document.body, { childList: true });
 
 	new MutationObserver((mutations) => {
-		updateCDImage();
 		recalculateTitleSize();
 		calcTitleScroll();
 		recalculateVerticalAlignMiddleOffset();
