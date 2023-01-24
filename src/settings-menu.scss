@@ -262,10 +262,10 @@ body:hover #rnp-settings {
 
 
 body:not(.partial-bg) .bg-opacity,
-body.gradient-bg .bg-blur,
-body:not(.gradient-bg) .gradient-bg-dynamic,
-body:not(.gradient-bg) .bg-dim-for-gradient-bg,
-body.gradient-bg .bg-dim{
+body.rnp-bg-gradient .bg-blur,
+body:not(.rnp-bg-gradient) .gradient-bg-dynamic,
+body:not(.rnp-bg-gradient) .bg-dim-for-gradient-bg,
+body.rnp-bg-gradient .bg-dim{
 	opacity: 0;
 	height: 0;
 	padding-bottom: 0;

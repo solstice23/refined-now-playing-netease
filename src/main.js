@@ -3,6 +3,7 @@ import './styles.scss';
 import settingsMenuHTML from './settings-menu.html';
 import './settings-menu.scss';
 import {normalizeColor, calcWhiteShadeColor, getGradientFromPalette} from './color-utils.js';
+import { Background } from './background.js';
 
 let pluginPath;
 const loadFile = async (path) => {
@@ -90,10 +91,10 @@ const updateCDImage = () => {
 		if (cdImage == lastCDImage) {
 			return;
 		}
-		if (cdBgBlur.style.backgroundImage !== `url(${cdImage})`) {
+		/*if (cdBgBlur.style.backgroundImage !== `url(${cdImage})`) {
 			cdBgBlur.style.backgroundImage = `url(${cdImage})`;
 			realCD.style.backgroundImage = `url(${cdImage})`;
-		}
+		}*/
 		lastCDImage = cdImage;
 		updateAccentColor(colorThief.getColor(imgDom));
 		updateGradientBackground(colorThief.getPalette(imgDom));
@@ -352,7 +353,7 @@ const addSettingsMenu = async () => {
 		func(mapping(slider.value));
 		sliderEnhance(slider);
 	}
-	const bindSelectGroupToClasses = (selectGroup, defaultValue, mapping = (x) => { return x }, afterClick = () => {}) => {
+	const bindSelectGroupToClasses = (selectGroup, defaultValue, mapping = (x) => { return x }, callback = (x) => {}) => {
 		const buttons = selectGroup.querySelectorAll(".rnp-select-group-btn");
 		buttons.forEach(button => {
 			button.addEventListener("click", e => {
@@ -364,7 +365,7 @@ const addSettingsMenu = async () => {
 				e.target.classList.add("selected");
 				document.body.classList.add(mapping(value));
 				setSetting(selectGroup.id, value);
-				afterClick();
+				callback(value);
 			});
 		});
 		const value = getSetting(selectGroup.id, defaultValue);
@@ -377,6 +378,7 @@ const addSettingsMenu = async () => {
 				document.body.classList.remove(mapping(button.getAttribute("value")));
 			}
 		});
+		callback(value);
 	}
 
 
@@ -432,9 +434,11 @@ const addSettingsMenu = async () => {
 		bindSliderToCSSVariable(fontSizeLyricCurrent, '--font-size-lyric-current', 1.3, 'input', (x) => { return x + 'rem' }, 'adjusting-lyric-size');
 
 		const verticalAlign = document.querySelector('#vertical-align');
-		const bgType = document.querySelector('#bg-type');
+		const backgroundType = document.querySelector('#background-type');
 		bindSelectGroupToClasses(verticalAlign, 'bottom', (x) => { return 'vertical-align-' + x }, () => { recalculateVerticalAlignMiddleOffset() });
-		bindSelectGroupToClasses(bgType, 'album', (x) => { return x == 'gradient' ? 'gradient-bg' : 'album-bg' });
+		bindSelectGroupToClasses(backgroundType, 'fluid', (x) => `rnp-bg-${x}`, (x) => {
+			document.dispatchEvent(new CustomEvent('rnp-background-type', { detail: { type: x } }));
+		});
 	}
 	const settingsMenu = document.createElement('div');
 	settingsMenu.id = 'settings-menu';
@@ -491,13 +495,14 @@ plugin.onLoad(async (p) => {
 
 	document.body.classList.add('refined-now-playing');
 
-	const bodyObserver = new MutationObserver((mutations) => {
+	const bodyObserver = new MutationObserver(async (mutations) => {
 		if (document.querySelector('.g-single:not(.patched)')) {
-			injectHTML('div', '', document.querySelector('.g-single'), (dom) => {
-				dom.id = 'cd-bg-blur';
-			});
-			addSettingsMenu();
 			document.querySelector('.g-single').classList.add('patched');
+			const dom = document.createElement('div');
+			dom.classList.add('rnp-bg');
+			ReactDOM.render(<Background type={getSetting('background-type', 'fluid')} image={await betterncm.utils.waitForElement(".n-single .cdimg img")}/>, dom);
+			document.querySelector('.g-single').appendChild(dom);
+			addSettingsMenu();
 		}
 		compatibleWithAppleMusicLikeLyrics();
 	}).observe(document.body, { childList: true });
