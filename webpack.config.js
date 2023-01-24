@@ -76,6 +76,11 @@ const config = {
 
   optimization: {
     minimizer: [new TerserPlugin({
+      terserOptions: {
+        format: {
+          comments: false,
+        },
+      },
       extractComments: false,
     })],
   },

@@ -414,6 +414,7 @@ const addSettingsMenu = async () => {
 		const bgBlur = document.querySelector('#bg-blur');
 		const bgDim = document.querySelector('#bg-dim');
 		const bgDimForGradientBg = document.querySelector('#bg-dim-for-gradient-bg');
+		const bgDimForFluidBg = document.querySelector('#bg-dim-for-fluid-bg');
 		const bgOpacity = document.querySelector('#bg-opacity');
 		const albumSize = document.querySelector('#album-size');
 		const fontSizeLyric = document.querySelector('#font-size-lyric');
@@ -422,6 +423,7 @@ const addSettingsMenu = async () => {
 		bindSliderToCSSVariable(bgBlur, '--bg-blur', 36, 'change', (x) => { return x + 'px' });
 		bindSliderToCSSVariable(bgDim, '--bg-dim', 55, 'input', (x) => { return x / 100 });
 		bindSliderToCSSVariable(bgDimForGradientBg, '--bg-dim-for-gradient-bg', 45, 'input', (x) => { return x / 100 });
+		bindSliderToCSSVariable(bgDimForFluidBg, '--bg-dim-for-fluid-bg', 30, 'input', (x) => { return x / 100 });
 		bindSliderToCSSVariable(bgOpacity, '--bg-opacity', 0, 'input', (x) => { return 1 - x / 100 });
 		bindSliderToFunction(albumSize, (x) => {
 			window.albumSize = x;
