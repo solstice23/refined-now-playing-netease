@@ -1,9 +1,10 @@
-import ColorThief from 'colorthief';
 import './styles.scss';
 import settingsMenuHTML from './settings-menu.html';
 import './settings-menu.scss';
-import {normalizeColor, calcWhiteShadeColor, getGradientFromPalette} from './color-utils.js';
+import {normalizeColor, calcWhiteShadeColor, getGradientFromPalette, argb2Rgb} from './color-utils.js';
+import { chunk } from './utils.js';
 import { Background } from './background.js';
+import { themeFromSourceColor, QuantizerCelebi, Hct, Score } from "@importantimport/material-color-utilities";
 
 let pluginPath;
 const loadFile = async (path) => {
@@ -53,25 +54,37 @@ const waitForElement = (selector, fun) => {
 	}, 100);
 }
 
-const updateAccentColor = ([r, g, b]) => {
-	[r, g, b] = normalizeColor([r, g, b]);
-	const [r1, g1, b1] = calcWhiteShadeColor([r, g, b], 0.2);
-	document.body.style.setProperty('--rnp-accent-color', `rgb(${r1}, ${g1}, ${b1})`);
-	document.body.style.setProperty('--rnp-accent-color-rgb', `${r1}, ${g1}, ${b1}`);
-	const [r2, g2, b2] = calcWhiteShadeColor([r, g, b], 0.3);
-	document.body.style.setProperty('--rnp-accent-color-shade-1', `rgb(${calcWhiteShadeColor([r2, g2, b2])})`);
-	document.body.style.setProperty('--rnp-accent-color-shade-1-rgb', `${r2}, ${g2}, ${b2}`);
-	const [r3, g3, b3] = calcWhiteShadeColor([r, g, b], 0.45);
-	document.body.style.setProperty('--rnp-accent-color-shade-2', `rgb(${calcWhiteShadeColor([r3, g3, b3])})`);
-	document.body.style.setProperty('--rnp-accent-color-shade-2-rgb', `${r3}, ${g3}, ${b3}`);
+const updateAccentColor = (name, argb) => {
+	const [r, g, b] = [...argb2Rgb(argb)];
+	document.body.style.setProperty(`--${name}`, `rgb(${r}, ${g}, ${b})`);
+	document.body.style.setProperty(`--${name}-rgb`, `${r}, ${g}, ${b}`);
 }
 
+const calcAccentColor = (dom) => {
+	console.log('asdasd');
+	const canvas = document.createElement('canvas');
+	canvas.width = 50;
+	canvas.height = 50;
+	const ctx = canvas.getContext('2d');
+	ctx.drawImage(dom, 0, 0, dom.naturalWidth, dom.naturalHeight, 0, 0, 50, 50);
+	console.log(ctx.getImageData(0, 0, 50, 50).data);
+	console.log('asdasd1');
+	const pixels = chunk(ctx.getImageData(0, 0, 50, 50).data, 4).map((pixel) => {
+		return ((pixel[3] << 24 >>> 0) | (pixel[0] << 16 >>> 0) | (pixel[1] << 8 >>> 0) | pixel[2]) >>> 0;
+	});
+	const quantizedColors = QuantizerCelebi.quantize(pixels, 128);
+	const ranked = Score.score(quantizedColors);
+	const top = ranked[0];
 
-const updateGradientBackground = (palette) => {
-	document.body.style.setProperty('--gradient-bg', getGradientFromPalette(palette));
+	const theme = themeFromSourceColor(top);
+
+	console.log('asdasd3');
+	// theme.schemes.light.bgDarken = (Hct.from(theme.palettes.neutral.hue, theme.palettes.neutral.chroma, 97.5)).toInt();
+	updateAccentColor('rnp-accent-color', theme.schemes.dark.primary);
+	updateAccentColor('rnp-accent-color-shade-1', theme.schemes.light.outlineVariant);
+	updateAccentColor('rnp-accent-color-shade-2', theme.schemes.light.surfaceVariant);
 }
 
-const colorThief = new ColorThief();
 var lastCDImage = '';
 const updateCDImage = () => {
 	if (!document.querySelector('.g-single')) {
@@ -83,7 +96,6 @@ const updateCDImage = () => {
 		return;
 	}
 
-	const cdBgBlur = document.querySelector('#cd-bg-blur');
 	const realCD = document.querySelector('.n-single .cdimg');
 
 	const update = () => {
@@ -91,13 +103,8 @@ const updateCDImage = () => {
 		if (cdImage == lastCDImage) {
 			return;
 		}
-		/*if (cdBgBlur.style.backgroundImage !== `url(${cdImage})`) {
-			cdBgBlur.style.backgroundImage = `url(${cdImage})`;
-			realCD.style.backgroundImage = `url(${cdImage})`;
-		}*/
 		lastCDImage = cdImage;
-		updateAccentColor(colorThief.getColor(imgDom));
-		updateGradientBackground(colorThief.getPalette(imgDom));
+		calcAccentColor(imgDom);
 	}
 
 	if (imgDom.complete) {

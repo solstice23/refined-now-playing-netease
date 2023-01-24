@@ -170,3 +170,16 @@ export const getGradientFromPalette = (palette) => {
 	ans += ')';
 	return ans;
 }
+export const argb2Rgb = (x) => {
+	// const a = (x >> 24) & 0xff;
+	const r = (x >> 16) & 0xff;
+	const g = (x >> 8) & 0xff;
+	const b = x & 0xff;
+	return [r, g, b];
+};
+export const Rgb2Hex = (r, g, b) => {
+	return '#' + [r, g, b].map((x) => {
+		const hex = x.toString(16);
+		return hex.length === 1 ? '0' + hex : hex;
+	}).join('');
+};

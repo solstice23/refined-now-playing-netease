@@ -30,6 +30,6 @@
     "serve": "webpack serve"
   },
   "dependencies": {
-    "colorthief": "^2.3.2"
+    "@importantimport/material-color-utilities": "^0.2.1-alpha.0"
   }
 }
