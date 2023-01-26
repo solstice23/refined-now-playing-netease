@@ -1,6 +1,5 @@
 import './background.scss';
 import { getGradientFromPalette } from './color-utils';
-import ColorThief from 'colorthief';
 
 const useState = React.useState;
 const useEffect = React.useEffect;
