@@ -4,6 +4,7 @@ import ColorThief from 'colorthief';
 
 const useState = React.useState;
 const useEffect = React.useEffect;
+const useRef = React.useRef;
 
 const colorThief = new ColorThief();
 
@@ -52,7 +53,7 @@ export function Background(props) {
 	);
 }
 function BlurBackground(props) {
-	const ref = React.useRef();
+	const ref = useRef();
 	useEffect(() => {
 		if (!props.url) return;
 		ref.current.style.backgroundImage = `url(${props.url})`;
@@ -84,8 +85,33 @@ function GradientBackground(props) {
 }
 
 function FluidBackground(props) {
-	const [canvas1, canvas2, canvas3, canvas4] = [React.useRef(), React.useRef(), React.useRef(), React.useRef()];
-	const [feTurbulence, feDisplacementMap] = [React.useRef(), React.useRef()];
+	const [canvas1, canvas2, canvas3, canvas4] = [useRef(), useRef(), useRef(), useRef()];
+	const [feTurbulence, feDisplacementMap] = [useRef(), useRef()];
+	const [songId, setSongId] = useState("0");
+
+	const playState = useRef(document.querySelector("#main-player .btnp").classList.contains("btnp-pause"));
+
+	const onPlayStateChange = (id, state) => {
+		//playState.current = (state.split('|')[1] == 'resume');
+		playState.current = document.querySelector("#main-player .btnp").classList.contains("btnp-pause");
+		setSongId(id);
+		console.log(id, playState.current, state.split('|')[1], document.querySelector("#main-player .btnp").classList.contains("btnp-pause"));
+	};
+
+	useEffect(() => {
+		legacyNativeCmder.appendRegisterCall(
+			"PlayState",
+			"audioplayer",
+			onPlayStateChange
+		);
+		return () => {
+			legacyNativeCmder.removeRegisterCall(	
+				"PlayState",
+				"audioplayer",
+				onPlayStateChange
+			);
+		}
+	}, []);
 
 	useEffect(() => {
 		canvas1.current.getContext('2d').filter = 'blur(5px)';
@@ -133,6 +159,118 @@ function FluidBackground(props) {
 			window.removeEventListener('resize', onResize);
 		}
 	}, []);
+
+
+	// Audio-responsive background (For LibVolumeLevelProvider)
+	if (loadedPlugins.LibFrontendPlay) {
+		const processor = useRef({});
+		useEffect(() => {
+			processor.current.audioContext = new AudioContext();
+			processor.current.audioSource = null;
+			processor.current.analyser = processor.current.audioContext.createAnalyser();
+			//processor.current.analyser.connect(processor.current.audioContext.destination);
+			processor.current.analyser.fftSize = 512;
+			processor.current.filter = processor.current.audioContext.createBiquadFilter();
+			processor.current.filter.type = 'lowpass';
+			processor.current.bufferLength = processor.current.analyser.frequencyBinCount;
+			processor.current.dataArray = new Float32Array(processor.current.bufferLength);
+		}, []);
+
+		const onAudioSourceChange = (e) => {
+			processor.current.audio = e.detail;
+			console.log('audio source changed', processor.current.audio);
+			if (!processor.current.audio) return;
+			if (processor.current.audioSource) processor.current.audioSource.disconnect();
+			processor.current.audioSource = processor.current.audioContext.createMediaElementSource(processor.current.audio);
+			processor.current.audioSource.connect(processor.current.filter).connect(processor.current.analyser);
+			processor.current.audioSource.connect(processor.current.audioContext.destination);
+		};
+			
+		useEffect(() => {
+			loadedPlugins.LibFrontendPlay.addEventListener(
+				"updateCurrentAudioPlayer",
+				onAudioSourceChange
+			);
+			return () => {
+				loadedPlugins.LibFrontendPlay.removeEventListener(
+					"updateCurrentAudioPlayer",
+					onAudioSourceChange
+				);
+			}
+		}, []);
+
+		const request = useRef(0);
+		useEffect(() => {
+			const animate = () => {
+				request.current = requestAnimationFrame(animate);
+				if (!playState.current) return;
+				processor.current.analyser.getFloatFrequencyData(processor.current.dataArray);
+				const max = Math.max(...processor.current.dataArray);
+				//const percentage = (max - processor.current.analyser.minDecibels) / (processor.current.analyser.maxDecibels - processor.current.analyser.minDecibels);
+				const percentage = Math.pow(1.3, max / 20) * 2 - 1;
+				//console.log(max, percentage, processor.current.audio.volume);
+				feDisplacementMap.current.setAttribute('scale', Math.min(600, Math.max(200, 800 - percentage * 800)));
+			};
+			request.current = requestAnimationFrame(animate);
+			return () => {
+				cancelAnimationFrame(request.current);
+			}
+		}, []);
+	}
+	// Audio-responsive background (For LibVolumeLevelProvider)
+	else if (typeof(registerAudioLevelCallback) == "function") {
+		let audioLevels = {}, audioLevelSum = 0, now = 0;
+		let maxq = [], minq = [];
+		let percentage;
+		const onAudioLevelChange = (value) => {
+			if (!playState.current) return;
+			now += 1;
+			if (now <= 100) {
+				audioLevels[now] = value;
+				audioLevelSum += value;
+				while (maxq.length && audioLevels[maxq[maxq.length - 1]] <= value) maxq.pop();
+				maxq.push(now);
+				while (minq.length && audioLevels[minq[minq.length - 1]] >= value) minq.pop();
+				minq.push(now);
+				feDisplacementMap.current.setAttribute('scale', 400 - value * 200);
+				return;
+			}
+			audioLevelSum -= audioLevels[now - 100];
+			delete audioLevels[now - 100];
+			audioLevels[now] = value;
+			audioLevelSum += value;
+			while (maxq.length && audioLevels[maxq[maxq.length - 1]] <= value) maxq.pop();
+			maxq.push(now);
+			while (maxq[0] <= now - 100) maxq.shift();
+			while (minq.length && audioLevels[minq[minq.length - 1]] >= value) minq.pop();
+			minq.push(now);
+			while (minq[0] <= now - 100) minq.shift();
+			console.log(audioLevels[maxq[0]], audioLevels[minq[0]], audioLevels[maxq[0]] - audioLevels[minq[0]]);
+			console.log(value, audioLevelSum / 100, value - audioLevelSum / 100);
+			percentage = (value - audioLevels[minq[0]]) / (audioLevels[maxq[0]] - audioLevels[minq[0]]);
+			function easeInOutQuint(x) {
+				return x < 0.5 ? 16 * x * x * x * x * x : 1 - Math.pow(-2 * x + 2, 5) / 2;
+			}
+			console.log('percentage', percentage, easeInOutQuint(percentage));
+			percentage = easeInOutQuint(percentage);
+			const scale = 500 - (percentage) * 300;
+			//feDisplacementMap.current.setAttribute('scale', scale);
+			const oldScale = parseFloat(feDisplacementMap.current.getAttribute('scale'));
+			feDisplacementMap.current.setAttribute('scale', oldScale + (scale - oldScale) * 0.1);
+		}
+		useEffect(() => {
+			registerAudioLevelCallback(onAudioLevelChange);
+			return () => {
+				unregisterAudioLevelCallback(onAudioLevelChange);
+				feDisplacementMap.current.setAttribute('scale', 400);
+			}
+		}, []);
+		useEffect(() => {
+			audioLevels = [];
+			audioLevelSum = 0;
+		}, [songId]);
+	}
+
 
 	return (
 		<>

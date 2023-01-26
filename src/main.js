@@ -61,14 +61,11 @@ const updateAccentColor = (name, argb) => {
 }
 
 const calcAccentColor = (dom) => {
-	console.log('asdasd');
 	const canvas = document.createElement('canvas');
 	canvas.width = 50;
 	canvas.height = 50;
 	const ctx = canvas.getContext('2d');
 	ctx.drawImage(dom, 0, 0, dom.naturalWidth, dom.naturalHeight, 0, 0, 50, 50);
-	console.log(ctx.getImageData(0, 0, 50, 50).data);
-	console.log('asdasd1');
 	const pixels = chunk(ctx.getImageData(0, 0, 50, 50).data, 4).map((pixel) => {
 		return ((pixel[3] << 24 >>> 0) | (pixel[0] << 16 >>> 0) | (pixel[1] << 8 >>> 0) | pixel[2]) >>> 0;
 	});
@@ -78,7 +75,6 @@ const calcAccentColor = (dom) => {
 
 	const theme = themeFromSourceColor(top);
 
-	console.log('asdasd3');
 	// theme.schemes.light.bgDarken = (Hct.from(theme.palettes.neutral.hue, theme.palettes.neutral.chroma, 97.5)).toInt();
 	updateAccentColor('rnp-accent-color', theme.schemes.dark.primary);
 	updateAccentColor('rnp-accent-color-shade-1', theme.schemes.light.outlineVariant);
@@ -181,7 +177,6 @@ const recalculateVerticalAlignMiddleOffset = () => {
 	if (!document.querySelector('.g-single')) {
 		return;
 	}
-	console.log('recalculateVerticalAlignMiddleOffset');
 	const page_height = document.querySelector('.g-single .g-singlec-ct').clientHeight;
 	const inner_height = document.querySelector('.g-single .content').clientHeight;
 	let offset = ( page_height - parseInt(getComputedStyle(document.querySelector(".g-single-track .content")).bottom) - inner_height ) - (page_height / 2 - inner_height / 2 );

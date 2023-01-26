@@ -74,7 +74,7 @@
 				position: absolute;
 				animation: fluid-block-rotate 60s linear infinite;
 				animation-play-state: running;
-				opacity: .8;
+				opacity: 1;
 			}
 			@for $i from 1 through 4 {
 				canvas[canvasID="#{$i}"] {
