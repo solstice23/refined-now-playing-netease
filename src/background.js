@@ -1,5 +1,6 @@
 import './background.scss';
 import { getGradientFromPalette } from './color-utils';
+import ColorThief from 'colorthief';
 
 const useState = React.useState;
 const useEffect = React.useEffect;
@@ -94,7 +95,7 @@ function FluidBackground(props) {
 		//playState.current = (state.split('|')[1] == 'resume');
 		playState.current = document.querySelector("#main-player .btnp").classList.contains("btnp-pause");
 		setSongId(id);
-		console.log(id, playState.current, state.split('|')[1], document.querySelector("#main-player .btnp").classList.contains("btnp-pause"));
+		//console.log(id, playState.current, state.split('|')[1], document.querySelector("#main-player .btnp").classList.contains("btnp-pause"));
 	};
 
 	useEffect(() => {
@@ -244,13 +245,13 @@ function FluidBackground(props) {
 			while (minq.length && audioLevels[minq[minq.length - 1]] >= value) minq.pop();
 			minq.push(now);
 			while (minq[0] <= now - 100) minq.shift();
-			console.log(audioLevels[maxq[0]], audioLevels[minq[0]], audioLevels[maxq[0]] - audioLevels[minq[0]]);
-			console.log(value, audioLevelSum / 100, value - audioLevelSum / 100);
+			//console.log(audioLevels[maxq[0]], audioLevels[minq[0]], audioLevels[maxq[0]] - audioLevels[minq[0]]);
+			//console.log(value, audioLevelSum / 100, value - audioLevelSum / 100);
 			percentage = (value - audioLevels[minq[0]]) / (audioLevels[maxq[0]] - audioLevels[minq[0]]);
 			function easeInOutQuint(x) {
 				return x < 0.5 ? 16 * x * x * x * x * x : 1 - Math.pow(-2 * x + 2, 5) / 2;
 			}
-			console.log('percentage', percentage, easeInOutQuint(percentage));
+			//console.log('percentage', percentage, easeInOutQuint(percentage));
 			percentage = easeInOutQuint(percentage);
 			const scale = 500 - (percentage) * 300;
 			//feDisplacementMap.current.setAttribute('scale', scale);

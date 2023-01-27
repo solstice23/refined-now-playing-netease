@@ -4,6 +4,7 @@ import './settings-menu.scss';
 import {normalizeColor, calcWhiteShadeColor, getGradientFromPalette, argb2Rgb} from './color-utils.js';
 import { chunk } from './utils.js';
 import { Background } from './background.js';
+import { Lyrics } from './lyrics.js';
 import { themeFromSourceColor, QuantizerCelebi, Hct, Score } from "@importantimport/material-color-utilities";
 
 let pluginPath;
@@ -502,10 +503,18 @@ plugin.onLoad(async (p) => {
 	const bodyObserver = new MutationObserver(async (mutations) => {
 		if (document.querySelector('.g-single:not(.patched)')) {
 			document.querySelector('.g-single').classList.add('patched');
-			const dom = document.createElement('div');
-			dom.classList.add('rnp-bg');
-			ReactDOM.render(<Background type={getSetting('background-type', 'fluid')} image={await betterncm.utils.waitForElement(".n-single .cdimg img")}/>, dom);
-			document.querySelector('.g-single').appendChild(dom);
+			const background = document.createElement('div');
+			background.classList.add('rnp-bg');
+			ReactDOM.render(<Background type={getSetting('background-type', 'fluid')} image={await betterncm.utils.waitForElement(".n-single .cdimg img")}/>, background);
+			document.querySelector('.g-single').appendChild(background);
+
+			const lyrics = document.createElement('div');
+			lyrics.classList.add('lyric');
+			ReactDOM.render(<Lyrics />, lyrics);
+			const oldLyrics = document.querySelector('.g-single-track .g-singlec-ct .n-single .mn .lyric');
+			oldLyrics.parentNode.insertBefore(lyrics, oldLyrics.nextSibling);
+			oldLyrics.remove();
+
 			addSettingsMenu();
 		}
 		compatibleWithAppleMusicLikeLyrics();

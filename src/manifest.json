@@ -8,6 +8,7 @@
     "version": "1.2.1",
     "type": "extension",
     "requirements": [],
+    "loadAfter": ["LibLyric"],
     "betterncm_version": ">=0.2.5",
     "injects": {
         "Main": [
@@ -17,8 +18,8 @@
         ]
     },
     "hijacks": {
-        ">= 2.10.4 <= 2.10.6": {
-            "orpheus://orpheus/pub/core.5ad43a6.js": {
+        ">= 2.10.4": {
+            "orpheus://orpheus/pub/core": {
                 "type": "replace",
                 "from": "function(t,i,e,r,n,a){var o;if(((this.U()||C).from||C).id==t)",
                 "to": "async function(t,i,e,r,n,a){;i='online';window.onProcessLyrics&&(a=(await onProcessLyrics(a,e)));var o;if(((this.U()||C).from||C).id==t)"

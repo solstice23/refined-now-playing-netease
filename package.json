@@ -30,6 +30,9 @@
     "serve": "webpack serve"
   },
   "dependencies": {
-    "@importantimport/material-color-utilities": "^0.2.1-alpha.0"
+    "@importantimport/material-color-utilities": "^0.2.1-alpha.0",
+    "colorthief": "^2.3.2",
+    "lodash": "^4.17.21",
+    "path-browserify": "^1.0.1"
   }
 }
