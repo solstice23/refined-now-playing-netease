@@ -18,7 +18,7 @@ window.onProcessLyrics = (lyrics) => {
 	if (!lyrics) return _onProcessLyrics(lyrics);
 	console.log('update original lyrics', lyrics);
 	const processedLyrics = preProcessLyrics(lyrics);
-	//if (!_isEqual(processedLyrics, currentRawLyrics)) {
+	if (!_isEqual(processedLyrics, currentRawLyrics)) {
 		currentRawLyrics = processedLyrics;
 		console.log('update raw lyrics', currentRawLyrics);
 		setTimeout(async () => {
@@ -26,21 +26,39 @@ window.onProcessLyrics = (lyrics) => {
 			console.log('update lyrics', currentLyrics);
 			document.dispatchEvent(new CustomEvent('lyrics-updated', {detail: currentLyrics}));
 		}, 0);
-	//}
+	}
 	return _onProcessLyrics(lyrics);
 }
 
+const CJKRegex = /([\p{Unified_Ideograph}|\u3040-\u309F|\u30A0-\u30FF])/gu;
+const isCJK = (word) => {
+	return CJKRegex.test(word);
+}
 
 const preProcessLyrics = (lyrics) => {
 	if (!lyrics) return null;
 	if (!lyrics.lrc) return null;
 	
-	return loadedPlugins.liblyric.parseLyric(
-		lyrics?.yrc?.lyric ?? lyrics?.lrc?.lyric ?? '',
-		lyrics?.ytlrc?.lyric ?? lyrics?.ttlrc?.lyric ?? lyrics?.tlyric?.lyric ?? '',
-		lyrics?.yromalrc?.lyric ?? lyrics?.romalrc?.lyric ?? '',
-		lyrics?.yrc?.lyric ?? ''
+	const original = lyrics?.lrc?.lyric ?? '';
+	const translation = lyrics?.ytlrc?.lyric ?? lyrics?.ttlrc?.lyric ?? lyrics?.tlyric?.lyric ?? '';
+	const roma = lyrics?.yromalrc?.lyric ?? lyrics?.romalrc?.lyric ?? '';
+	const dynamic = lyrics?.yrc?.lyric ?? '';
+	const approxLines = original.match(/\[(.*?)\]/g)?.length ?? 0;
+
+	const parsed = loadedPlugins.liblyric.parseLyric(
+		original,
+		translation,
+		roma,
+		dynamic
 	);
+	if (approxLines - parsed.length > 10) { // 某些特殊情况（逐字歌词残缺不全）
+		return loadedPlugins.liblyric.parseLyric(
+			original,
+			translation,
+			roma
+		);
+	}
+	return parsed;
 }
 
 const processLyrics = (lyrics) => {
@@ -87,12 +105,23 @@ export function Lyrics(props) {
 		_lyrics.current = x;
 		_setLyrics(x);
 	}
+	const [hasTranslation, setHasTranslation] = useState(false);
+	const [hasRomaji, setHasRomaji] = useState(false);
+	const [hasKaraoke, setHasKaraoke] = useState(false);
 
 	const [playState, setPlayState] = useState(null);
 	const [songId, setSongId] = useState("0");
 	const currentTime = useRef(0), lastTime = useRef(0); // 当前播放时间，上一次获得的播放时间
 	const [seekCounter, setSeekCounter] = useState(0); // 拖动进度条时修改触发重渲染
-	const [currentLine, setCurrentLine] = useState(0);
+
+	let [currentLine, setCurrentLine] = useState(0);
+	const _currentLine = useRef(0);
+	const _setCurrentLine = setCurrentLine;
+	setCurrentLine = (x) => {
+		_currentLine.current = x;
+		_setCurrentLine(x);
+	}
+
 	const [globalOffset, setGlobalOffset] = useState(0);
 
 	const heightOfItems = useRef([]);
@@ -108,24 +137,59 @@ export function Lyrics(props) {
 	const [lineTransforms, setLineTransforms] = useState([]);
 	const shouldTransit = useRef(true);
 
-	const [allToNonEmptyLyricsMapping, setAllToNonEmptyLyricsMapping] = useState([]);
-	const [nonEmptyToAllLyricsMapping, setNonEmptyToAllLyricsMapping] = useState([]);
+	const [allToNonInterludeLyricsMapping, setAllToNonInterludeLyricsMapping] = useState([]); // 所有歌词 index -> 非间奏歌词 index (间奏歌词则是往前最近的非间奏歌词)
+	const [nonInterludeToAllLyricsMapping, setNonInterludeToAllLyricsMapping] = useState([]); // 非间奏歌词 index -> 所有歌词 index
 
-	const [isSeekingMode, setIsSeekingMode] = useState(false);
+	const [scrollingMode, setScrollingMode] = useState(false);
+	const [scrollingFocusLine, setScrollingFocusLine] = useState(0);
+	const _scrollingMode = useRef(false);
+	const _scrollingFocusLine = useRef(0);
+	const exitScrollingModeTimeout = useRef(null);
 
-	const onLyricsUpdated = (e) => {
+	const preProcessMapping = (lyrics) => {
+		lyrics ??= [];
+		const allToNonInterlude = [], nonInterludeToAll = [];
+		let cnt = 0;
+		for (let i = 0; i < lyrics.length; i++) {
+			const line = lyrics[i];
+			if (line.isInterlude) {
+				if (allToNonInterlude.length > 0) {
+					allToNonInterlude.push(allToNonInterlude[allToNonInterlude.length - 1]);
+				} else {
+					allToNonInterlude.push(0);
+				}
+			} else {
+				nonInterludeToAll.push(i);
+				allToNonInterlude.push(cnt);
+				cnt++;
+			}
+		}
+		setAllToNonInterludeLyricsMapping(allToNonInterlude);
+		setNonInterludeToAllLyricsMapping(nonInterludeToAll);
+	}
+
+	const onLyricsUpdate = (e) => {		
 		shouldTransit.current = false;
+		setScrollingMode(false);
+		_scrollingMode.current = false;
+		preProcessMapping(e.detail);
 		setCurrentLine(0);
 		setLyrics(e.detail);
-
+		setHasTranslation(e.detail.some((x) => x.translatedLyric));
+		setHasRomaji(e.detail.some((x) => x.romanLyric));
+		setHasKaraoke(e.detail.some((x) => x.dynamicLyric));
 	}
 
 	useEffect(() => {
 		shouldTransit.current = false;
+		preProcessMapping(currentLyrics);
 		setLyrics(currentLyrics);
-		document.addEventListener('lyrics-updated', onLyricsUpdated);
+		setHasTranslation(currentLyrics.some((x) => x.translatedLyric));
+		setHasRomaji(currentLyrics.some((x) => x.romanLyric));
+		setHasKaraoke(currentLyrics.some((x) => x.dynamicLyric));
+		document.addEventListener('lyrics-updated', onLyricsUpdate);
 		return () => {
-			document.removeEventListener('lyrics-updated', onLyricsUpdated);
+			document.removeEventListener('lyrics-updated', onLyricsUpdate);
 		}
 	}, []);
 
@@ -139,7 +203,7 @@ export function Lyrics(props) {
 			heights.push(item.clientHeight);
 		}
 		heightOfItems.current = heights;
-		console.log('heightOfItems', heightOfItems.current);
+		//console.log('heightOfItems', heightOfItems.current);
 	}, [lyrics, containerWidth, fontSize, showTranslation, showRomaji, useKaraokeLyrics]);
 	
 	const onResize = () => {
@@ -160,13 +224,12 @@ export function Lyrics(props) {
 
 	// TODO:
 	// 1. 刚进去歌曲的时候和切歌的时候不应有过渡动画  DONE
-	// 2. 修复某些时候的 Fatal Error（可能缺少原歌词？）
+	// 2. 修复某些时候的 Fatal Error（可能缺少原歌词？）DONE
 	// 3. 点击歌词跳转到相应位置 DONE
 	// 4. 逐字歌词（需要单独做而不是和计算 transform 放在一起，因为有滚轮和进度条的动作） DONE
-	// 5. 支持滚轮与进度条拖动
-	// 关于滚轮和进度条操作：未定是把当前用户focus的歌词当作是当前歌词，还是直接滚动（偏向前者）
+	// 5. 支持滚轮与进度条拖动 DONE
 	// 6. 自定义字体字号模糊缩放
-	// 7. 微调 UI (字体相对大小，边距，container 大小)
+	// 7. 微调 UI (字体相对大小，边距，container 大小) DONE
 	// 8. 逐字注音而不是直接显示罗马音
 
 	const previousFocusedLineRef = useRef(0);
@@ -175,9 +238,9 @@ export function Lyrics(props) {
 
 		const space = fontSize * 1.2;
 		const scaleByOffset = (offset) => {
-			return 1;
-			offset =  1 - offset * 0.1
-			return Math.max(0.5, offset * offset * offset * offset * offset);
+			//return 1;
+			offset =  Math.max(1 - offset * 0.2, 0);
+			return offset * offset * offset * offset * 0.3 + 0.7;
 		};
 		const delayByOffset = (offset) => {
 			let sign = currentLine - previousFocusedLineRef.current > 0 ? 1 : -1;
@@ -194,13 +257,16 @@ export function Lyrics(props) {
 		const transforms = [];
 		for (let i = 0; i < lyrics.length; i++) transforms.push({ top: 0, scale: 1, delay: 0 });
 		//console.log('containerHeight', containerHeight);
-		let current = Math.max(currentLine ?? 0, 0);
+		let current = Math.min(Math.max(currentLine ?? 0, 0), lyrics.length - 1);
+		if (scrollingMode) {
+			current = Math.min(Math.max(scrollingFocusLine ?? 0, 0), lyrics.length - 1);
+		}
 		//console.log(currentLine, current);
 		transforms[current].top = containerHeight / 2 - heightOfItems.current[current] / 2;
 		transforms[current].scale = 1;
 		transforms[current].delay = delayByOffset(0);
 		const currentLineHeight = heightOfItems.current[current];
-		if (lyrics[current].isInterlude && !isSeekingMode) {
+		if (lyrics[current].isInterlude && !scrollingMode) {
 			heightOfItems.current[current] = currentLineHeight + 50;
 		}
 		for (let i = current - 1; i >= 0; i--) {
@@ -225,7 +291,7 @@ export function Lyrics(props) {
 		setLineTransforms(transforms);
 		//console.log('transforms', transforms);
 		previousFocusedLineRef.current = currentLine;
-	}, [currentLine, containerHeight, containerWidth, fontSize, showTranslation, showRomaji, useKaraokeLyrics, isSeekingMode, lyrics]);
+	}, [currentLine, containerHeight, containerWidth, fontSize, showTranslation, showRomaji, useKaraokeLyrics, scrollingMode, scrollingFocusLine, lyrics]);
 
 
 	const onPlayStateChange = (id, state) => {
@@ -249,6 +315,10 @@ export function Lyrics(props) {
 		}
 		shouldTransit.current = true;
 		setCurrentLine(cur);
+		if (!_scrollingMode.current) {
+			setScrollingFocusLine(cur);
+			_scrollingFocusLine.current = cur;
+		}
 	};
 	useEffect(() => {
 		onPlayProgress(songId, currentTime.current);
@@ -262,6 +332,8 @@ export function Lyrics(props) {
 		channel.call = (name, ...args) => {
 			if (name == "audioplayer.seek") {
 				currentTime.current = parseInt(args[1][2] * 1000);
+				setScrollingMode(false);
+				_scrollingMode.current = false;
 				setSeekCounter(+new Date());
 			}
 			_channalCall(name, ...args);
@@ -275,6 +347,8 @@ export function Lyrics(props) {
 
 	const jumpToTime = React.useCallback((time) => {
 		shouldTransit.current = true;
+		setScrollingMode(false);
+		_scrollingMode.current = false;
 		channel.call("audioplayer.seek", () => {}, [
 			songId,
 			`${songId}|seek|${Math.random().toString(36).substring(6)}`,
@@ -287,12 +361,85 @@ export function Lyrics(props) {
 		}
 	}, [songId, playState]);
 
+	
+	const exitScrollingModeSoon = React.useCallback((timeout = 2000) => {
+		cancelExitScrollingModeTimeout();
+		exitScrollingModeTimeout.current = setTimeout(() => {
+			setScrollingMode(false);
+			_scrollingMode.current = false;
+			setScrollingFocusLine(_currentLine.current);
+			_scrollingFocusLine.current = _currentLine.current;
+		}, timeout);
+	}, [currentLine]);
+
+	const cancelExitScrollingModeTimeout = React.useCallback(() => {
+		if (exitScrollingModeTimeout.current) {
+			clearTimeout(exitScrollingModeTimeout.current);
+			exitScrollingModeTimeout.current = null;
+		}
+	}, []);
+
+	const scrollingFocusOnLine = React.useCallback((line) => {
+		if (line == null) return;
+		setScrollingMode(true);
+		_scrollingMode.current = true;
+		setScrollingFocusLine(line);
+		_scrollingFocusLine.current = line;
+	}, []);
+
+	const onWheel = (e) => {
+		if (e.deltaY > 0) {
+			for (let target = _scrollingFocusLine.current + 1; target < _lyrics.current.length; target++) {
+				if (!_lyrics.current[target].isInterlude) {
+					scrollingFocusOnLine(target);
+					break;
+				}
+			}
+			exitScrollingModeSoon();
+		} else if (e.deltaY < 0) {
+			for (let target = _scrollingFocusLine.current - 1; target >= 0; target--) {
+				if (!_lyrics.current[target].isInterlude) {
+					scrollingFocusOnLine(target);
+					break;
+				}
+			}
+			exitScrollingModeSoon();
+		}
+		return false;
+	};
+
+	useEffect(() => {
+		containerRef.current.addEventListener("scroll", (e) => {
+			e.stopPropagation();
+			e.preventDefault();
+			return false;
+		}, { passive: false });
+		containerRef.current.addEventListener("wheel", (e) => {
+			e.stopPropagation();
+			e.preventDefault();
+			onWheel(e);
+			return false;
+		}, { passive: false });
+	}, []);
+
+	useEffect(() => {
+		const onMouseLeave = () => {
+			exitScrollingModeSoon(0);
+		}
+		document.addEventListener("mouseleave", onMouseLeave);
+		return () => {
+			document.removeEventListener("mouseleave", onMouseLeave);
+		}
+	}, []);
+
 	return (
 		<>
-			<div className="rnp-lyrics" ref={containerRef}>
+			<div
+				className="rnp-lyrics"
+				ref={containerRef}>
 				{lyrics && lyrics.map((line, index) => {
 					return <Line
-						key={index}
+						key={`${songId} ${index}`}
 						id={index}
 						line={line}
 						currentLine={currentLine}
@@ -308,19 +455,46 @@ export function Lyrics(props) {
 					/>
 				})}
 			</div>
-			<Scrollbar/>
+			<Scrollbar
+				nonInterludeToAll={nonInterludeToAllLyricsMapping}
+				allToNonInterlude={allToNonInterludeLyricsMapping}
+				currentLine={currentLine}
+				containerHeight={containerHeight}
+				scrollingMode={scrollingMode}
+				scrollingFocusLine={scrollingFocusLine}
+				scrollingFocusOnLine={scrollingFocusOnLine}
+				exitScrollingModeSoon={exitScrollingModeSoon}
+			/>
 			<div className="rnp-lyrics-switch">
 				{/*<button className="rnp-lyrics-switch-btn" onClick={() => setFontSize(fontSize + 1)}>+</button>
 				<button className="rnp-lyrics-switch-btn" onClick={() => setFontSize(fontSize - 1)}>-</button>*/}
-				<button className={`rnp-lyrics-switch-btn ${showTranslation ? 'active' : ''}`} onClick={() => {
+				<button
+					className={`
+						rnp-lyrics-switch-btn
+						${showTranslation ? 'active' : ''}
+						${hasTranslation ? '' : 'unavailable'}
+					`}
+					onClick={() => {
 					setSetting("show-translation", !showTranslation);
 					setShowTranslation(!showTranslation);
 				}}>译</button>
-				<button className={`rnp-lyrics-switch-btn ${showRomaji ? 'active' : ''}`} onClick={() => {
+				<button 
+					className={`
+						rnp-lyrics-switch-btn
+						${showRomaji ? 'active' : ''}
+						${hasRomaji ? '' : 'unavailable'}
+					`}
+					onClick={() => {
 					setSetting("show-romaji", !showRomaji);
 					setShowRomaji(!showRomaji);
 				}}>音</button>
-				<button className={`rnp-lyrics-switch-btn ${useKaraokeLyrics ? 'active' : ''}`} onClick={() => {
+				<button 
+					className={
+						`rnp-lyrics-switch-btn
+						${useKaraokeLyrics ? 'active' : ''}
+						${hasKaraoke ? '' : 'unavailable'}
+					`}
+					onClick={() => {
 					setSetting("use-karaoke-lyrics", !useKaraokeLyrics);
 					setUseKaraokeLyrics(!useKaraokeLyrics);
 				}}>逐字</button>
@@ -372,7 +546,7 @@ function Line(props) {
 		<div
 			className={`rnp-lyrics-line ${props.line.isInterlude ? 'rnp-interlude' : ''}`}
 			offset={offset}
-			onClick={() => props.jumpToTime(props.line.time + 10)}
+			onClick={() => props.jumpToTime(props.line.time + 50)}
 			style={{
 				fontSize: props.fontSize,
 				transform: `
@@ -386,7 +560,7 @@ function Line(props) {
 				{props.line.dynamicLyric.map((word, index) => {
 					return <span
 						key={index}
-						className={`rnp-karaoke-word ${word.word.endsWith(' ') ? 'end-with-space' : ''}`}
+						className={`rnp-karaoke-word ${isCJK(word.word) ? 'is-cjk' : ''} ${word.word.endsWith(' ') ? 'end-with-space' : ''}`}
 						style={karaokeAnimation(word)}>
 							{word.word}
 					</span>
@@ -415,12 +589,88 @@ function Interlude() {
 	)
 }
 
-function Scrollbar() {
+function Scrollbar(props) {
+	const scrollbarRef = useRef(null);
+	const thumbRef = useRef(null);
+
+	const currentLine = props.scrollingMode ? props.scrollingFocusLine : props.currentLine;
+	const totalSteps = props.nonInterludeToAll.length;
+	const thumbHeight = Math.max(props.containerHeight / totalSteps, 30);
+	const heightOfTrack = props.containerHeight - thumbHeight;
+	const perStep = heightOfTrack / (totalSteps - 1);
+	const current = props.allToNonInterlude[currentLine];
+
+	useEffect(() => {
+		const thumb = thumbRef.current;
+		const heightOfTrack = props.containerHeight - thumbHeight;
+		const perStep = heightOfTrack / (totalSteps - 1);
+		let dragging = false;
+		let startX, startY, offsetX, offsetY, trackTopY;
+		const onMouseDown = (e) => {
+			dragging = true;
+			thumb.classList.add('dragging');
+			thumb.style.transitionDuration = '0.2s';
+			thumb.style.transltionTimingFunction = 'ease-out';
+			startX = e.clientX;
+			startY = e.clientY;
+			offsetX = e.offsetX;
+			offsetY = e.offsetY;
+			trackTopY = scrollbarRef.current.getBoundingClientRect().top;
+			document.addEventListener('mousemove', onMouseMove);
+			document.addEventListener('mouseup', onMouseUp);
+		}
+		let lastFocusLine = props.current;
+		const onMouseMove = (e) => {
+			if (!dragging) return;
+			const diffX = e.clientX - startX;
+			let y = e.clientY - trackTopY - offsetY;
+			if (Math.abs(diffX) > 300) {
+				y = startY - trackTopY - offsetY;
+			}
+			const cloest = Math.max(Math.min(Math.round(y / perStep), totalSteps - 1), 0);
+			console.log(cloest);
+			const yOfCloest = cloest * perStep;
+			//const distance = y - cloest * perStep;
+			thumb.style.top = `${yOfCloest}px`;
+			//thumb.style.transform = `translateY(${distance * 0.3}px)`;
+			if (lastFocusLine == cloest) return;
+			lastFocusLine = cloest;
+			//console.log(props.nonInterludeToAll[cloest]);
+			props.scrollingFocusOnLine(props.nonInterludeToAll[cloest]);
+		}
+		const onMouseUp = (e) => {
+			dragging = false;
+			thumb.classList.remove('dragging');
+			thumb.style.transitionDuration = '';
+			//thumb.style.transform = `none`;
+			thumb.style.transltionTimingFunction = '';
+			document.removeEventListener('mousemove', onMouseMove);
+			document.removeEventListener('mouseup', onMouseUp);
+			props.exitScrollingModeSoon();
+		}
+		thumb.addEventListener('mousedown', onMouseDown);
+		return () => {
+			dragging = false;
+			thumb.classList.remove('dragging');
+			thumb.style.transitionDuration = '';
+			thumb.style.transltionTimingFunction = '';
+			thumb.removeEventListener('mousedown', onMouseDown);
+			document.removeEventListener('mousemove', onMouseMove);
+			document.removeEventListener('mouseup', onMouseUp);
+			props.exitScrollingModeSoon();
+		}
+	}, [props.nonInterludeToAll, props.allToNonInterlude, props.containerHeight]);
+
 	return (
-		<div className="rnp-lyrics-scrollbar">
-			<div className="rnp-lyrics-scrollbar-track">
-				<div className="rnp-lyrics-scrollbar-thumb"></div>
-			</div>
+		<div className="rnp-lyrics-scrollbar" ref={scrollbarRef}>
+			<div 
+				className="rnp-lyrics-scrollbar-thumb"
+				ref={thumbRef}
+				style={{
+					height: thumbHeight,
+					top: `${current * perStep}px`,
+				}}/>
+			{/*<div>{ props.allToNonInterlude[currentLine] }</div>*/}
 		</div>
 	)
 }
