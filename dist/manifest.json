@@ -7,7 +7,7 @@
     "preview": "preview.jpg",
     "version": "1.2.1",
     "type": "extension",
-    "requirements": [],
+    "requirements": ["LibLyric"],
     "loadAfter": ["LibLyric"],
     "betterncm_version": ">=0.2.5",
     "injects": {

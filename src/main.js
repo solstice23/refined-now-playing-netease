@@ -2,7 +2,7 @@ import './styles.scss';
 import settingsMenuHTML from './settings-menu.html';
 import './settings-menu.scss';
 import {normalizeColor, calcWhiteShadeColor, getGradientFromPalette, argb2Rgb} from './color-utils.js';
-import { chunk } from './utils.js';
+import { getSetting, setSetting, chunk } from './utils.js';
 import { Background } from './background.js';
 import { Lyrics } from './lyrics.js';
 import { themeFromSourceColor, QuantizerCelebi, Hct, Score } from "@importantimport/material-color-utilities";
@@ -256,23 +256,6 @@ waitForElement("#main-player, .m-pinfo", (dom) => {
 	});
 });
 
-const getSetting = (option, defaultValue = '') => {
-	option = "refined-now-playing-" + option;
-	let value = localStorage.getItem(option);
-	if (!value) {
-		value = defaultValue;
-	}
-	if (value === 'true') {
-		value = true;
-	} else if (value === 'false') {
-		value = false;
-	}
-	return value;
-}
-const setSetting = (option, value) => {
-	option = "refined-now-playing-" + option;
-	localStorage.setItem(option, value);
-}
 const addOrRemoveGlobalClassByOption = (className, optionValue) => {
 	if (optionValue) {
 		document.body.classList.add(className);
