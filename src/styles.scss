@@ -729,11 +729,15 @@ body.use-notosans {
 
 
 body.hide-comments {
-	.g-single-track .g-bd2 {
+	.g-single-track .g-bd2,
+	.g-singlec .g-bd2 {
 		display: none;
 	}
 	.g-singlec-ct {
 		overflow-y: hidden;
+	}
+	.g-bd2 {
+		dis
 	}
 }
 
