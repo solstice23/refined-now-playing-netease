@@ -85,7 +85,8 @@ export function Lyrics(props) {
 
 	const [playState, setPlayState] = useState(null);
 	const [songId, setSongId] = useState("0");
-	const currentTime = useRef(0), lastTime = useRef(0);
+	const currentTime = useRef(0), lastTime = useRef(0); // 当前播放时间，上一次获得的播放时间
+	const [lastSeekTime, setLastSeekTime] = useState(0); // 上一次用户手动拖动进度条的时间
 	const [currentLine, setCurrentLine] = useState(0);
 	const [globalOffset, setGlobalOffset] = useState(0);
 
@@ -102,6 +103,7 @@ export function Lyrics(props) {
 	const [lineTransforms, setLineTransforms] = useState([]);
 
 	const onLyricsUpdated = (e) => {
+		setCurrentLine(0);
 		setLyrics(e.detail);
 	}
 
@@ -229,9 +231,18 @@ export function Lyrics(props) {
 	useEffect(() => {
 		legacyNativeCmder.appendRegisterCall("PlayState", "audioplayer", onPlayStateChange);
 		legacyNativeCmder.appendRegisterCall("PlayProgress", "audioplayer", onPlayProgress);
+		const _channalCall = channel.call;
+		channel.call = (name, ...args) => {
+			if (name == "audioplayer.seek") {
+				currentTime.current = parseInt(args[1][2] * 1000);
+				setLastSeekTime(parseInt(args[1][2] * 1000));
+			}
+			_channalCall(name, ...args);
+		};
 		return () => {
 			legacyNativeCmder.removeRegisterCall("PlayState", "audioplayer", onPlayStateChange);
 			legacyNativeCmder.removeRegisterCall("PlayProgress", "audioplayer", onPlayProgress);
+			channel.call = _channalCall;
 		}
 	}, []);
 
@@ -245,6 +256,7 @@ export function Lyrics(props) {
 						line={line}
 						currentLine={currentLine}
 						currentTime={currentTime.current}
+						lastSeekTime={lastSeekTime}
 						playState={playState}
 						fontSize={fontSize}
 						showTranslation={showTranslation}
@@ -286,7 +298,15 @@ function Line(props) {
 				transitionDelay: `0ms`,
 			};
 		}
-		console.log(word, word.time, props.currentTime, word.time - props.currentTime);
+		if (props.playState == false && word.time + word.duration - props.currentTime > 0) {
+			return {
+				transitionDuration: `0s`,
+				transitionDelay: `0ms`,
+				opacity: Math.max(0.4 + 0.6 * (props.currentTime - word.time) / word.duration, 0.4),
+				transform: `translateY(-${Math.max((props.currentTime - word.time) / word.duration * 2, 0)}px)`
+			};
+		}
+		//console.log(word, word.time, props.currentTime, word.time - props.currentTime);
 		return {
 			transitionDuration: `${word.duration}ms, ${word.duration + 150}ms`,
 			transitionDelay: `${word.time - props.currentTime}ms`
@@ -294,16 +314,15 @@ function Line(props) {
 	};
 
 	const karaokeLineRef = useRef(null);
-	/*useMemo(() => {
+	useEffect(() => {
 		if (props.currentLine != props.id) return;
 		if (!karaokeLineRef.current) return;
+		console.log("asdasdasd");
 		karaokeLineRef.current.classList.add('force-refresh');
-	}, [props.useKaraokeLyrics, props.currentTime]);
-	useLayoutEffect(() => {
-		if (props.currentLine != props.id) return;
-		if (!karaokeLineRef.current) return;
-		karaokeLineRef.current.classList.remove('force-refresh');
-	}, [props.useKaraokeLyrics, props.currentTime]);*/
+		setTimeout(() => {
+			karaokeLineRef.current.classList.remove('force-refresh');
+		}, 6);
+	}, [props.useKaraokeLyrics, props.lastSeekTime]);
 
 		
 	

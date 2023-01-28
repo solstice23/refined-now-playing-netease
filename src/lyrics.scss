@@ -74,4 +74,9 @@
 			margin-right: 0.25em;
 		}
 	}
+	.rnp-lyrics-line-karaoke.force-refresh > .rnp-karaoke-word {
+		transition: all 0s !important;
+		opacity: 0.4 !important;
+		transform: translateY(0) !important;
+	}
 }
