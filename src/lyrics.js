@@ -101,13 +101,16 @@ export function Lyrics(props) {
 	const [useKaraokeLyrics, setUseKaraokeLyrics] = useState(getSetting('use-karaoke-lyrics', true));
 
 	const [lineTransforms, setLineTransforms] = useState([]);
+	const shouldTransit = useRef(true);
 
 	const onLyricsUpdated = (e) => {
+		shouldTransit.current = false;
 		setCurrentLine(0);
 		setLyrics(e.detail);
 	}
 
 	useEffect(() => {
+		shouldTransit.current = false;
 		setLyrics(currentLyrics);
 		document.addEventListener('lyrics-updated', onLyricsUpdated);
 		return () => {
@@ -129,6 +132,7 @@ export function Lyrics(props) {
 	}, [lyrics, containerWidth, fontSize, showTranslation, showRomaji, useKaraokeLyrics]);
 	
 	const onResize = () => {
+		shouldTransit.current = true;
 		const container = containerRef.current;
 		setContainerHeight(container.clientHeight);
 		setContainerWidth(container.clientWidth);
@@ -146,7 +150,7 @@ export function Lyrics(props) {
 	// TODO:
 	// 1. 刚进去歌曲的时候和切歌的时候不应有过渡动画  DONE
 	// 2. 修复某些时候的 Fatal Error（可能缺少原歌词？）
-	// 3. 点击歌词跳转到相应位置
+	// 3. 点击歌词跳转到相应位置 DONE
 	// 4. 逐字歌词（需要单独做而不是和计算 transform 放在一起，因为有滚轮和进度条的动作） DONE
 	// 5. 支持滚轮与进度条拖动
 	// 关于滚轮和进度条操作：未定是把当前用户focus的歌词当作是当前歌词，还是直接滚动（偏向前者）
@@ -196,6 +200,12 @@ export function Lyrics(props) {
 			transforms[i].top = transforms[i - 1].top + previousScaledHeight + space;
 			transforms[i].delay = delayByOffset(i - current);
 		}
+		if (!shouldTransit.current) {
+			for (let i = 0; i < lyrics.length; i++) {
+				transforms[i].delay = 0;
+				transforms[i].duration = 0;
+			}
+		}
 		setLineTransforms(transforms);
 		console.log('transforms', transforms);
 		previousFocusedLineRef.current = currentLine;
@@ -221,6 +231,7 @@ export function Lyrics(props) {
 				cur = i;
 			}
 		}
+		shouldTransit.current = true;
 		setCurrentLine(cur);
 	};
 	useEffect(() => {
@@ -247,6 +258,7 @@ export function Lyrics(props) {
 	}, []);
 
 	const jumpToTime = React.useCallback((time) => {
+		shouldTransit.current = true;
 		channel.call("audioplayer.seek", () => {}, [
 			songId,
 			`${songId}|seek|${Math.random().toString(36).substring(6)}`,
@@ -352,6 +364,7 @@ function Line(props) {
 					scale(${props.transforms.scale})
 				`,
 				transitionDelay: `${props.transforms.delay}ms`,
+				transitionDuration: `${props.transforms?.duration ?? 500}ms`,
 			}}>
 			{ props.line.dynamicLyric && props.useKaraokeLyrics && <div className="rnp-lyrics-line-karaoke" ref={karaokeLineRef}>
 				{props.line.dynamicLyric.map((word, index) => {
