@@ -495,8 +495,10 @@ plugin.onLoad(async (p) => {
 			lyrics.classList.add('lyric');
 			ReactDOM.render(<Lyrics />, lyrics);
 			const oldLyrics = document.querySelector('.g-single-track .g-singlec-ct .n-single .mn .lyric');
-			oldLyrics.parentNode.insertBefore(lyrics, oldLyrics.nextSibling);
-			oldLyrics.remove();
+			if (oldLyrics) {
+				oldLyrics.parentNode.insertBefore(lyrics, oldLyrics.nextSibling);
+				oldLyrics.remove();
+			}
 
 			addSettingsMenu();
 		}
@@ -531,6 +533,18 @@ plugin.onLoad(async (p) => {
 		} else {
 			if (lightThemeFixStyle.href != '') {
 				lightThemeFixStyle.href = '';
+			}
+		}
+	}).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+
+	let previousHasClass = document.body.classList.contains('mq-playing');
+	new MutationObserver(() => {
+		const hasClass = document.body.classList.contains('mq-playing');
+		if (hasClass != previousHasClass) {
+			previousHasClass = hasClass;
+			if (hasClass) {
+				window.dispatchEvent(new Event('resize'));
 			}
 		}
 	}).observe(document.body, { attributes: true, attributeFilter: ['class'] });

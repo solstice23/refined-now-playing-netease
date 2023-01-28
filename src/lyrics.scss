@@ -4,7 +4,12 @@
 	position: relative;
 	overflow: hidden;	
 	-webkit-mask-image: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 2%, rgba(0,0,0,1) 98%, rgba(0,0,0,0) 100%);
+	color: var(--rnp-accent-color-shade-2);
 }
+.g-singlec[data-log*='"s_ctype":"voice"'] .rnp-lyrics { // 在播客界面隐藏
+	display: none;
+}
+
 
 .rnp-lyrics-switch {
     position: absolute;
@@ -29,7 +34,7 @@
 			color: #000;
 		}
 		&.unavailable {
-			opacity: .1;
+			opacity: .15;
 		}
 	}
 }
@@ -97,10 +102,36 @@
 		transform: translateY(0) !important;
 	}
 
+
+	// Interlude Dots	
+	&[offset='0'] > div{ 
+		.rnp-interlude-dot {
+			opacity: 0.9;
+			transform: scale(1);
+			transition-property: opacity, transform;
+			transition-timing-function: linear, ease;
+		}
+	}
+	&:not([offset='0']) > div{
+		.rnp-interlude-dot {
+			opacity: 0.2;
+			transform: scale(0.9);
+		}
+	}
 	&.rnp-interlude {
 		height: 0;
 		overflow: visible;
 		pointer-events: none;
+		.rnp-interlude-inner {
+			animation-name: breath;
+			animation-duration: 2s;
+			animation-iteration-count: infinite;
+			animation-timing-function: ease-in-out;
+			transform-origin: left;
+			&.pause-breath {
+				animation-play-state: paused;
+			}
+		}
 		.rnp-interlude-inner {
 			opacity: 0;
 			transition: opacity .5s ease;
@@ -111,7 +142,37 @@
 				opacity: 1;
 			}
 		}
+		.rnp-interlude-dot {
+			display: inline-block;
+			width: 0.7em !important;
+			height: 0.7em !important;
+			aspect-ratio: 1/1;
+			border-radius: 100%;
+			margin-right: 0.5em;
+			background-color: var(--rnp-accent-color-shade-2);
+		}
+		.force-refresh > .rnp-interlude-dot {
+			transition: all 0s !important;
+			opacity: 0.2 !important;
+			transform: scale(0.9) !important;
+		}
+		@keyframes breath {
+			0% {
+				transform: scale(1);
+			}
+			50% {
+				transform: scale(1.1);
+			}
+			100% {
+				transform: scale(1);
+			}
+		}
 	}
+}
+.rnp-lyrics.scrolling .rnp-interlude-inner {
+	opacity: 0 !important;
+	transition: opacity .5s ease !important;
+	transition-delay: 0s !important;
 }
 
 
@@ -132,8 +193,11 @@
 		transition-timing-function: ease;
 		transition-duration: .5s, .25s;
 		&:hover, &.dragging {
-			opacity: .6;
+			opacity: .6 !important;
 		}
 	}
+}
+.lyric:not(:hover) .rnp-lyrics-scrollbar-thumb {
+	opacity: 0;
 }
 

@@ -140,11 +140,18 @@ export function Lyrics(props) {
 	const [allToNonInterludeLyricsMapping, setAllToNonInterludeLyricsMapping] = useState([]); // 所有歌词 index -> 非间奏歌词 index (间奏歌词则是往前最近的非间奏歌词)
 	const [nonInterludeToAllLyricsMapping, setNonInterludeToAllLyricsMapping] = useState([]); // 非间奏歌词 index -> 所有歌词 index
 
-	const [scrollingMode, setScrollingMode] = useState(false);
+	let [scrollingMode, setScrollingMode] = useState(false);
 	const [scrollingFocusLine, setScrollingFocusLine] = useState(0);
 	const _scrollingMode = useRef(false);
 	const _scrollingFocusLine = useRef(0);
 	const exitScrollingModeTimeout = useRef(null);
+	const _setScrollingMode = setScrollingMode;
+	setScrollingMode = (x) => {
+		_scrollingMode.current = x;
+		if (x) containerRef.current.classList.add('scrolling');
+		else containerRef.current.classList.remove('scrolling');
+		_setScrollingMode(x);
+	}
 
 	const preProcessMapping = (lyrics) => {
 		lyrics ??= [];
@@ -168,10 +175,12 @@ export function Lyrics(props) {
 		setNonInterludeToAllLyricsMapping(nonInterludeToAll);
 	}
 
-	const onLyricsUpdate = (e) => {		
+	const onLyricsUpdate = (e) => {
+		if (!e.detail) {
+			return;
+		}	
 		shouldTransit.current = false;
 		setScrollingMode(false);
-		_scrollingMode.current = false;
 		preProcessMapping(e.detail);
 		setCurrentLine(0);
 		setLyrics(e.detail);
@@ -182,11 +191,13 @@ export function Lyrics(props) {
 
 	useEffect(() => {
 		shouldTransit.current = false;
-		preProcessMapping(currentLyrics);
-		setLyrics(currentLyrics);
-		setHasTranslation(currentLyrics.some((x) => x.translatedLyric));
-		setHasRomaji(currentLyrics.some((x) => x.romanLyric));
-		setHasKaraoke(currentLyrics.some((x) => x.dynamicLyric));
+		if (currentLyrics) {
+			preProcessMapping(currentLyrics);
+			setLyrics(currentLyrics);
+			setHasTranslation(currentLyrics.some((x) => x.translatedLyric));
+			setHasRomaji(currentLyrics.some((x) => x.romanLyric));
+			setHasKaraoke(currentLyrics.some((x) => x.dynamicLyric));
+		}
 		document.addEventListener('lyrics-updated', onLyricsUpdate);
 		return () => {
 			document.removeEventListener('lyrics-updated', onLyricsUpdate);
@@ -228,9 +239,13 @@ export function Lyrics(props) {
 	// 3. 点击歌词跳转到相应位置 DONE
 	// 4. 逐字歌词（需要单独做而不是和计算 transform 放在一起，因为有滚轮和进度条的动作） DONE
 	// 5. 支持滚轮与进度条拖动 DONE
-	// 6. 自定义字体字号模糊缩放
 	// 7. 微调 UI (字体相对大小，边距，container 大小) DONE
 	// 8. 逐字注音而不是直接显示罗马音
+
+	// TODO 2:
+	// 1. 更明显的主题色
+	// 2. 自定义字体字号模糊缩放
+
 
 	const previousFocusedLineRef = useRef(0);
 	useEffect(() => { // Recalculate vertical positions and transforms of each line
@@ -333,7 +348,6 @@ export function Lyrics(props) {
 			if (name == "audioplayer.seek") {
 				currentTime.current = parseInt(args[1][2] * 1000);
 				setScrollingMode(false);
-				_scrollingMode.current = false;
 				setSeekCounter(+new Date());
 			}
 			_channalCall(name, ...args);
@@ -348,7 +362,6 @@ export function Lyrics(props) {
 	const jumpToTime = React.useCallback((time) => {
 		shouldTransit.current = true;
 		setScrollingMode(false);
-		_scrollingMode.current = false;
 		channel.call("audioplayer.seek", () => {}, [
 			songId,
 			`${songId}|seek|${Math.random().toString(36).substring(6)}`,
@@ -366,7 +379,6 @@ export function Lyrics(props) {
 		cancelExitScrollingModeTimeout();
 		exitScrollingModeTimeout.current = setTimeout(() => {
 			setScrollingMode(false);
-			_scrollingMode.current = false;
 			setScrollingFocusLine(_currentLine.current);
 			_scrollingFocusLine.current = _currentLine.current;
 		}, timeout);
@@ -382,7 +394,6 @@ export function Lyrics(props) {
 	const scrollingFocusOnLine = React.useCallback((line) => {
 		if (line == null) return;
 		setScrollingMode(true);
-		_scrollingMode.current = true;
 		setScrollingFocusLine(line);
 		_scrollingFocusLine.current = line;
 	}, []);
@@ -575,16 +586,73 @@ function Line(props) {
 			{ props.line.translatedLyric && props.showTranslation && <div className="rnp-lyrics-line-translated">
 				{ props.line.translatedLyric }
 			</div> }
-			{ props.line.isInterlude && <Interlude /> }
+			{ props.line.isInterlude && <Interlude
+				id={props.id}
+				line={props.line}
+				currentLine={props.currentLine}
+				currentTime={props.currentTime}
+				seekCounter={props.seekCounter}
+				playState={props.playState}
+				fontSize={props.fontSize}
+			/> }
 		</div>
 	)
 
 }
 
-function Interlude() {
+function Interlude(props) {
+	const dotContainerRef = useRef(null);
+
+	const dotCount = 3;
+	const perDotTime = parseInt(props.line.duration / dotCount);
+	const dots = [];
+	for (let i = 0; i < dotCount; i++) {
+		dots.push({
+			time: props.line.time + perDotTime * i,
+			duration: perDotTime,
+		});
+	}
+	const dotAnimation = (dot) => {
+		if (dotContainerRef.current) dotContainerRef.current.classList.add('pause-breath');
+		if (props.currentLine != props.id){
+			return {
+				transitionDuration: `200ms`,
+				transitionDelay: `0ms`,
+			};
+		}
+		if (props.playState == false && dot.time + dot.duration - props.currentTime > 0) {
+			return {
+				transitionDuration: `0s`,
+				transitionDelay: `0ms`,
+				opacity: Math.max(0.2 + 0.7 * (props.currentTime - dot.time) / dot.duration, 0.2),
+				transform: `scale(${Math.max(0.9 + 0.1 * (props.currentTime - dot.time) / dot.duration * 2, 0.8)}px)`
+			};
+		}
+		if (dotContainerRef.current) dotContainerRef.current.classList.remove('pause-breath');
+		return {
+			transitionDuration: `${dot.duration}ms, ${dot.duration + 150}ms`,
+			transitionDelay: `${dot.time - props.currentTime}ms`
+		};
+	};
+
+	useEffect(() => {
+		if (props.currentLine != props.id) return;
+		if (!dotContainerRef.current) return;
+		dotContainerRef.current.classList.add('force-refresh');
+		setTimeout(() => {
+			dotContainerRef.current.classList.remove('force-refresh');
+		}, 6);
+	}, [props.seekCounter]);
+
 	return (
-		<div className="rnp-interlude-inner">
-			interlude
+		<div className="rnp-interlude-inner" ref={dotContainerRef}>
+			{dots.map((dot, index) => {
+				return <div
+					key={index}
+					className="rnp-interlude-dot"
+					style={dotAnimation(dot)}
+				/>
+			})}
 		</div>
 	)
 }
