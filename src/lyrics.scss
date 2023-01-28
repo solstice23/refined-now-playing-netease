@@ -61,11 +61,19 @@
 				transform: translateY(0);
 			}
 		}
+		&.rnp-lyrics-line-romaji {
+			opacity: $idle-opacity * 0.8;
+		}
 	}
 	> div {
 		transition: opacity 0.5s ease;
 		&:not(:last-child) {
 			margin-bottom: 0.3em;
+		}
+		&.rnp-lyrics-line-romaji {
+			font-size: 0.6em;
+			margin-bottom: 0.4em;
+			opacity: .8;
 		}
 	}
 	.rnp-karaoke-word {

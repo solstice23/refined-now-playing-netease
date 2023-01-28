@@ -86,7 +86,7 @@ export function Lyrics(props) {
 	const [playState, setPlayState] = useState(null);
 	const [songId, setSongId] = useState("0");
 	const currentTime = useRef(0), lastTime = useRef(0); // 当前播放时间，上一次获得的播放时间
-	const [lastSeekTime, setLastSeekTime] = useState(0); // 上一次用户手动拖动进度条的时间
+	const [seekCounter, setSeekCounter] = useState(0); // 拖动进度条时修改触发重渲染
 	const [currentLine, setCurrentLine] = useState(0);
 	const [globalOffset, setGlobalOffset] = useState(0);
 
@@ -144,10 +144,10 @@ export function Lyrics(props) {
 
 
 	// TODO:
-	// 1. 刚进去歌曲的时候和切歌的时候不应有过渡动画
+	// 1. 刚进去歌曲的时候和切歌的时候不应有过渡动画  DONE
 	// 2. 修复某些时候的 Fatal Error（可能缺少原歌词？）
 	// 3. 点击歌词跳转到相应位置
-	// 4. 逐字歌词（需要单独做而不是和计算 transform 放在一起，因为有滚轮和进度条的动作）
+	// 4. 逐字歌词（需要单独做而不是和计算 transform 放在一起，因为有滚轮和进度条的动作） DONE
 	// 5. 支持滚轮与进度条拖动
 	// 关于滚轮和进度条操作：未定是把当前用户focus的歌词当作是当前歌词，还是直接滚动（偏向前者）
 	// 6. 自定义字体字号模糊缩放
@@ -235,7 +235,7 @@ export function Lyrics(props) {
 		channel.call = (name, ...args) => {
 			if (name == "audioplayer.seek") {
 				currentTime.current = parseInt(args[1][2] * 1000);
-				setLastSeekTime(parseInt(args[1][2] * 1000));
+				setSeekCounter(+new Date());
 			}
 			_channalCall(name, ...args);
 		};
@@ -245,6 +245,19 @@ export function Lyrics(props) {
 			channel.call = _channalCall;
 		}
 	}, []);
+
+	const jumpToTime = React.useCallback((time) => {
+		channel.call("audioplayer.seek", () => {}, [
+			songId,
+			`${songId}|seek|${Math.random().toString(36).substring(6)}`,
+			time / 1000,
+		]);
+		currentTime.current = time;
+		setSeekCounter(+new Date());
+		if (!playState) {
+			document.querySelector("#main-player .btnp").click();
+		}
+	}, [songId, playState]);
 
 	return (
 		<>
@@ -256,12 +269,13 @@ export function Lyrics(props) {
 						line={line}
 						currentLine={currentLine}
 						currentTime={currentTime.current}
-						lastSeekTime={lastSeekTime}
+						seekCounter={seekCounter}
 						playState={playState}
 						fontSize={fontSize}
 						showTranslation={showTranslation}
 						showRomaji={showRomaji}
 						useKaraokeLyrics={useKaraokeLyrics}
+						jumpToTime={jumpToTime}
 						transforms={lineTransforms[index] ?? { top: 0, scale: 1, delay: 0 }}
 					/>
 				})}
@@ -322,7 +336,7 @@ function Line(props) {
 		setTimeout(() => {
 			karaokeLineRef.current.classList.remove('force-refresh');
 		}, 6);
-	}, [props.useKaraokeLyrics, props.lastSeekTime]);
+	}, [props.useKaraokeLyrics, props.seekCounter]);
 
 		
 	
@@ -330,6 +344,7 @@ function Line(props) {
 		<div
 			className="rnp-lyrics-line"
 			offset={offset}
+			onClick={() => props.jumpToTime(props.line.time + 10)}
 			style={{
 				fontSize: props.fontSize,
 				transform: `
@@ -351,11 +366,11 @@ function Line(props) {
 			{ !(props.line.dynamicLyric && props.useKaraokeLyrics) && <div className="rnp-lyrics-line-original">
 				{ props.line.originalLyric }
 			</div> }
+			{ props.line.romanLyric && props.showRomaji && <div className="rnp-lyrics-line-romaji">
+				{ props.line.romanLyric }
+			</div> }
 			{ props.line.translatedLyric && props.showTranslation && <div className="rnp-lyrics-line-translated">
 				{ props.line.translatedLyric }
-			</div> }
-			{ props.line.romanLyric && props.showRomaji && <div className="rnp-lyrics-line-roman">
-				{ props.line.romanLyric }
 			</div> }
 		</div>
 	)
