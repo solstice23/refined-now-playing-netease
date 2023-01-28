@@ -44,6 +44,11 @@ const preProcessLyrics = (lyrics) => {
 }
 
 const processLyrics = (lyrics) => {
+	for (const line of lyrics) {
+		if (line.originalLyric == '') {
+			line.isInterlude = true;
+		}
+	}
 	/*for (const line of lyrics) {
 		if (!line.dynamicLyric) {
 			// 拆开每一个 CJK 字符，但是保留英文单词不拆
@@ -95,7 +100,7 @@ export function Lyrics(props) {
 	const [containerHeight, setContainerHeight] = useState(0);
 	const [containerWidth, setContainerWidth] = useState(0);
 
-	const [fontSize, setFontSize] = useState(36);
+	const [fontSize, setFontSize] = useState(32);
 	const [showTranslation, setShowTranslation] = useState(getSetting('show-translation', true));
 	const [showRomaji, setShowRomaji] = useState(getSetting('show-romaji', true));
 	const [useKaraokeLyrics, setUseKaraokeLyrics] = useState(getSetting('use-karaoke-lyrics', true));
@@ -103,10 +108,16 @@ export function Lyrics(props) {
 	const [lineTransforms, setLineTransforms] = useState([]);
 	const shouldTransit = useRef(true);
 
+	const [allToNonEmptyLyricsMapping, setAllToNonEmptyLyricsMapping] = useState([]);
+	const [nonEmptyToAllLyricsMapping, setNonEmptyToAllLyricsMapping] = useState([]);
+
+	const [isSeekingMode, setIsSeekingMode] = useState(false);
+
 	const onLyricsUpdated = (e) => {
 		shouldTransit.current = false;
 		setCurrentLine(0);
 		setLyrics(e.detail);
+
 	}
 
 	useEffect(() => {
@@ -188,9 +199,13 @@ export function Lyrics(props) {
 		transforms[current].top = containerHeight / 2 - heightOfItems.current[current] / 2;
 		transforms[current].scale = 1;
 		transforms[current].delay = delayByOffset(0);
+		const currentLineHeight = heightOfItems.current[current];
+		if (lyrics[current].isInterlude && !isSeekingMode) {
+			heightOfItems.current[current] = currentLineHeight + 50;
+		}
 		for (let i = current - 1; i >= 0; i--) {
 			transforms[i].scale = scaleByOffset(current - i);
-			const scaledHeight = heightOfItems.current[i] * transforms[i].scale;
+			let scaledHeight = heightOfItems.current[i] * transforms[i].scale;
 			transforms[i].top = transforms[i + 1].top - scaledHeight - space;
 			transforms[i].delay = delayByOffset(i - current);
 		}
@@ -200,6 +215,7 @@ export function Lyrics(props) {
 			transforms[i].top = transforms[i - 1].top + previousScaledHeight + space;
 			transforms[i].delay = delayByOffset(i - current);
 		}
+		heightOfItems.current[current] = currentLineHeight;
 		if (!shouldTransit.current) {
 			for (let i = 0; i < lyrics.length; i++) {
 				transforms[i].delay = 0;
@@ -207,9 +223,9 @@ export function Lyrics(props) {
 			}
 		}
 		setLineTransforms(transforms);
-		console.log('transforms', transforms);
+		//console.log('transforms', transforms);
 		previousFocusedLineRef.current = currentLine;
-	}, [currentLine, containerHeight, containerWidth, fontSize, showTranslation, showRomaji, useKaraokeLyrics, lyrics]);
+	}, [currentLine, containerHeight, containerWidth, fontSize, showTranslation, showRomaji, useKaraokeLyrics, isSeekingMode, lyrics]);
 
 
 	const onPlayStateChange = (id, state) => {
@@ -292,6 +308,7 @@ export function Lyrics(props) {
 					/>
 				})}
 			</div>
+			<Scrollbar/>
 			<div className="rnp-lyrics-switch">
 				{/*<button className="rnp-lyrics-switch-btn" onClick={() => setFontSize(fontSize + 1)}>+</button>
 				<button className="rnp-lyrics-switch-btn" onClick={() => setFontSize(fontSize - 1)}>-</button>*/}
@@ -313,8 +330,8 @@ export function Lyrics(props) {
 }
 
 function Line(props) {
-	if (props.originalLyric == '') {
-		props.originalLyric = 'interlude';
+	if (props.line.originalLyric == '') {
+		props.line.isInterlude = true;
 	}
 	const offset = props.id - props.currentLine;
 	const karaokeAnimation = (word) => {
@@ -343,7 +360,6 @@ function Line(props) {
 	useEffect(() => {
 		if (props.currentLine != props.id) return;
 		if (!karaokeLineRef.current) return;
-		console.log("asdasdasd");
 		karaokeLineRef.current.classList.add('force-refresh');
 		setTimeout(() => {
 			karaokeLineRef.current.classList.remove('force-refresh');
@@ -354,7 +370,7 @@ function Line(props) {
 	
 	return (
 		<div
-			className="rnp-lyrics-line"
+			className={`rnp-lyrics-line ${props.line.isInterlude ? 'rnp-interlude' : ''}`}
 			offset={offset}
 			onClick={() => props.jumpToTime(props.line.time + 10)}
 			style={{
@@ -376,7 +392,7 @@ function Line(props) {
 					</span>
 				})}
 			</div> }
-			{ !(props.line.dynamicLyric && props.useKaraokeLyrics) && <div className="rnp-lyrics-line-original">
+			{ !(props.line.dynamicLyric && props.useKaraokeLyrics) && props.line.originalLyric && <div className="rnp-lyrics-line-original">
 				{ props.line.originalLyric }
 			</div> }
 			{ props.line.romanLyric && props.showRomaji && <div className="rnp-lyrics-line-romaji">
@@ -385,6 +401,7 @@ function Line(props) {
 			{ props.line.translatedLyric && props.showTranslation && <div className="rnp-lyrics-line-translated">
 				{ props.line.translatedLyric }
 			</div> }
+			{ props.line.isInterlude && <Interlude /> }
 		</div>
 	)
 
@@ -392,7 +409,18 @@ function Line(props) {
 
 function Interlude() {
 	return (
-		// TODO
-		<div>interlude</div>
+		<div className="rnp-interlude-inner">
+			interlude
+		</div>
+	)
+}
+
+function Scrollbar() {
+	return (
+		<div className="rnp-lyrics-scrollbar">
+			<div className="rnp-lyrics-scrollbar-track">
+				<div className="rnp-lyrics-scrollbar-thumb"></div>
+			</div>
+		</div>
 	)
 }

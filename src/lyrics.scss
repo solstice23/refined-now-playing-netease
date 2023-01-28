@@ -1,7 +1,10 @@
-.rnp-lyrics {
-	width: 100%;
-	height: 100%;
+.lyrics {
 	border: #ffffff66 solid 1px;
+}
+
+.rnp-lyrics {
+	width: calc(100% - 10px);
+	height: 100%;
 	position: relative;
 	//overflow: hidden;
 }
@@ -89,5 +92,21 @@
 		transition: all 0s !important;
 		opacity: 0.4 !important;
 		transform: translateY(0) !important;
+	}
+
+	&.rnp-interlude {
+		height: 0;
+		overflow: visible;
+		pointer-events: none;
+		.rnp-interlude-inner {
+			opacity: 0;
+			transition: opacity .5s ease;
+		}
+		&[offset='0'] {
+			.rnp-interlude-inner {
+				transition-delay: .5s;
+				opacity: 1;
+			}
+		}
 	}
 }
