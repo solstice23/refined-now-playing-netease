@@ -78,8 +78,9 @@ const calcAccentColor = (dom) => {
 
 	// theme.schemes.light.bgDarken = (Hct.from(theme.palettes.neutral.hue, theme.palettes.neutral.chroma, 97.5)).toInt();
 	updateAccentColor('rnp-accent-color', theme.schemes.dark.primary);
-	updateAccentColor('rnp-accent-color-shade-1', theme.schemes.light.outlineVariant);
-	updateAccentColor('rnp-accent-color-shade-2', theme.schemes.light.surfaceVariant);
+	updateAccentColor('rnp-accent-color-on-primary', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 100)).toInt());
+	updateAccentColor('rnp-accent-color-shade-1', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 80)).toInt());
+	updateAccentColor('rnp-accent-color-shade-2', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 90)).toInt());
 }
 
 var lastCDImage = '';
@@ -544,7 +545,9 @@ plugin.onLoad(async (p) => {
 		if (hasClass != previousHasClass) {
 			previousHasClass = hasClass;
 			if (hasClass) {
-				window.dispatchEvent(new Event('resize'));
+				setTimeout(() => {
+					window.dispatchEvent(new Event('recalc-lyrics'));
+				}, 50);
 			}
 		}
 	}).observe(document.body, { attributes: true, attributeFilter: ['class'] });

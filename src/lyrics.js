@@ -113,6 +113,7 @@ export function Lyrics(props) {
 	const [songId, setSongId] = useState("0");
 	const currentTime = useRef(0), lastTime = useRef(0); // 当前播放时间，上一次获得的播放时间
 	const [seekCounter, setSeekCounter] = useState(0); // 拖动进度条时修改触发重渲染
+	const [recalcCounter, setRecalcCounter] = useState(0); // 手动重计算时触发渲染
 
 	let [currentLine, setCurrentLine] = useState(0);
 	const _currentLine = useRef(0);
@@ -215,7 +216,7 @@ export function Lyrics(props) {
 		}
 		heightOfItems.current = heights;
 		//console.log('heightOfItems', heightOfItems.current);
-	}, [lyrics, containerWidth, fontSize, showTranslation, showRomaji, useKaraokeLyrics]);
+	}, [lyrics, containerWidth, fontSize, showTranslation, showRomaji, useKaraokeLyrics, recalcCounter]);
 	
 	const onResize = () => {
 		shouldTransit.current = true;
@@ -232,6 +233,15 @@ export function Lyrics(props) {
 		}
 	}, []);
 
+	useEffect(() => {
+		const onRecalc = () => {
+			setRecalcCounter(+ new Date());
+		}
+		window.addEventListener('recalc-lyrics', onRecalc);
+		return () => {
+			window.removeEventListener('recalc-lyrics', onRecalc);
+		}
+	});
 
 	// TODO:
 	// 1. 刚进去歌曲的时候和切歌的时候不应有过渡动画  DONE
@@ -243,7 +253,7 @@ export function Lyrics(props) {
 	// 8. 逐字注音而不是直接显示罗马音
 
 	// TODO 2:
-	// 1. 更明显的主题色
+	// 1. 更明显的主题色 DONE
 	// 2. 自定义字体字号模糊缩放
 	// 3. 暂停时也暂停流体背景
 
@@ -308,7 +318,7 @@ export function Lyrics(props) {
 		//console.log('transforms', transforms);
 		console.log('pre',previousFocusedLineRef, 'cur', currentLine)
 		previousFocusedLineRef.current = currentLine;
-	}, [currentLine, containerHeight, containerWidth, fontSize, showTranslation, showRomaji, useKaraokeLyrics, scrollingMode, scrollingFocusLine, lyrics]);
+	}, [currentLine, containerHeight, containerWidth, fontSize, showTranslation, showRomaji, useKaraokeLyrics, scrollingMode, scrollingFocusLine, recalcCounter, lyrics]);
 
 
 	const onPlayStateChange = (id, state) => {
