@@ -200,6 +200,41 @@
 }
 
 
+.rnp-lyric-offset {
+	> div:first-child {
+		display: flex;
+		align-items: center;
+		button:not(.rnp-slider-reset) {
+			background: #dfe1e422;
+			border: none;
+			aspect-ratio: 1/1;
+			height: 20px;
+			margin-left: 2px;
+			border-radius: 6px;
+			transition: background-color .25s ease;
+			&.active {
+				background: var(--rnp-accent-color);
+			}
+		}
+	}
+	> div:last-child {
+		display: flex;
+		margin-top: 6px;
+		justify-content: space-between;
+		font-size: 13px;
+		opacity: 0.5;
+	}
+	.rnp-slider-reset {
+		transform: translateY(1px);
+	}
+	.rnp-slider-reset:not(.active) {
+		opacity: 0;
+		pointer-events: none;
+	}
+}
+
+
+
 
 #rnp-settings-menu {
 	position: fixed;
@@ -275,32 +310,17 @@ body:not(.rnp-bg-fluid) .bg-dim-for-fluid-bg {
 }
 
 
-body:not(.applemusic-like-lyrics) .only-visible-with-amll {
-	display: none;
-}
-body.applemusic-like-lyrics {
+body.gpu-acceleration-disabled {
 	#rnp-settings-menu {
-		padding-bottom: 50px;
+		padding-bottom: 80px;
 		&::before {
-			content: '检测到 Apple Music-Like Lyrics, 一些选项将不可用';
+			content: 'GPU 渲染已禁用，会影响正常渲染和性能\A请前往网易云音乐设置关闭"禁用 GPU 加速"选项\A如果该选项默认为关，请打开一次后再关闭';
+        	white-space: pre;
 			position: absolute;
 			bottom: 15px;
 			font-size: 16px;
 			opacity: .6;
-		}
-		.incompatible-with-amll {
-			opacity: .1;
-			pointer-events: none;
-			overflow: hidden;
-		}
-	}
-	&.use-amll-bg {
-		#rnp-settings-menu {
-			.use-amll-bg ~ * {
-				opacity: .1;
-				pointer-events: none;
-				overflow: hidden;
-			}
+			line-height: 1.2;
 		}
 	}
 }

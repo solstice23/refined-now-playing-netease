@@ -30,16 +30,11 @@ window.onProcessLyrics = (lyrics) => {
 	return _onProcessLyrics(lyrics);
 }
 
-const CJKRegex = /([\p{Unified_Ideograph}|\u3040-\u309F|\u30A0-\u30FF])/gu;
-const isCJK = (word) => {
-	return CJKRegex.test(word);
-}
-
 const preProcessLyrics = (lyrics) => {
 	if (!lyrics) return null;
 	if (!lyrics.lrc) return null;
 	
-	const original = lyrics?.lrc?.lyric ?? '';
+	const original = (lyrics?.lrc?.lyric ?? '').replace(/\u3000/g, ' ');
 	const translation = lyrics?.ytlrc?.lyric ?? lyrics?.ttlrc?.lyric ?? lyrics?.tlyric?.lyric ?? '';
 	const roma = lyrics?.yromalrc?.lyric ?? lyrics?.romalrc?.lyric ?? '';
 	const dynamic = lyrics?.yrc?.lyric ?? '';
@@ -111,7 +106,7 @@ export function Lyrics(props) {
 
 	const [playState, setPlayState] = useState(null);
 	const [songId, setSongId] = useState("0");
-	const currentTime = useRef(0), lastTime = useRef(0); // 当前播放时间，上一次获得的播放时间
+	const currentTime = useRef(0); // 当前播放时间
 	const [seekCounter, setSeekCounter] = useState(0); // 拖动进度条时修改触发重渲染
 	const [recalcCounter, setRecalcCounter] = useState(0); // 手动重计算时触发渲染
 
@@ -123,14 +118,16 @@ export function Lyrics(props) {
 		_setCurrentLine(x);
 	}
 
-	const [globalOffset, setGlobalOffset] = useState(0);
+	const [globalOffset, setGlobalOffset] = useState(parseInt(getSetting('lyric-offset', 0)));
 
 	const heightOfItems = useRef([]);
 
 	const [containerHeight, setContainerHeight] = useState(0);
 	const [containerWidth, setContainerWidth] = useState(0);
 
-	const [fontSize, setFontSize] = useState(32);
+	const [fontSize, setFontSize] = useState(getSetting('lyric-font-size', 32));
+	const [lyricZoom, setLyricZoom] = useState(getSetting('lyric-zoom', false));
+	const [lyricBlur, setLyricBlur] = useState(getSetting('lyric-blur', false));
 	const [showTranslation, setShowTranslation] = useState(getSetting('show-translation', true));
 	const [showRomaji, setShowRomaji] = useState(getSetting('show-romaji', true));
 	const [useKaraokeLyrics, setUseKaraokeLyrics] = useState(getSetting('use-karaoke-lyrics', true));
@@ -153,6 +150,11 @@ export function Lyrics(props) {
 		else containerRef.current.classList.remove('scrolling');
 		_setScrollingMode(x);
 	}
+
+	const isPureMusic = lyrics && (
+		lyrics.length === 1 ||
+		lyrics.length <= 10 && lyrics.some((x) => (x.originalLyric ?? '').includes('纯音乐'))
+	);
 
 	const preProcessMapping = (lyrics) => {
 		lyrics ??= [];
@@ -243,31 +245,25 @@ export function Lyrics(props) {
 		}
 	});
 
-	// TODO:
-	// 1. 刚进去歌曲的时候和切歌的时候不应有过渡动画  DONE
-	// 2. 修复某些时候的 Fatal Error（可能缺少原歌词？）DONE
-	// 3. 点击歌词跳转到相应位置 DONE
-	// 4. 逐字歌词（需要单独做而不是和计算 transform 放在一起，因为有滚轮和进度条的动作） DONE
-	// 5. 支持滚轮与进度条拖动 DONE
-	// 7. 微调 UI (字体相对大小，边距，container 大小) DONE
-	// 8. 逐字注音而不是直接显示罗马音
-
-	// TODO 2:
-	// 1. 更明显的主题色 DONE
-	// 2. 自定义字体字号模糊缩放
-	// 3. 暂停时也暂停流体背景
-
-
 	const previousFocusedLineRef = useRef(0);
 	useEffect(() => { // Recalculate vertical positions and transforms of each line
 		if (!lyrics?.length) return;
 
 		const space = fontSize * 1.2;
 		const scaleByOffset = (offset) => {
-			//return 1;
+			if (!lyricZoom) return 1;
+			offset = Math.abs(offset);
 			offset =  Math.max(1 - offset * 0.2, 0);
-			return offset * offset * offset * offset * 0.3 + 0.7;
+			return offset * offset * offset /* offset*/ * 0.3 + 0.7;
 		};
+		const blurByOffset = (offset) => {
+			if (!lyricBlur || scrollingMode) return 0;
+			offset = Math.abs(offset);
+			if (offset == 0) return 0;
+			return Math.min(0.5 + 1 * offset, 4.5);
+		};
+
+
 		const delayByOffset = (offset) => {
 			let sign = currentLine - previousFocusedLineRef.current > 0 ? 1 : -1;
 			//console.log(currentLine, previousFocusedLineRef.current);
@@ -291,18 +287,21 @@ export function Lyrics(props) {
 		transforms[current].top = containerHeight / 2 - heightOfItems.current[current] / 2;
 		transforms[current].scale = 1;
 		transforms[current].delay = delayByOffset(0);
+		transforms[current].blur = blurByOffset(0);
 		const currentLineHeight = heightOfItems.current[current];
 		if (lyrics[current].isInterlude && !scrollingMode) {
 			heightOfItems.current[current] = currentLineHeight + 50;
 		}
 		for (let i = current - 1; i >= 0; i--) {
 			transforms[i].scale = scaleByOffset(current - i);
+			transforms[i].blur = blurByOffset(i - current);
 			let scaledHeight = heightOfItems.current[i] * transforms[i].scale;
 			transforms[i].top = transforms[i + 1].top - scaledHeight - space;
 			transforms[i].delay = delayByOffset(i - current);
 		}
 		for (let i = current + 1; i < lyrics.length; i++) {
 			transforms[i].scale = scaleByOffset(i - current);
+			transforms[i].blur = blurByOffset(i - current);
 			const previousScaledHeight = heightOfItems.current[i - 1] * transforms[i - 1].scale;
 			transforms[i].top = transforms[i - 1].top + previousScaledHeight + space;
 			transforms[i].delay = delayByOffset(i - current);
@@ -316,9 +315,16 @@ export function Lyrics(props) {
 		}
 		setLineTransforms(transforms);
 		//console.log('transforms', transforms);
-		console.log('pre',previousFocusedLineRef, 'cur', currentLine)
 		previousFocusedLineRef.current = currentLine;
-	}, [currentLine, containerHeight, containerWidth, fontSize, showTranslation, showRomaji, useKaraokeLyrics, scrollingMode, scrollingFocusLine, recalcCounter, lyrics]);
+	},[
+		currentLine,
+		containerHeight, containerWidth,
+		fontSize, lyricZoom, lyricBlur,
+		showTranslation, showRomaji, useKaraokeLyrics,
+		scrollingMode, scrollingFocusLine,
+		recalcCounter,
+		lyrics
+	]);
 
 
 	const onPlayStateChange = (id, state) => {
@@ -326,17 +332,17 @@ export function Lyrics(props) {
 		setSongId(id);
 	};
 	const onPlayProgress = (id, progress) => {
-		const ms = ((progress * 1000) || 0) + globalOffset;
-		lastTime.current = currentTime.current;
-		currentTime.current = ms;
+		const lastTime = currentTime.current + globalOffset;
+		currentTime.current = ((progress * 1000) || 0);
+		const currentTimeWithOffset = currentTime.current + globalOffset;
 		if (!_lyrics.current) return;
 		let cur = 0;
 		let startIndex = 0;
-		if (currentTime.current - lastTime.current > 0 && currentTime.current - lastTime.current < 50) {
+		if (currentTimeWithOffset - lastTime > 0 && currentTimeWithOffset - lastTime < 50) {
 			startIndex = Math.max(0, cur - 1);
 		}
 		for (let i = startIndex; i < _lyrics.current.length; i++) {
-			if (_lyrics.current[i].time <= ms) {
+			if (_lyrics.current[i].time <= currentTimeWithOffset) {
 				cur = i;
 			}
 		}
@@ -348,7 +354,7 @@ export function Lyrics(props) {
 		setCurrentLine(cur);
 	};
 	useEffect(() => {
-		onPlayProgress(songId, currentTime.current);
+		onPlayProgress(songId, currentTime.current / 1000);
 	}, [lyrics, globalOffset]);
 
 
@@ -369,9 +375,10 @@ export function Lyrics(props) {
 			legacyNativeCmder.removeRegisterCall("PlayProgress", "audioplayer", onPlayProgress);
 			channel.call = _channalCall;
 		}
-	}, []);
+	});
 
 	const jumpToTime = React.useCallback((time) => {
+		time -= globalOffset;
 		shouldTransit.current = true;
 		setScrollingMode(false);
 		channel.call("audioplayer.seek", () => {}, [
@@ -379,12 +386,11 @@ export function Lyrics(props) {
 			`${songId}|seek|${Math.random().toString(36).substring(6)}`,
 			time / 1000,
 		]);
-		currentTime.current = time;
 		setSeekCounter(+new Date());
 		if (!playState) {
 			document.querySelector("#main-player .btnp").click();
 		}
-	}, [songId, playState]);
+	}, [songId, playState, globalOffset]);
 
 	
 	const exitScrollingModeSoon = React.useCallback((timeout = 2000) => {
@@ -455,26 +461,59 @@ export function Lyrics(props) {
 		}
 	}, []);
 
+	useEffect(() => {
+		const onLyricFontSizeChange = (e) => {
+			setFontSize(e.detail ?? 32);
+		}
+		const onLyricZoomChange = (e) => {
+			setLyricZoom(e.detail ?? false);
+		}
+		const onLyricBlurChange = (e) => {
+			setLyricBlur(e.detail ?? false);
+		}
+		document.addEventListener("rnp-lyric-font-size", onLyricFontSizeChange);
+		document.addEventListener("rnp-lyric-zoom", onLyricZoomChange);
+		document.addEventListener("rnp-lyric-blur", onLyricBlurChange);
+		return () => {
+			document.removeEventListener("rnp-lyric-font-size", onLyricFontSizeChange);
+			document.removeEventListener("rnp-lyric-zoom", onLyricZoomChange);
+			document.removeEventListener("rnp-lyric-blur", onLyricBlurChange);
+		}
+	}, []);
+
+	useEffect(() => {
+		const onGlobalOffsetChange = (e) => {
+			setGlobalOffset(e.detail ?? 0);
+			setSeekCounter(+new Date());
+		}
+		document.addEventListener("rnp-global-offset", onGlobalOffsetChange);
+		return () => {
+			document.removeEventListener("rnp-global-offset", onGlobalOffsetChange);
+		}
+	}, []);
+
 	return (
 		<>
 			<div
-				className="rnp-lyrics"
-				ref={containerRef}>
+				className={`rnp-lyrics ${isPureMusic ? 'pure-music' : ''}`}
+				ref={containerRef}
+				style={{
+					fontSize: `${fontSize}px`,
+				}}>
 				{lyrics && lyrics.map((line, index) => {
 					return <Line
 						key={`${songId} ${index}`}
 						id={index}
 						line={line}
 						currentLine={currentLine}
-						currentTime={currentTime.current}
+						currentTime={currentTime.current + globalOffset}
 						seekCounter={seekCounter}
 						playState={playState}
-						fontSize={fontSize}
 						showTranslation={showTranslation}
 						showRomaji={showRomaji}
 						useKaraokeLyrics={useKaraokeLyrics}
-						jumpToTime={jumpToTime}
-						transforms={lineTransforms[index] ?? { top: 0, scale: 1, delay: 0 }}
+						jumpToTime={isPureMusic ? () => {} : jumpToTime}
+						transforms={lineTransforms[index] ?? { top: 0, scale: 1, delay: 0, blur: 0 }}
 					/>
 				})}
 			</div>
@@ -563,27 +602,27 @@ function Line(props) {
 		}, 6);
 	}, [props.useKaraokeLyrics, props.seekCounter]);
 
-		
-	
+	const CJKRegex = /([\p{Unified_Ideograph}|\u3040-\u309F|\u30A0-\u30FF])/gu;
+
 	return (
 		<div
 			className={`rnp-lyrics-line ${props.line.isInterlude ? 'rnp-interlude' : ''}`}
 			offset={offset}
 			onClick={() => props.jumpToTime(props.line.time + 50)}
 			style={{
-				fontSize: props.fontSize,
 				transform: `
 					translateY(${props.transforms.top}px)
 					scale(${props.transforms.scale})
 				`,
 				transitionDelay: `${props.transforms.delay}ms`,
 				transitionDuration: `${props.transforms?.duration ?? 500}ms`,
+				filter: props.transforms?.blur ? `blur(${props.transforms?.blur}px)` : 'none'
 			}}>
 			{ props.line.dynamicLyric && props.useKaraokeLyrics && <div className="rnp-lyrics-line-karaoke" ref={karaokeLineRef}>
 				{props.line.dynamicLyric.map((word, index) => {
 					return <span
 						key={index}
-						className={`rnp-karaoke-word ${isCJK(word.word) ? 'is-cjk' : ''} ${word.word.endsWith(' ') ? 'end-with-space' : ''}`}
+						className={`rnp-karaoke-word ${CJKRegex.test(word.word) ? 'is-cjk' : ''} ${word.word.endsWith(' ') ? 'end-with-space' : ''}`}
 						style={karaokeAnimation(word)}>
 							{word.word}
 					</span>
@@ -605,7 +644,6 @@ function Line(props) {
 				currentTime={props.currentTime}
 				seekCounter={props.seekCounter}
 				playState={props.playState}
-				fontSize={props.fontSize}
 			/> }
 		</div>
 	)
@@ -677,7 +715,7 @@ function Scrollbar(props) {
 	const totalSteps = props.nonInterludeToAll.length;
 	const thumbHeight = Math.max(props.containerHeight / totalSteps, 30);
 	const heightOfTrack = props.containerHeight - thumbHeight;
-	const perStep = heightOfTrack / (totalSteps - 1);
+	const perStep = totalSteps > 1 ? heightOfTrack / (totalSteps - 1) : 0;
 	const current = props.allToNonInterlude[currentLine];
 
 	useEffect(() => {
@@ -744,11 +782,11 @@ function Scrollbar(props) {
 	return (
 		<div className="rnp-lyrics-scrollbar" ref={scrollbarRef}>
 			<div 
-				className="rnp-lyrics-scrollbar-thumb"
+				className={`rnp-lyrics-scrollbar-thumb ${totalSteps > 1 ? '' : 'no-scroll'}`}
 				ref={thumbRef}
 				style={{
 					height: thumbHeight,
-					top: `${current * perStep}px`,
+					top: `${current * perStep}px`
 				}}/>
 			{/*<div>{ props.allToNonInterlude[currentLine] }</div>*/}
 		</div>

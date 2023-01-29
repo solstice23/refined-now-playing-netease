@@ -71,7 +71,7 @@ const calcAccentColor = (dom) => {
 		return ((pixel[3] << 24 >>> 0) | (pixel[0] << 16 >>> 0) | (pixel[1] << 8 >>> 0) | pixel[2]) >>> 0;
 	});
 	const quantizedColors = QuantizerCelebi.quantize(pixels, 128);
-	const ranked = Score.score(quantizedColors);
+	const ranked = Score.score(new Map(Array.from(quantizedColors).sort((a, b) => b[1] - a[1]).slice(0, 50)));
 	const top = ranked[0];
 
 	const theme = themeFromSourceColor(top);
@@ -145,7 +145,7 @@ const recalculateTitleSize = (forceRefresh = false) => {
 
 	const maxThreshold = Math.max(Math.min(document.body.clientHeight * 0.05, 60), 45);
 	const minThreshold = 24;
-	const targetWidth = (document.body.clientWidth / 2 - 50) * 0.95;
+	const targetWidth = document.querySelector('.g-single-track .g-singlec-ct .n-single .mn .head .inf .title').clientWidth;
 
 	let l = 1, r = 61;
 	while (l < r) {
@@ -182,9 +182,7 @@ const recalculateVerticalAlignMiddleOffset = () => {
 	const page_height = document.querySelector('.g-single .g-singlec-ct').clientHeight;
 	const inner_height = document.querySelector('.g-single .content').clientHeight;
 	let offset = ( page_height - parseInt(getComputedStyle(document.querySelector(".g-single-track .content")).bottom) - inner_height ) - (page_height / 2 - inner_height / 2 );
-	if (document.body.classList.contains('applemusic-like-lyrics')) {
-		offset -= 120;
-	}
+
 	verticalAlignMiddleController.innerHTML = `
 		body.vertical-align-middle .g-single-track .g-singlec-ct .n-single .sd,
 		body.vertical-align-middle .g-single-track .g-singlec-ct .n-single .mn .head {
@@ -297,8 +295,16 @@ const addSettingsMenu = async () => {
 		});
 		addOrRemoveGlobalClassByOption(className, checkbox.checked);
 	}
-	const bindSliderToCSSVariable = (slider, variable, defalutValue = 0, event = 'input', mapping = (x) => { return x }, addClassWhenAdjusting = '') => {
-		slider.value = getSetting(slider.id, defalutValue);
+	const bindCheckboxToFunction = (checkbox, func, defaultValue = false) => {
+		checkbox.checked = getSetting(checkbox.id, defaultValue);
+		checkbox.addEventListener("change", e => {
+			setSetting(checkbox.id, e.target.checked);
+			func(e.target.checked);
+		});
+		func(checkbox.checked);
+	}
+	const bindSliderToCSSVariable = (slider, variable, defaultValue = 0, event = 'input', mapping = (x) => { return x }, addClassWhenAdjusting = '') => {
+		slider.value = getSetting(slider.id, defaultValue);
 		slider.dispatchEvent(new Event("input"));
 		slider.addEventListener(event, e => {
 			const value = e.target.value;
@@ -318,8 +324,8 @@ const addSettingsMenu = async () => {
 		document.body.style.setProperty(variable, mapping(slider.value));
 		sliderEnhance(slider);
 	}
-	const bindSliderToFunction = (slider, func, defalutValue = 0, event = 'input', mapping = (x) => { return x }, addClassWhenAdjusting = '') => {
-		slider.value = getSetting(slider.id, defalutValue);
+	const bindSliderToFunction = (slider, func, defaultValue = 0, event = 'input', mapping = (x) => { return x }, addClassWhenAdjusting = '') => {
+		slider.value = getSetting(slider.id, defaultValue);
 		slider.dispatchEvent(new Event("input"));
 		slider.addEventListener(event, e => {
 			const value = e.target.value;
@@ -336,7 +342,6 @@ const addSettingsMenu = async () => {
 				document.body.classList.remove(addClassWhenAdjusting);
 			});
 		}
-
 		func(mapping(slider.value));
 		sliderEnhance(slider);
 	}
@@ -372,23 +377,28 @@ const addSettingsMenu = async () => {
 	const initSettings = () => {
 		const rectangleCover = document.querySelector('#rectangle-cover');
 		const lyricBlur = document.querySelector('#lyric-blur');
+		const lyricZoom = document.querySelector('#lyric-zoom');
 		const enableAccentColor = document.querySelector('#enable-accent-color');
 		const useNotosans = document.querySelector('#use-notosans');
 		const hideComments = document.querySelector('#hide-comments');
 		const lyricBreakWord = document.querySelector('#lyric-break-word');
 		const partialBg = document.querySelector('#partial-bg');
 		const gradientBgDynamic = document.querySelector('#gradient-bg-dynamic');
-		const useAMLLBg = document.querySelector('#use-amll-bg');
 
 		bindCheckboxToClass(rectangleCover, 'rectangle-cover', true);
-		bindCheckboxToClass(lyricBlur, 'lyric-blur', true);
 		bindCheckboxToClass(enableAccentColor, 'enable-accent-color', true);
 		bindCheckboxToClass(useNotosans, 'use-notosans', false);
 		bindCheckboxToClass(hideComments, 'hide-comments', false);
 		bindCheckboxToClass(lyricBreakWord, 'lyric-break-word', true);
 		bindCheckboxToClass(partialBg, 'partial-bg', false);
 		bindCheckboxToClass(gradientBgDynamic, 'gradient-bg-dynamic', true);
-		bindCheckboxToClass(useAMLLBg, 'use-amll-bg', true);
+		
+		bindCheckboxToFunction(lyricBlur, (x) => {
+			document.dispatchEvent(new CustomEvent('rnp-lyric-blur', { detail: x }));
+		}, false);
+		bindCheckboxToFunction(lyricZoom, (x) => {
+			document.dispatchEvent(new CustomEvent('rnp-lyric-zoom', { detail: x }));
+		}, false);
 
 
 		const bgBlur = document.querySelector('#bg-blur');
@@ -397,8 +407,7 @@ const addSettingsMenu = async () => {
 		const bgDimForFluidBg = document.querySelector('#bg-dim-for-fluid-bg');
 		const bgOpacity = document.querySelector('#bg-opacity');
 		const albumSize = document.querySelector('#album-size');
-		const fontSizeLyric = document.querySelector('#font-size-lyric');
-		const fontSizeLyricCurrent = document.querySelector('#font-size-lyric-current');
+		const lyricFontSize = document.querySelector('#lyric-font-size');
 
 		bindSliderToCSSVariable(bgBlur, '--bg-blur', 36, 'change', (x) => { return x + 'px' });
 		bindSliderToCSSVariable(bgDim, '--bg-dim', 55, 'input', (x) => { return x / 100 });
@@ -413,14 +422,9 @@ const addSettingsMenu = async () => {
 				document.querySelector('.n-single .cdimg img').src = newSrc;
 			}
 		}, 200, 'change', (x) => { return x == 200 ? 210 : x });
-		bindSliderToCSSVariable(fontSizeLyric, '--font-size-lyric', 1.05, 'input', (x) => {
-			if (fontSizeLyricCurrent.value < x) {
-				fontSizeLyricCurrent.value = x;
-				fontSizeLyricCurrent.dispatchEvent(new Event("input"));
-			}
-			return x + 'rem';
-		}, 'adjusting-lyric-size');
-		bindSliderToCSSVariable(fontSizeLyricCurrent, '--font-size-lyric-current', 1.3, 'input', (x) => { return x + 'rem' }, 'adjusting-lyric-size');
+		bindSliderToFunction(lyricFontSize, (x) => {
+			document.dispatchEvent(new CustomEvent('rnp-lyric-font-size', { detail: x }));
+		}, 32, 'change'); 
 
 		const verticalAlign = document.querySelector('#vertical-align');
 		const backgroundType = document.querySelector('#background-type');
@@ -428,12 +432,49 @@ const addSettingsMenu = async () => {
 		bindSelectGroupToClasses(backgroundType, 'fluid', (x) => `rnp-bg-${x}`, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-background-type', { detail: { type: x } }));
 		});
+
+		const lyricOffsetAdd = document.querySelector('#rnp-lyric-offset-add');
+		const lyricOffsetSub = document.querySelector('#rnp-lyric-offset-sub');
+		const lyricOffsetReset = document.querySelector('#rnp-lyric-offset-reset');
+		const lyricOffsetNumber = document.querySelector('#rnp-lyric-offset-number');
+		const lyricOffsetTip = document.querySelector('#rnp-lyric-offset-tip');
+		const setLyricOffsetValue = (ms, save = false) => {
+			lyricOffsetNumber.innerHTML = `${['-', '', '+'][Math.sign(ms) + 1]}${(Math.abs(ms) / 1000).toFixed(1).replace(/\.0$/, '')}s`;
+			if (ms == 0) lyricOffsetTip.innerHTML = '未设置偏移';
+			else lyricOffsetTip.innerHTML = (ms > 0 ? '歌词提前' : '歌词延后');
+			if (ms == 0) lyricOffsetAdd.classList.remove('active'), lyricOffsetSub.classList.remove('active'), lyricOffsetReset.classList.remove('active');
+			else if (ms > 0) lyricOffsetAdd.classList.add('active'), lyricOffsetSub.classList.remove('active'), lyricOffsetReset.classList.add('active');
+			else lyricOffsetAdd.classList.remove('active'), lyricOffsetSub.classList.add('active'), lyricOffsetReset.classList.add('active');
+			document.dispatchEvent(new CustomEvent('rnp-global-offset', { detail: ms }));
+			if (save) {
+				setSetting('lyric-offset', ms);
+			}
+		};
+		setLyricOffsetValue(parseInt(getSetting('lyric-offset', 0)));
+		lyricOffsetAdd.addEventListener('click', () => {
+			setLyricOffsetValue(parseInt(getSetting('lyric-offset', 0)) + 500, true);
+		});
+		lyricOffsetSub.addEventListener('click', () => {
+			setLyricOffsetValue(parseInt(getSetting('lyric-offset', 0)) - 500, true);
+		});
+		lyricOffsetReset.addEventListener('click', () => {
+			setLyricOffsetValue(0, true);
+		});
 	}
 	const settingsMenu = document.createElement('div');
 	settingsMenu.id = 'settings-menu';
 	settingsMenu.innerHTML = settingsMenuHTML;
 	document.querySelector('.g-single').appendChild(settingsMenu);
 	initSettings();
+	channel.call(
+		"app.getLocalConfig", 
+		(GpuAccelerationEnabled) => {
+			if (!~~GpuAccelerationEnabled) {
+				document.body.classList.add('gpu-acceleration-disabled');
+			}
+		}, 
+		["setting", "hardware-acceleration"]
+	);
 };
 
 const removeNbspFromLyrics = (dom) => {
@@ -470,14 +511,6 @@ Object.defineProperty(HTMLImageElement.prototype, 'src', {
 	}
 });
 
-const compatibleWithAppleMusicLikeLyrics = () => {
-	const nsingle = document.querySelector('#applemusic-like-lyrics-view + .n-single');
-	if (!nsingle) {
-		return;
-	}
-	//document.querySelector('#applemusic-like-lyrics-view').prepend(nsingle);
-	document.body.classList.add('applemusic-like-lyrics');
-}
 
 plugin.onLoad(async (p) => {
 	pluginPath = p.pluginPath;
@@ -489,7 +522,19 @@ plugin.onLoad(async (p) => {
 			document.querySelector('.g-single').classList.add('patched');
 			const background = document.createElement('div');
 			background.classList.add('rnp-bg');
-			ReactDOM.render(<Background type={getSetting('background-type', 'fluid')} image={await betterncm.utils.waitForElement(".n-single .cdimg img")}/>, background);
+			ReactDOM.render(
+				<Background
+					type={getSetting('background-type', 'fluid')}
+					image={
+						await (async () => {
+							if (document.querySelector(".n-single .cdimg img")) {
+								return document.querySelector(".n-single .cdimg img");
+							}
+							return await betterncm.utils.waitForElement(".n-single .cdimg img");
+						})()
+					}
+				/>
+			, background);
 			document.querySelector('.g-single').appendChild(background);
 
 			const lyrics = document.createElement('div');
@@ -503,7 +548,6 @@ plugin.onLoad(async (p) => {
 
 			addSettingsMenu();
 		}
-		compatibleWithAppleMusicLikeLyrics();
 	}).observe(document.body, { childList: true });
 
 	new MutationObserver((mutations) => {

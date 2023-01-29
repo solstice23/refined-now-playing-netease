@@ -87,6 +87,7 @@ function GradientBackground(props) {
 function FluidBackground(props) {
 	const [canvas1, canvas2, canvas3, canvas4] = [useRef(), useRef(), useRef(), useRef()];
 	const [feTurbulence, feDisplacementMap] = [useRef(), useRef()];
+	const fluidContainer = useRef();
 	const [songId, setSongId] = useState("0");
 
 	const playState = useRef(document.querySelector("#main-player .btnp").classList.contains("btnp-pause"));
@@ -95,8 +96,13 @@ function FluidBackground(props) {
 		//playState.current = (state.split('|')[1] == 'resume');
 		playState.current = document.querySelector("#main-player .btnp").classList.contains("btnp-pause");
 		setSongId(id);
+		fluidContainer.current.classList.toggle("paused", !playState.current);
 		//console.log(id, playState.current, state.split('|')[1], document.querySelector("#main-player .btnp").classList.contains("btnp-pause"));
 	};
+
+	useEffect(() => {
+		fluidContainer.current.classList.toggle("paused", !playState.current);
+	}, [songId]);
 
 	useEffect(() => {
 		legacyNativeCmder.appendRegisterCall(
@@ -248,6 +254,7 @@ function FluidBackground(props) {
 			//console.log(audioLevels[maxq[0]], audioLevels[minq[0]], audioLevels[maxq[0]] - audioLevels[minq[0]]);
 			//console.log(value, audioLevelSum / 100, value - audioLevelSum / 100);
 			percentage = (value - audioLevels[minq[0]]) / (audioLevels[maxq[0]] - audioLevels[minq[0]]);
+			if (percentage != percentage) percentage = 1 / 3; // NaN
 			function easeInOutQuint(x) {
 				return x < 0.5 ? 16 * x * x * x * x * x : 1 - Math.pow(-2 * x + 2, 5) / 2;
 			}
@@ -282,7 +289,7 @@ function FluidBackground(props) {
 				</filter>
 			</svg>
 			<div className="rnp-background-fluid" style={{ backgroundImage: `url(${props.url})` }}>
-				<div className="rnp-background-fluid-rect">
+				<div className="rnp-background-fluid-rect" ref={fluidContainer} >
 					<canvas ref={canvas1} className="rnp-background-fluid-canvas" canvasID="1" width="100" height="100"/>
 					<canvas ref={canvas2} className="rnp-background-fluid-canvas" canvasID="2" width="100" height="100"/>
 					<canvas ref={canvas3} className="rnp-background-fluid-canvas" canvasID="3" width="100" height="100"/>

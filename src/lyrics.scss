@@ -3,8 +3,11 @@
 	height: 100%;
 	position: relative;
 	overflow: hidden;	
-	-webkit-mask-image: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 2%, rgba(0,0,0,1) 98%, rgba(0,0,0,0) 100%);
+	-webkit-mask-image: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 3%, rgba(0,0,0,1) 97%, rgba(0,0,0,0) 100%);
 	color: var(--rnp-accent-color-shade-2);
+    padding-left: 5px;
+    padding-right: 5px;
+    box-sizing: border-box;
 }
 .g-singlec[data-log*='"s_ctype":"voice"'] .rnp-lyrics { // 在播客界面隐藏
 	display: none;
@@ -19,7 +22,7 @@
     bottom: 0;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-end;
     justify-content: flex-end;
 	transition: opacity .25s ease;
 	.rnp-lyrics-switch-btn {
@@ -32,6 +35,8 @@
 		border-radius: 4px;
 		padding: 3px;
 		writing-mode: vertical-lr;
+		width: 20px;
+		box-sizing: border-box;
 		transition: background-color .2s ease, color .2s ease;
 		&.active {
 			background-color: rgba(var(--rnp-accent-color-rgb), 0.8);
@@ -50,10 +55,15 @@
 
 .rnp-lyrics-line {
 	position: absolute;
-	transform-origin: left top;
-	transition: transform 0.5s ease;
+	transform-origin: left center;
+	transition: transform 0.5s ease, filter 0.5s ease;
+	will-change: transform, filter;
 }
 .rnp-lyrics-line {
+	.rnp-lyrics-line-karaoke, .rnp-lyrics-line-original {
+		font-weight: 600;
+	}
+    max-width: calc(100% - 10px);
 	$idle-opacity: 0.4;
 	&[offset='0'] > div{ 
 		opacity: 0.8;
@@ -75,6 +85,7 @@
 		&.rnp-lyrics-line-karaoke {
 			opacity: 1;
 			.rnp-karaoke-word {
+				transition-property: opacity, transform;
 				opacity: $idle-opacity;
 				transform: translateY(0);
 			}
@@ -183,6 +194,25 @@
 	transition-delay: 0s !important;
 }
 
+.rnp-lyrics:not(.pure-music) .rnp-lyrics-line {
+	&::before {
+		content: '';
+		display: block;
+		position: absolute;
+		left: -5px;
+		top: -10px;
+		right: -5px;
+		bottom: -10px;
+		border-radius: 10px;
+		background-color: #fff;
+		opacity: 0;
+		z-index: 0;
+		transition: opacity .2s ease;
+	}
+	&:hover::before {
+		opacity: 0.08;
+	}
+}
 
 .rnp-lyrics-scrollbar {
     position: absolute;
@@ -202,6 +232,10 @@
 		transition-duration: .5s, .25s;
 		&:hover, &.dragging {
 			opacity: .6 !important;
+		}
+		&.no-scroll {
+			opacity: 0 !important;
+			pointer-events: none;
 		}
 	}
 }

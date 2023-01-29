@@ -13,22 +13,19 @@
 			<input id="rectangle-cover" type="checkbox" class="rnp-checkbox">
 			<label for="rectangle-cover" class="rnp-checkbox-label">方形专辑封面</label>
 		</div>
-		<div class="rnp-checkbox-wrapper incompatible-with-amll">
-			<input id="lyric-blur" type="checkbox" class="rnp-checkbox">
-			<label for="lyric-blur" class="rnp-checkbox-label">歌词模糊效果</label>
-		</div>
 		<div class="rnp-checkbox-wrapper">
 			<input id="enable-accent-color" type="checkbox" class="rnp-checkbox">
 			<label for="enable-accent-color" class="rnp-checkbox-label">沉浸主题色</label>
 		</div>
+		<div class="rnp-checkbox-wrapper">
+			<input id="use-notosans" type="checkbox" class="rnp-checkbox">
+			<label for="use-notosans" class="rnp-checkbox-label">思源黑体</label>
+		</div>
+		<span class="rnp-checkbox-note">需要电脑中有此字体</span>
 	</div>
 
 	<div class="rnp-group">
 		<div class="rnp-group-title">背景</div>
-		<div class="rnp-checkbox-wrapper only-visible-with-amll use-amll-bg" style="--estimated-height: 20px;">
-			<input id="use-amll-bg" type="checkbox" class="rnp-checkbox">
-			<label for="use-amll-bg" class="rnp-checkbox-label">使用 Apple Lyrics 背景</label>
-		</div>
 		<div class="rnp-select-group-wrapper">
 			<label for="bg-type" class="rnp-select-group-label">类型</label>
 			<div class="rnp-select-group" id="background-type">
@@ -69,20 +66,32 @@
 
 	
 	<div class="rnp-group">
-		<div class="rnp-group-title">字体</div>
-		<div class="rnp-slider-wrapper incompatible-with-amll">
-			<label for="font-size-lyric" class="rnp-slider-label">歌词大小<button class="rnp-slider-reset"></button></label>
-			<input id="font-size-lyric" type="range" class="rnp-slider" min="0.8" max="2.2" step="0.01" value="1.05" default="1.05">
-		</div>
-		<div class="rnp-slider-wrapper incompatible-with-amll" style="transition: all 0s;">
-			<label for="font-size-lyric-current" class="rnp-slider-label">歌词大小 (当前)<button class="rnp-slider-reset"></button></label>
-			<input id="font-size-lyric-current" type="range" class="rnp-slider" min="0.8" max="2.2" step="0.01" value="1.3" default="1.3">
+		<div class="rnp-group-title">歌词</div>
+		<div class="rnp-slider-wrapper">
+			<label for="lyric-font-size" class="rnp-slider-label">字体大小<button class="rnp-slider-reset"></button></label>
+			<input id="lyric-font-size" type="range" class="rnp-slider" min="16" max="64" step="1" value="32" default="32">
 		</div>
 		<div class="rnp-checkbox-wrapper">
-			<input id="use-notosans" type="checkbox" class="rnp-checkbox">
-			<label for="use-notosans" class="rnp-checkbox-label">思源黑体</label>
+			<input id="lyric-zoom" type="checkbox" class="rnp-checkbox">
+			<label for="lyric-zoom" class="rnp-checkbox-label">歌词缩放</label>
 		</div>
-		<span class="rnp-checkbox-note">需要电脑中有此字体</span>
+		<div class="rnp-checkbox-wrapper">
+			<input id="lyric-blur" type="checkbox" class="rnp-checkbox">
+			<label for="lyric-blur" class="rnp-checkbox-label">歌词模糊</label>
+		</div>
+		<div class="rnp-lyric-offset">
+			<div>
+				<label class="rnp-checkbox-label">全局偏移</label>
+				<button class="rnp-slider-reset" id="rnp-lyric-offset-reset"></button>
+				<div style="flex:1;"></div>
+				<button id="rnp-lyric-offset-sub">-</button>
+				<button id="rnp-lyric-offset-add">+</button>
+			</div>
+			<div>
+				<label id="rnp-lyric-offset-number">0s</label>
+				<label id="rnp-lyric-offset-tip">未设置偏移</label>
+			</div>
+		</div>
 	</div>
 
 	
@@ -92,11 +101,11 @@
 			<input id="hide-comments" type="checkbox" class="rnp-checkbox">
 			<label for="hide-comments" class="rnp-checkbox-label">隐藏评论区</label>
 		</div>
-		<div class="rnp-checkbox-wrapper incompatible-with-amll">
+		<div class="rnp-checkbox-wrapper">
 			<input id="lyric-break-word" type="checkbox" class="rnp-checkbox">
 			<label for="lyric-break-word" class="rnp-checkbox-label">优化歌词断行</label>
 		</div>
-		<span class="rnp-checkbox-note incompatible-with-amll">不在单词内部断行</span>
+		<span class="rnp-checkbox-note">不在单词内部断行</span>
 		<div class="rnp-slider-wrapper album-size with-ticks">
 			<label for="album-size" class="rnp-slider-label">专辑封面清晰度<button class="rnp-slider-reset"></button></label>
 			<input id="album-size" type="range" class="rnp-slider" min="200" max="800" value="200" default="200" step="200">

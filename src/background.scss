@@ -64,6 +64,7 @@
 		transform: scale(1.15);
 		.rnp-background-fluid-rect {
 			animation: fluid-container-rotate 150s linear infinite;
+			animation-play-state: running;
 			width: max(100vw, 100vh);
 			height: max(100vw, 100vh);
 			top: calc(50% - 50vh);
@@ -75,6 +76,12 @@
 				animation: fluid-block-rotate 60s linear infinite;
 				animation-play-state: running;
 				opacity: 1;
+			}
+			&.paused {
+				animation-play-state: paused;
+				canvas {
+					animation-play-state: paused;
+				}
 			}
 			@for $i from 1 through 4 {
 				canvas[canvasID="#{$i}"] {
