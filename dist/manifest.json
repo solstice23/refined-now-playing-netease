@@ -7,8 +7,8 @@
     "preview": "preview.jpg",
     "version": "2.0.0",
     "type": "extension",
-    "requirements": ["LibLyric"],
-    "loadAfter": ["LibLyric"],
+    "requirements": ["liblyric"],
+    "loadAfter": ["liblyric"],
     "betterncm_version": ">=1.0.0",
     "injects": {
         "Main": [
