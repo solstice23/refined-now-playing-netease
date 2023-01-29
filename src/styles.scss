@@ -390,6 +390,11 @@ body:not(.mq-playing), body.mq-playing-scroll {
 		transition: opacity .2s ease !important;
 	}
 }
+.n-single .cd .newtrytxt .box {
+    margin-left: 5px;
+    text-align: left;
+    transform: translateY(calc(-65px - clamp(200px,20vw,500px)));
+}
 .m-playlrc .word .text {
 	overscroll-behavior: contain;
 }

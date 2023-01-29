@@ -5,7 +5,7 @@
     "author_links": ["https://github.com/solstice23"],
     "description": "重新设计的正在播放页面 | 流体背景 | 逐字歌词 | 弹性歌词滚动",
     "preview": "preview.jpg",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "type": "extension",
     "requirements": ["liblyric"],
     "loadAfter": ["liblyric"],

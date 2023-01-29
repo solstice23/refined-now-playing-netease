@@ -188,9 +188,6 @@ const recalculateVerticalAlignMiddleOffset = () => {
 		body.vertical-align-middle .g-single-track .g-singlec-ct .n-single .mn .head {
 			transform: translateY(-${offset}px);
 		}
-		body.vertical-align-middle .g-single-track .g-singlec-ct .n-single .mn .lyric {
-			bottom: 15vh;
-		}
 	`;
 }
 recalculateVerticalAlignMiddleOffset();
