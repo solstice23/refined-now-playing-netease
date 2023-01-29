@@ -245,6 +245,7 @@ export function Lyrics(props) {
 	// TODO 2:
 	// 1. 更明显的主题色
 	// 2. 自定义字体字号模糊缩放
+	// 3. 暂停时也暂停流体背景
 
 
 	const previousFocusedLineRef = useRef(0);
@@ -305,6 +306,7 @@ export function Lyrics(props) {
 		}
 		setLineTransforms(transforms);
 		//console.log('transforms', transforms);
+		console.log('pre',previousFocusedLineRef, 'cur', currentLine)
 		previousFocusedLineRef.current = currentLine;
 	}, [currentLine, containerHeight, containerWidth, fontSize, showTranslation, showRomaji, useKaraokeLyrics, scrollingMode, scrollingFocusLine, lyrics]);
 
@@ -329,11 +331,11 @@ export function Lyrics(props) {
 			}
 		}
 		shouldTransit.current = true;
-		setCurrentLine(cur);
 		if (!_scrollingMode.current) {
 			setScrollingFocusLine(cur);
 			_scrollingFocusLine.current = cur;
 		}
+		setCurrentLine(cur);
 	};
 	useEffect(() => {
 		onPlayProgress(songId, currentTime.current);
