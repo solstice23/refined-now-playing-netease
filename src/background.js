@@ -14,23 +14,43 @@ export function Background(props) {
 	const image = props.image;
 
 	
-	useEffect(() => {
-		const observer = new MutationObserver(() => {
-			if (image.src === url) return;
-			if (image.complete) {
+	if (!props.isFM) {
+		useEffect(() => {
+			const observer = new MutationObserver(() => {
+				if (image.src === url) return;
+				if (image.complete) {
+					setUrl(image.src);
+				}
+			});
+			observer.observe(image, { attributes: true, attributeFilter: ['src'] });
+			const onload = () => {
 				setUrl(image.src);
+			};
+			image.addEventListener('load', onload);
+			return () => {
+				observer.disconnect();
+				image.removeEventListener('load', onload);
 			}
-		});
-		observer.observe(image, { attributes: true, attributeFilter: ['src'] });
-		const onload = () => {
-			setUrl(image.src);
-		};
-		image.addEventListener('load', onload);
-		return () => {
-			observer.disconnect();
-			image.removeEventListener('load', onload);
-		}
-	}, [image]);
+		}, [image]);
+	} else {
+		useEffect(() => {
+			const imageContainer = image;
+			if (imageContainer.querySelector('.cvr.j-curr img')) {
+				setUrl(imageContainer.querySelector('.cvr.j-curr img').src);
+				props.imageChangedCallback(imageContainer.querySelector('.cvr.j-curr img'));
+			}
+			const observer = new MutationObserver(() => {
+				if (imageContainer.querySelector('.cvr.j-curr img')) {
+					setUrl(imageContainer.querySelector('.cvr.j-curr img').src);
+					props.imageChangedCallback(imageContainer.querySelector('.cvr.j-curr img'));
+				}
+			});
+			observer.observe(imageContainer, { childList: true, subtree: true });
+			return () => {
+				observer.disconnect();
+			}
+		}, [image]);
+	}
 
 	useEffect(() => {
 		document.addEventListener('rnp-background-type', (e) => {

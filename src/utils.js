@@ -1,4 +1,7 @@
 export const getSetting = (option, defaultValue = '') => {
+	if (option.endsWith('-fm')) {
+		option = option.replace(/-fm$/, '');
+	}
 	option = "refined-now-playing-" + option;
 	let value = localStorage.getItem(option);
 	if (!value) {

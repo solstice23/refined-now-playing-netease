@@ -236,47 +236,47 @@ body {
 	}
 }
 .g-single-track .g-singlec-ct .n-single {
-	.head .title h1 .name {
-		white-space: nowrap;
-		max-width: calc(100% - 10px);
-		animation: none;
-		overflow: hidden;
-	}
-	.mn .head .inf .title h1 .tag-wrap {
-		display: inline-block;
-		opacity: 0;
-		transition: opacity .3s ease;
-		vertical-align: bottom;
-		position: absolute;
-		font-size: 35px;
-		top: calc(-35px - 1em * 0.1);
-		left: 3px;
-		user-select: none;
-	}
-	.mn .head .inf:hover .title h1 .tag-wrap {
-		opacity: 0.4;
-	}
-	.mn .head .inf:hover .title h1 .tag-wrap:hover {
-		opacity: 0.8;
-	}
-	.mn .head .inf .title h1 .tag-wrap svg {
-		fill: #fff;
-		position: absolute;
-		left: 0;
-		top: 0;
-	}
-	.mn .head .inf .info ul li:nth-of-type(1) a:not(:first-of-type):before {
-		background-image: none;
-		content: '/';
-		color: #fff;
-		filter: none;
-		width: max-content;
-		height: auto;
-		margin-left: 2px;
-		margin-right: 3px;
-		transform: none;
-	}
 	.mn .head {
+		.inf .title h1 .name {
+			white-space: nowrap;
+			max-width: calc(100% - 10px);
+			animation: none;
+			overflow: hidden;
+		}
+		.inf .title h1 .tag-wrap {
+			display: inline-block;
+			opacity: 0;
+			transition: opacity .3s ease;
+			vertical-align: bottom;
+			position: absolute;
+			font-size: 35px;
+			top: calc(-35px - 1em * 0.1);
+			left: 3px;
+			user-select: none;
+		}
+		.inf:hover .title h1 .tag-wrap {
+			opacity: 0.4;
+		}
+		.inf:hover .title h1 .tag-wrap:hover {
+			opacity: 0.8;
+		}
+		.inf .title h1 .tag-wrap svg {
+			fill: #fff;
+			position: absolute;
+			left: 0;
+			top: 0;
+		}
+		.inf .info ul li:nth-of-type(1) a:not(:first-of-type):before {
+			background-image: none;
+			content: '/';
+			color: #fff;
+			filter: none;
+			width: max-content;
+			height: auto;
+			margin-left: 2px;
+			margin-right: 3px;
+			transform: none;
+		}
 		.inf {
 			transform: translateY(16px);
 			transition: transform .3s ease;
@@ -753,7 +753,7 @@ body.hide-comments {
 
 
 body.partial-bg {
-	.rnp-bg {
+	.rnp-bg:not(.bg-fm) {
 		left: 30px;
 		top: 60px;
 		width: calc(100% - 60px);
@@ -779,7 +779,7 @@ body:not(.enable-accent-color), body:not([style*='--rnp-accent-color']) {
 	--rnp-accent-color-shade-1-rgb: 238, 238, 238 !important;
 	--rnp-accent-color-shade-2: #fff !important;
 	--rnp-accent-color-shade-2-rgb: 255, 255, 255 !important;
-	#rnp-settings-menu {
+	.rnp-settings-menu {
 		--rnp-accent-color: #ffffff55;
 	}
 }
@@ -792,55 +792,4 @@ body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
 
 body:not(.lyric-break-word) .m-playlrc .word .text .z-crt p {
     word-break: break-all;
-}
-
-body.applemusic-like-lyrics {
-	.g-single {
-		.g-single-track .n-single {
-			display: block !important;
-			height: 0;
-			width: 0;
-			overflow: visible;
-			margin-top: -90px;
-		}
-		.g-single-track .g-bd2 {
-			padding-top: 220px;
-		}
-		.g-bd2 .recommend-btn {
-			top: 210px;
-		}
-		.n-single .mn .lyric {
-			display: none;
-		}
-		.n-single .mn {
-			width: 45vw;
-		}
-		.head .inf .info .alias {
-			max-width: 45vw;
-		}
-		.n-single .mn .head .inf .title h1 .tag-wrap svg {
-			width: 100% !important;
-			height: 100% !important;
-		}
-		#applemusic-like-lyrics-view .am-music-info {
-			opacity: 0;
-			pointer-events: none;
-		}
-		#applemusic-like-lyrics-view .am-lyric-dots > * {
-			box-shadow: none;
-		}
-	}
-	&.enable-accent-color {
-		.g-single {
-			--applemusic-like-lyrics-font-color: var(--rnp-accent-color-shade-1, white);
-		}
-	}
-	&:not(.use-amll-bg) {
-		.am-lyric-background {
-			display: none;
-		}
-	}
-	&.mq-playing-scroll #main-player {
-		backdrop-filter: blur(100px);
-	}
 }

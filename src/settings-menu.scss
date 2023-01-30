@@ -236,7 +236,7 @@
 
 
 
-#rnp-settings-menu {
+.rnp-settings-menu {
 	position: fixed;
 	z-index: 10;
 	right: 30px;
@@ -261,7 +261,7 @@
 	font-weight: bold;
 }
 
-#rnp-settings {
+.rnp-settings {
 	appearance: none;
 	position: fixed;
 	right: 30px;
@@ -280,16 +280,16 @@
 	cursor: pointer;
 	z-index: 9;
 }
-body:hover #rnp-settings {
+body:hover .rnp-settings {
 	opacity: .2;
 }
-#rnp-settings:checked {
+.rnp-settings:checked {
 	opacity: 1 !important;
 }
-#rnp-settings:hover {
+.rnp-settings:hover {
 	opacity: .7;
 }
-#rnp-settings:checked + #rnp-settings-menu {
+.rnp-settings:checked + .rnp-settings-menu {
 	pointer-events: all;
 	opacity: 1;
 	transform: none;
@@ -311,7 +311,7 @@ body:not(.rnp-bg-fluid) .bg-dim-for-fluid-bg {
 
 
 body.gpu-acceleration-disabled {
-	#rnp-settings-menu {
+	.rnp-settings-menu {
 		padding-bottom: 80px;
 		&::before {
 			content: 'GPU 渲染已禁用，会影响正常渲染和性能\A请前往网易云音乐设置关闭"禁用 GPU 加速"选项\A如果该选项默认为关，请打开一次后再关闭';

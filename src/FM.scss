@@ -1,0 +1,111 @@
+.rnp-bg.fm-bg {
+    position: fixed;
+    top: 0;
+    z-index: -1;
+}
+.m-fm {
+    width: min(max(80%, 1500px), calc(100% - max(50px, 5%)));
+	> .g-play {
+		height: calc(100vh - var(--bottombar-height, 72px) - 60px + 20px);
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		box-sizing: border-box;
+		width: 45%;
+		margin-bottom: 25px;
+		padding-bottom: clamp(30px, 5%, 60px);
+		.fmlrc {
+			height: unset;
+		}
+		
+		.fmplay {
+			margin-left: 35px;
+			width: unset !important;
+			.covers::after {
+				display: none;
+			}
+			.playbtn {
+				display: none;
+			}
+			.btnwrap {
+				display: block;
+			}
+		}
+		.m-playlrc .word {
+			display: none;
+		}
+
+		.fmplay .covers, .fmplay .covers .cvr {
+			width: clamp(200px, 20vw, 500px) !important;
+			height: clamp(200px, 20vw, 500px) !important;
+		}
+		.fmplay .covers .cvr {
+			border-radius: 16px;
+			box-shadow: 0 10px 10px rgb(0 0 0 / 5%), 0 0px 20px rgb(0 0 0 / 6%);
+			transition: transform 0.6s ease, opacity 0.6s ease;
+		}
+		.fmplay .covers .cvr-next {
+			opacity: 0.1;
+			&:hover {
+				opacity: 0.5;
+			}
+		}
+	}
+	.lyric {
+		position: absolute;
+		display: block;
+		top: 10px;
+		height: calc(100vh - var(--bottombar-height, 72px) - 120px);
+		left: 50%;
+		width: 45%;
+	}
+
+	.m-playlrc .inf{
+		.title h1 {
+			font-size: 32px;
+			line-height: 1.5;
+		}		
+		h2 {
+			font-size: 20px;
+			line-height: 1;
+			opacity: .6;
+			margin-bottom: 5px;
+		}		
+		.playfrom {
+			display: flex;
+			flex-direction: column;
+		}
+		li {
+			max-width: 100%;
+			width: unset;
+			color: #ffffff66;
+		}
+		.playfrom li span {
+			color: #ffffff66;
+		}
+		.playfrom li a span {
+			color: #ffffff99;
+		}
+		ul li a {
+			color: #ffffff99;
+			margin-right: 4px;
+			margin-left: 4px;
+		}
+		.playfrom li {
+			color: #ffffff66;
+			font-size: 16px;
+			margin-top: 5px;
+			width: unset;
+			line-height: normal;
+		}
+	}
+}
+body:not(.rectangle-cover) .m-fm .fmplay .covers .cvr{
+	border-radius: 1000px;
+    box-shadow: 0 0 0 8px #ffffff22;
+}
+
+body.vertical-align-middle #page_pc_userfm_songplay > .g-play {
+    padding-bottom: 0;
+    justify-content: center;
+}

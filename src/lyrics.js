@@ -46,7 +46,7 @@ const preProcessLyrics = (lyrics) => {
 		roma,
 		dynamic
 	);
-	if (approxLines - parsed.length > 10) { // 某些特殊情况（逐字歌词残缺不全）
+	if (approxLines - parsed.length > approxLines * 0.2) { // 某些特殊情况（逐字歌词残缺不全）
 		return loadedPlugins.liblyric.parseLyric(
 			original,
 			translation,
@@ -89,8 +89,14 @@ const processLyrics = (lyrics) => {
 	return lyrics;
 }
 
+const isFMSession = () => {
+	return !document.querySelector(".m-player-fm").classList.contains("f-dn");
+}
+// TODO: 监听 DOM 更改以缓存此函数
 
 export function Lyrics(props) {
+	const isFM = props.isFM ?? false;
+
 	const containerRef = useRef(null);
 
 	let [lyrics, setLyrics] = useState(null);
@@ -156,6 +162,10 @@ export function Lyrics(props) {
 		lyrics.length <= 10 && lyrics.some((x) => (x.originalLyric ?? '').includes('纯音乐'))
 	);
 
+	const isCurrentModeSession = () => { // 判断是否在当前模式播放 (普通/FM)
+		return isFM ? isFMSession() : !isFMSession();
+	}
+
 	const preProcessMapping = (lyrics) => {
 		lyrics ??= [];
 		const allToNonInterlude = [], nonInterludeToAll = [];
@@ -181,7 +191,10 @@ export function Lyrics(props) {
 	const onLyricsUpdate = (e) => {
 		if (!e.detail) {
 			return;
-		}	
+		}
+		if (!isCurrentModeSession()) {
+			return;
+		}
 		shouldTransit.current = false;
 		setScrollingMode(false);
 		preProcessMapping(e.detail);
@@ -296,7 +309,7 @@ export function Lyrics(props) {
 			current = Math.min(Math.max(scrollingFocusLine ?? 0, 0), lyrics.length - 1);
 		}
 
-		recalcHeightOfItems();
+		if (!scrollingMode) recalcHeightOfItems();
 		//console.log(currentLine, current);
 		transforms[current].top = containerHeight / 2 - heightOfItems.current[current] / 2;
 		transforms[current].scale = 1;
@@ -342,10 +355,23 @@ export function Lyrics(props) {
 
 
 	const onPlayStateChange = (id, state) => {
-		setPlayState(document.querySelector("#main-player .btnp").classList.contains("btnp-pause"));
+		if (!isCurrentModeSession()) {
+			return;
+		}
+		if (!isFM) {
+			setPlayState(document.querySelector("#main-player .btnp").classList.contains("btnp-pause"));
+		} else {
+			setPlayState(document.querySelector(".m-player-fm .btnp").classList.contains("btnp-pause"));
+		}
+		//setPlayState((state.split("|")[1] == "resume"));
 		setSongId(id);
 	};
 	const onPlayProgress = (id, progress) => {
+		if (!isCurrentModeSession()) {
+			return;
+		}
+		//console.log("new progress", id, progress);
+		//setSongId(id);
 		const lastTime = currentTime.current + globalOffset;
 		currentTime.current = ((progress * 1000) || 0);
 		const currentTimeWithOffset = currentTime.current + globalOffset;
@@ -378,9 +404,11 @@ export function Lyrics(props) {
 		const _channalCall = channel.call;
 		channel.call = (name, ...args) => {
 			if (name == "audioplayer.seek") {
-				currentTime.current = parseInt(args[1][2] * 1000);
-				setScrollingMode(false);
-				setSeekCounter(+new Date());
+				if (isCurrentModeSession()) {
+					currentTime.current = parseInt(args[1][2] * 1000);
+					setScrollingMode(false);
+					setSeekCounter(+new Date());
+				}
 			}
 			_channalCall(name, ...args);
 		};
@@ -395,14 +423,21 @@ export function Lyrics(props) {
 		time -= globalOffset;
 		shouldTransit.current = true;
 		setScrollingMode(false);
+		//console.log(songId);
 		channel.call("audioplayer.seek", () => {}, [
 			songId,
 			`${songId}|seek|${Math.random().toString(36).substring(6)}`,
 			time / 1000,
 		]);
+		/*console.log("audioplayer.seek", () => {}, [
+			songId,
+			`${songId}|seek|${Math.random().toString(36).substring(6)}`,
+			time / 1000,
+		]);*/
 		setSeekCounter(+new Date());
 		if (!playState) {
-			document.querySelector("#main-player .btnp").click();
+			if (!isFM) document.querySelector("#main-player .btnp").click();
+			else document.querySelector(".m-player-fm .btnp").click();
 		}
 	}, [songId, playState, globalOffset]);
 
@@ -506,6 +541,8 @@ export function Lyrics(props) {
 		}
 	}, []);
 
+	const length = lyrics?.length ?? 0;
+
 	return (
 		<>
 			<div
@@ -528,6 +565,8 @@ export function Lyrics(props) {
 						useKaraokeLyrics={useKaraokeLyrics}
 						jumpToTime={isPureMusic ? () => {} : jumpToTime}
 						transforms={lineTransforms[index] ?? { top: 0, scale: 1, delay: 0, blur: 0 }}
+						outOfRangeScrolling={scrollingMode && length > 100 && Math.abs(index - scrollingFocusLine) > 20}
+						outOfRangeKaraoke={length > 100 && Math.abs(index - currentLine) > 20}
 					/>
 				})}
 			</div>
@@ -580,6 +619,15 @@ export function Lyrics(props) {
 }
 
 function Line(props) {
+	if (props.outOfRangeScrolling) {
+		return (
+			<div
+				className={`rnp-lyrics-line ${props.line.isInterlude ? 'rnp-interlude' : ''}`}
+				offset={offset}
+				style={{display: 'none'}}
+			/>
+		)
+	}
 	if (props.line.originalLyric == '') {
 		props.line.isInterlude = true;
 	}
@@ -599,7 +647,6 @@ function Line(props) {
 				transform: `translateY(-${Math.max((props.currentTime - word.time) / word.duration * 2, 0)}px)`
 			};
 		}
-		//console.log(word, word.time, props.currentTime, word.time - props.currentTime);
 		return {
 			transitionDuration: `${word.duration}ms, ${word.duration + 150}ms`,
 			transitionDelay: `${word.time - props.currentTime}ms`
@@ -624,6 +671,7 @@ function Line(props) {
 			offset={offset}
 			onClick={() => props.jumpToTime(props.line.time + 50)}
 			style={{
+				display: props.outOfRangeScrolling ? 'none' : 'block',
 				transform: `
 					translateY(${props.transforms.top}px)
 					scale(${props.transforms.scale})
@@ -632,7 +680,7 @@ function Line(props) {
 				transitionDuration: `${props.transforms?.duration ?? 500}ms`,
 				filter: props.transforms?.blur ? `blur(${props.transforms?.blur}px)` : 'none'
 			}}>
-			{ props.line.dynamicLyric && props.useKaraokeLyrics && <div className="rnp-lyrics-line-karaoke" ref={karaokeLineRef}>
+			{ props.line.dynamicLyric && props.useKaraokeLyrics && !props.outOfRangeKaraoke && <div className="rnp-lyrics-line-karaoke" ref={karaokeLineRef}>
 				{props.line.dynamicLyric.map((word, index) => {
 					return <span
 						key={index}
@@ -642,7 +690,7 @@ function Line(props) {
 					</span>
 				})}
 			</div> }
-			{ !(props.line.dynamicLyric && props.useKaraokeLyrics) && props.line.originalLyric && <div className="rnp-lyrics-line-original">
+			{ !(props.line.dynamicLyric && props.useKaraokeLyrics && !props.outOfRangeKaraoke) && props.line.originalLyric && <div className="rnp-lyrics-line-original">
 				{ props.line.originalLyric }
 			</div> }
 			{ props.line.romanLyric && props.showRomaji && <div className="rnp-lyrics-line-romaji">
@@ -760,7 +808,7 @@ function Scrollbar(props) {
 				y = startY - trackTopY - offsetY;
 			}
 			const cloest = Math.max(Math.min(Math.round(y / perStep), totalSteps - 1), 0);
-			console.log(cloest);
+			//console.log(cloest);
 			const yOfCloest = cloest * perStep;
 			//const distance = y - cloest * perStep;
 			thumb.style.top = `${yOfCloest}px`;
