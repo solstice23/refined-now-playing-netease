@@ -1,7 +1,7 @@
 import './styles.scss';
 import settingsMenuHTML from './settings-menu.html';
 import './settings-menu.scss';
-import {normalizeColor, calcWhiteShadeColor, getGradientFromPalette, argb2Rgb} from './color-utils.js';
+import {normalizeColor, calcWhiteShadeColor, getGradientFromPalette, argb2Rgb, rgb2Argb} from './color-utils.js';
 import { getSetting, setSetting, chunk } from './utils.js';
 import { Background } from './background.js';
 import { Lyrics } from './lyrics.js';
@@ -61,6 +61,14 @@ const updateAccentColor = (name, argb) => {
 	document.body.style.setProperty(`--${name}-rgb`, `${r}, ${g}, ${b}`);
 }
 
+const useGreyAccentColor = () => {
+	updateAccentColor('rnp-accent-color', rgb2Argb(150, 150, 150));
+	updateAccentColor('rnp-accent-color-on-primary', rgb2Argb(250, 250, 250));
+	updateAccentColor('rnp-accent-color-shade-1', rgb2Argb(210, 210, 210));
+	updateAccentColor('rnp-accent-color-shade-2', rgb2Argb(255, 255, 255));
+}
+
+
 const calcAccentColor = (dom) => {
 	const canvas = document.createElement('canvas');
 	canvas.width = 50;
@@ -71,9 +79,19 @@ const calcAccentColor = (dom) => {
 		return ((pixel[3] << 24 >>> 0) | (pixel[0] << 16 >>> 0) | (pixel[1] << 8 >>> 0) | pixel[2]) >>> 0;
 	});
 	const quantizedColors = QuantizerCelebi.quantize(pixels, 128);
-	const ranked = Score.score(new Map(Array.from(quantizedColors).sort((a, b) => b[1] - a[1]).slice(0, 50)));
-	const top = ranked[0];
+	const sortedQuantizedColors = Array.from(quantizedColors).sort((a, b) => b[1] - a[1]);
 
+	/*Array.from(quantizedColors).sort((a, b) => b[1] - a[1]).slice(0, 50).map((x) => {
+		console.log(...argb2Rgb(x[0]), x[1]);
+	});*/
+	const mostFrequentColors = sortedQuantizedColors.slice(0, 5).map((x) => argb2Rgb(x[0]));
+	if (mostFrequentColors.every((x) => Math.max(...x) - Math.min(...x) < 5)) {
+		useGreyAccentColor();
+		return;
+	}
+
+	const ranked = Score.score(new Map(sortedQuantizedColors.slice(0, 50)));
+	const top = ranked[0];
 	const theme = themeFromSourceColor(top);
 
 	// theme.schemes.light.bgDarken = (Hct.from(theme.palettes.neutral.hue, theme.palettes.neutral.chroma, 97.5)).toInt();

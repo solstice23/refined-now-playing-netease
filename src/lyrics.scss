@@ -82,6 +82,7 @@
 	}
 	&:not([offset='0']) > div{
 		opacity: $idle-opacity;
+		transition-delay: 0s;
 		&.rnp-lyrics-line-karaoke {
 			opacity: 1;
 			.rnp-karaoke-word {
@@ -96,7 +97,7 @@
 	}
 	> div {
 		transition: opacity 0.5s ease;
-		transition-delay: inherit;
+		transition-delay: 0.2s;
 		&:not(:last-child) {
 			margin-bottom: 0.3em;
 		}

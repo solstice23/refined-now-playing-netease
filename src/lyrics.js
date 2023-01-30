@@ -208,7 +208,7 @@ export function Lyrics(props) {
 	}, []);
 
 
-	useEffect(() => { // Recalculate height of each line
+	/*useEffect(() => { // Recalculate height of each line
 		if (!lyrics) return;
 		const container = containerRef.current;
 		const items = container.children;
@@ -218,7 +218,19 @@ export function Lyrics(props) {
 		}
 		heightOfItems.current = heights;
 		//console.log('heightOfItems', heightOfItems.current);
-	}, [lyrics, containerWidth, fontSize, showTranslation, showRomaji, useKaraokeLyrics, recalcCounter]);
+	}, [lyrics, containerWidth, fontSize, showTranslation, showRomaji, useKaraokeLyrics, recalcCounter]);*/
+
+	const recalcHeightOfItems = () => {
+		if (!lyrics) return;
+		const container = containerRef.current;
+		const items = container.children;
+		const heights = [];
+		for (const item of items) {
+			heights.push(item.clientHeight);
+		}
+		heightOfItems.current = heights;
+		//console.log('heightOfItems', heightOfItems.current);
+	}
 	
 	const onResize = () => {
 		shouldTransit.current = true;
@@ -283,6 +295,8 @@ export function Lyrics(props) {
 		if (scrollingMode) {
 			current = Math.min(Math.max(scrollingFocusLine ?? 0, 0), lyrics.length - 1);
 		}
+
+		recalcHeightOfItems();
 		//console.log(currentLine, current);
 		transforms[current].top = containerHeight / 2 - heightOfItems.current[current] / 2;
 		transforms[current].scale = 1;

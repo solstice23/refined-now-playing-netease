@@ -729,11 +729,11 @@ body.use-notosans {
 	.g-single-track .g-singlec-ct .n-single .mn .lyric *:not(.no-force-font),
 	.n-single .head *:not(.no-force-font) {
 		font-family:
-			'Source Han Sans VF',
-			'Source Han Sans',
 			'Source Han Sans CN',
 			'Noto Sans',
-			'思源黑体' !important;
+			'思源黑体',
+			'Source Han Sans VF',
+			'Source Han Sans' !important;
 	}
 }
 

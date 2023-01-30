@@ -177,6 +177,9 @@ export const argb2Rgb = (x) => {
 	const b = x & 0xff;
 	return [r, g, b];
 };
+export const rgb2Argb = (r, g, b) => {
+	return (0xff << 24) | (r << 16) | (g << 8) | b;
+};
 export const Rgb2Hex = (r, g, b) => {
 	return '#' + [r, g, b].map((x) => {
 		const hex = x.toString(16);
