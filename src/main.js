@@ -7,6 +7,7 @@ import { getSetting, setSetting, chunk } from './utils.js';
 import { Background } from './background.js';
 import { Lyrics } from './lyrics.js';
 import { themeFromSourceColor, QuantizerCelebi, Hct, Score } from "@importantimport/material-color-utilities";
+import { compatibilityWizard } from './compatibility-check.js';
 
 let pluginPath;
 const loadFile = async (path) => {
@@ -571,10 +572,12 @@ Object.defineProperty(HTMLImageElement.prototype, 'src', {
 
 plugin.onLoad(async (p) => {
 	pluginPath = p.pluginPath;
+	
+	compatibilityWizard();
 
 	document.body.classList.add('refined-now-playing');
 
-	const bodyObserver = new MutationObserver(async (mutations) => { // Now playing page
+	new MutationObserver(async (mutations) => { // Now playing page
 		if (document.querySelector('.g-single:not(.patched)')) {
 			document.querySelector('.g-single').classList.add('patched');
 			const background = document.createElement('div');
@@ -602,8 +605,8 @@ plugin.onLoad(async (p) => {
 				oldLyrics.parentNode.insertBefore(lyrics, oldLyrics.nextSibling);
 				oldLyrics.remove();
 			}
+			addSettingsMenu();
 		}
-		addSettingsMenu();
 	}).observe(document.body, { childList: true });
 
 	new MutationObserver((mutations) => {
@@ -688,8 +691,8 @@ plugin.onLoad(async (p) => {
 				/>
 			, background);
 			document.querySelector('#page_pc_userfm_songplay').appendChild(background);
+			addSettingsMenu(true);
 		}
-		addSettingsMenu(true);
 	};
 	let FMObserver = new MutationObserver(patchFM);
 	window.addEventListener('hashchange', async () => {
@@ -714,6 +717,11 @@ plugin.onConfig((tools) => {
 		dom("span", { innerHTML: "打开正在播放界面以调整设置 " , style: { fontSize: "18px" } }),
 		tools.makeBtn("打开", async () => {
 			document.querySelector("a[data-action='max']").click();
+		}),
+		dom("div", { innerHTML: "" , style: { height: "20px" } }),
+		dom("span", { innerHTML: "进入兼容性检查页面 " , style: { fontSize: "18px" } }),
+		tools.makeBtn("兼容性检查", async () => {
+			compatibilityWizard(true);
 		})
 	);
 });
