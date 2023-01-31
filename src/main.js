@@ -68,16 +68,23 @@ const updateAccentColor = (name, argb, isFM = false) => {
 	if (isFM) {
 		document.querySelector('.g-mn:not(.better-ncm-manager)').style.setProperty(`--${name}`, `rgb(${r}, ${g}, ${b})`);
 		document.querySelector('.g-mn:not(.better-ncm-manager)').style.setProperty(`--${name}-rgb`, `${r}, ${g}, ${b}`);
+		return;
 	}
 	document.body.style.setProperty(`--${name}`, `rgb(${r}, ${g}, ${b})`);
 	document.body.style.setProperty(`--${name}-rgb`, `${r}, ${g}, ${b}`);
 }
 
 const useGreyAccentColor = (isFM = false) => {
-	updateAccentColor('rnp-accent-color', rgb2Argb(150, 150, 150), isFM);
-	updateAccentColor('rnp-accent-color-on-primary', rgb2Argb(250, 250, 250), isFM);
-	updateAccentColor('rnp-accent-color-shade-1', rgb2Argb(210, 210, 210), isFM);
-	updateAccentColor('rnp-accent-color-shade-2', rgb2Argb(255, 255, 255), isFM);
+	updateAccentColor('rnp-accent-color-dark', rgb2Argb(150, 150, 150), isFM);
+	updateAccentColor('rnp-accent-color-on-primary-dark', rgb2Argb(250, 250, 250), isFM);
+	updateAccentColor('rnp-accent-color-shade-1-dark', rgb2Argb(210, 210, 210), isFM);
+	updateAccentColor('rnp-accent-color-shade-2-dark', rgb2Argb(255, 255, 255), isFM);
+
+	
+	updateAccentColor('rnp-accent-color-light', rgb2Argb(120, 120, 120), isFM);
+	updateAccentColor('rnp-accent-color-on-primary-light', rgb2Argb(10, 10, 10), isFM);
+	updateAccentColor('rnp-accent-color-shade-1-light', rgb2Argb(40, 40, 40), isFM);
+	updateAccentColor('rnp-accent-color-shade-2-light', rgb2Argb(20, 20, 20), isFM);
 }
 
 
@@ -107,10 +114,15 @@ const calcAccentColor = (dom, isFM = false) => {
 	const theme = themeFromSourceColor(top);
 
 	// theme.schemes.light.bgDarken = (Hct.from(theme.palettes.neutral.hue, theme.palettes.neutral.chroma, 97.5)).toInt();
-	updateAccentColor('rnp-accent-color', theme.schemes.dark.primary, isFM);
-	updateAccentColor('rnp-accent-color-on-primary', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 100)).toInt(), isFM);
-	updateAccentColor('rnp-accent-color-shade-1', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 80)).toInt(), isFM);
-	updateAccentColor('rnp-accent-color-shade-2', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 90)).toInt(), isFM);
+	updateAccentColor('rnp-accent-color-dark', theme.schemes.dark.primary, isFM);
+	updateAccentColor('rnp-accent-color-on-primary-dark', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 20)).toInt(), isFM);
+	updateAccentColor('rnp-accent-color-shade-1-dark', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 80)).toInt(), isFM);
+	updateAccentColor('rnp-accent-color-shade-2-dark', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 90)).toInt(), isFM);
+
+	updateAccentColor('rnp-accent-color-light', theme.schemes.light.onPrimaryContainer, isFM);
+	updateAccentColor('rnp-accent-color-on-primary-light', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 100)).toInt(), isFM);
+	updateAccentColor('rnp-accent-color-shade-1-light', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 25)).toInt(), isFM);
+	updateAccentColor('rnp-accent-color-shade-2-light', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 15)).toInt(), isFM);
 }
 
 var lastCDImage = '';
@@ -255,7 +267,7 @@ const calcTitleScroll = () => {
 		titleContainer.innerHTML = '';
 		titleContainer.appendChild(titleInner);
 	}
-	const containerWidth = titleContainer.clientWidth;
+	/*const containerWidth = titleContainer.clientWidth;
 	const innerWidth = titleContainer.querySelector('.name-inner').clientWidth;
 	if (containerWidth < innerWidth && innerWidth - containerWidth < 20) {
 		titleSizeController.innerHTML = `
@@ -270,7 +282,7 @@ const calcTitleScroll = () => {
 		titleContainer.classList.remove('scroll');
 	}
 	titleContainer.style.setProperty('--scroll-offset', `${innerWidth - containerWidth}px`);
-	titleContainer.style.setProperty('--scroll-speed', `${(innerWidth - containerWidth) / 30}s`);
+	titleContainer.style.setProperty('--scroll-speed', `${(innerWidth - containerWidth) / 30}s`);*/
 }
 
 waitForElement("#main-player, .m-pinfo", (dom) => {
@@ -424,7 +436,6 @@ const addSettingsMenu = async (isFM = false) => {
 		const enableAccentColor = getOptionDom('#enable-accent-color');
 		const useNotosans = getOptionDom('#use-notosans');
 		const hideComments = getOptionDom('#hide-comments');
-		const lyricBreakWord = getOptionDom('#lyric-break-word');
 		const partialBg = getOptionDom('#partial-bg');
 		const gradientBgDynamic = getOptionDom('#gradient-bg-dynamic');
 
@@ -432,7 +443,6 @@ const addSettingsMenu = async (isFM = false) => {
 		bindCheckboxToClass(enableAccentColor, 'enable-accent-color', true);
 		bindCheckboxToClass(useNotosans, 'use-notosans', false);
 		bindCheckboxToClass(hideComments, 'hide-comments', false);
-		bindCheckboxToClass(lyricBreakWord, 'lyric-break-word', true);
 		bindCheckboxToClass(partialBg, 'partial-bg', false);
 		bindCheckboxToClass(gradientBgDynamic, 'gradient-bg-dynamic', true);
 		
@@ -473,10 +483,13 @@ const addSettingsMenu = async (isFM = false) => {
 
 		const verticalAlign = getOptionDom('#vertical-align');
 		const backgroundType = getOptionDom('#background-type');
+		const colorScheme = getOptionDom('#color-scheme');
 		bindSelectGroupToClasses(verticalAlign, 'bottom', (x) => { return 'vertical-align-' + x }, () => { recalculateVerticalAlignMiddleOffset() });
 		bindSelectGroupToClasses(backgroundType, 'fluid', (x) => `rnp-bg-${x}`, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-background-type', { detail: { type: x } }));
 		});
+		bindSelectGroupToClasses(colorScheme, 'auto', (x) => `rnp-${x}`);
+
 
 		const lyricOffsetAdd = getOptionDom('#rnp-lyric-offset-add');
 		const lyricOffsetSub = getOptionDom('#rnp-lyric-offset-sub');
@@ -710,6 +723,18 @@ plugin.onLoad(async (p) => {
 		FMObserver.observe(document.body, { childList: true });
 		window.dispatchEvent(new Event('recalc-lyrics'));
 	});
+
+	// Listen system theme change
+	const toggleSystemDarkmodeClass = (media) => {
+		document.body.classList.add(media.matches ? 'rnp-system-dark' : 'rnp-system-light');
+		document.body.classList.remove(media.matches ? 'rnp-system-light' : 'rnp-system-dark');
+		if (document.body.classList.contains('rnp-system-dynamic-theme-auto')) {
+			window.mdThemeType = media.matches ? 'dark' : 'light';
+		}
+	};
+	const systemDarkmodeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+	systemDarkmodeMedia.addEventListener('change', () => { toggleSystemDarkmodeClass(systemDarkmodeMedia); });
+	toggleSystemDarkmodeClass(systemDarkmodeMedia);
 });
 
 plugin.onConfig((tools) => {

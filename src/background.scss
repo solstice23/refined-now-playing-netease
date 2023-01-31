@@ -29,7 +29,7 @@
 			position: absolute;
 			width: 100%;
 			height: 100%;
-			background: #000;
+			background: var(--rnp-accent-color-overlay);
 			opacity: var(--bg-dim, 0.55);
 			pointer-events: none;
 		}
@@ -52,7 +52,7 @@
 			position: absolute;
 			width: 100%;
 			height: 100%;
-			background: #000;
+			background: var(--rnp-accent-color-overlay);
 			opacity: var(--bg-dim-for-gradient-bg, 0.45);
 			pointer-events: none;
 		}
@@ -121,7 +121,7 @@
 			position: absolute;
 			width: 100%;
 			height: 100%;
-			background: #000;
+			background: var(--rnp-accent-color-overlay);
 			opacity: var(--bg-dim-for-fluid-bg, 0.3);
 			z-index: 1;
 			pointer-events: none;
@@ -154,3 +154,8 @@ body.gradient-bg-dynamic .rnp-bg .rnp-background-gradient {
 
 
 
+body.rnp-light {
+	.rnp-background-fluid-rect {
+		filter: saturate(1.3) brightness(1.2) url(#fluid-filter) !important;
+	}
+}

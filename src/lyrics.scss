@@ -28,7 +28,6 @@
 	.rnp-lyrics-switch-btn {
 		background-color: rgba(var(--rnp-accent-color-rgb), 0.3);
 		color: var(--rnp-accent-color-on-primary);
-		color: #fff;
 		border: none;
 		font-size: 14px;
 		margin-top: 5px;
@@ -205,7 +204,7 @@
 		right: -5px;
 		bottom: -10px;
 		border-radius: 10px;
-		background-color: #fff;
+		background-color: var(--rnp-accent-color-contrast);
 		opacity: 0;
 		z-index: 0;
 		transition: opacity .2s ease;
@@ -225,7 +224,7 @@
 		position: absolute;
 		right: 0;
 		width: 100%;
-		background-color: #ffffff;
+		background-color: var(--rnp-accent-color-contrast);
 		opacity: .2;
 		border-radius: 100px;
 		transition-property: top, opacity;

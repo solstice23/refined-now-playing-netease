@@ -311,7 +311,8 @@ export function Lyrics(props) {
 
 		if (!scrollingMode) recalcHeightOfItems();
 		//console.log(currentLine, current);
-		transforms[current].top = containerHeight / 2 - heightOfItems.current[current] / 2;
+		//transforms[current].top = containerHeight / 2 - heightOfItems.current[current] / 2;
+		transforms[current].top = containerRef.current.clientHeight / 2 - heightOfItems.current[current] / 2;
 		transforms[current].scale = 1;
 		transforms[current].delay = delayByOffset(0);
 		transforms[current].blur = blurByOffset(0);
@@ -566,7 +567,7 @@ export function Lyrics(props) {
 						jumpToTime={isPureMusic ? () => {} : jumpToTime}
 						transforms={lineTransforms[index] ?? { top: 0, scale: 1, delay: 0, blur: 0 }}
 						outOfRangeScrolling={scrollingMode && length > 100 && Math.abs(index - scrollingFocusLine) > 20}
-						outOfRangeKaraoke={length > 100 && Math.abs(index - currentLine) > 20}
+						outOfRangeKaraoke={/*length > 100 && */Math.abs(index - currentLine) > 10}
 					/>
 				})}
 			</div>

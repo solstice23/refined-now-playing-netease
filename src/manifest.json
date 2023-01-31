@@ -3,12 +3,13 @@
     "name": "RefinedNowPlaying",
     "author": "solstice23",
     "author_links": ["https://github.com/solstice23"],
-    "description": "重新设计的正在播放页面 | 流体背景 | 逐字歌词 | 弹性歌词滚动 (如果无法安装请更新最新测试版 BetterNCM)",
+    "description": "重新设计的正在播放页面 (如果无法安装请更新最新测试版 BetterNCM)",
     "preview": "preview.jpg",
-    "version": "2.1.0",
+    "version": "2.2.0",
     "type": "extension",
     "requirements": ["liblyric"],
-    "loadAfter": ["liblyric"],
+    "loadAfter": ["liblyric", "LibFrontendPlay"],
+    "incompatible": ["Apple-Musiclike-lyrics"],
     "betterncm_version": ">=1.0.0",
     "injects": {
         "Main": [

@@ -3,19 +3,27 @@
 	<div class="rnp-group">
 		<div class="rnp-group-title">外观</div>
 		<div class="rnp-select-group-wrapper">
-			<label for="vertical-align" class="rnp-select-group-label">垂直对齐</label>
-			<div class="rnp-select-group" id="vertical-align">
-				<button class="rnp-select-group-btn selected" value="bottom">居下</button>
-				<button class="rnp-select-group-btn" value="middle">居中</button>
+			<label for="color-scheme" class="rnp-select-group-label">颜色模式</label>
+			<div class="rnp-select-group" id="color-scheme">
+				<button class="rnp-select-group-btn" value="dark">暗色</button>
+				<button class="rnp-select-group-btn" value="light">亮色</button>
+				<button class="rnp-select-group-btn selected" value="auto">系统</button>
 			</div>
+		</div>
+		<div class="rnp-checkbox-wrapper">
+			<input id="enable-accent-color" type="checkbox" class="rnp-checkbox">
+			<label for="enable-accent-color" class="rnp-checkbox-label">沉浸主题色</label>
 		</div>
 		<div class="rnp-checkbox-wrapper">
 			<input id="rectangle-cover" type="checkbox" class="rnp-checkbox">
 			<label for="rectangle-cover" class="rnp-checkbox-label">方形专辑封面</label>
 		</div>
-		<div class="rnp-checkbox-wrapper">
-			<input id="enable-accent-color" type="checkbox" class="rnp-checkbox">
-			<label for="enable-accent-color" class="rnp-checkbox-label">沉浸主题色</label>
+		<div class="rnp-select-group-wrapper">
+			<label for="vertical-align" class="rnp-select-group-label">封面垂直对齐</label>
+			<div class="rnp-select-group" id="vertical-align">
+				<button class="rnp-select-group-btn selected" value="bottom">居下</button>
+				<button class="rnp-select-group-btn" value="middle">居中</button>
+			</div>
 		</div>
 		<div class="rnp-checkbox-wrapper">
 			<input id="use-notosans" type="checkbox" class="rnp-checkbox">
@@ -101,11 +109,6 @@
 			<input id="hide-comments" type="checkbox" class="rnp-checkbox">
 			<label for="hide-comments" class="rnp-checkbox-label">隐藏评论区</label>
 		</div>
-		<div class="rnp-checkbox-wrapper">
-			<input id="lyric-break-word" type="checkbox" class="rnp-checkbox">
-			<label for="lyric-break-word" class="rnp-checkbox-label">优化歌词断行</label>
-		</div>
-		<span class="rnp-checkbox-note">不在单词内部断行</span>
 		<div class="rnp-slider-wrapper album-size with-ticks">
 			<label for="album-size" class="rnp-slider-label">专辑封面清晰度<button class="rnp-slider-reset"></button></label>
 			<input id="album-size" type="range" class="rnp-slider" min="200" max="800" value="200" default="200" step="200">
