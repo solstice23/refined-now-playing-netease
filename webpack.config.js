@@ -43,12 +43,18 @@ const config = {
     // Learn more about plugins from https://webpack.js.org/configuration/plugins/
   ],
   resolve: {
+    extensions: ['.tsx', '.ts', '.js'],
     fallback: {
       "path": require.resolve("path-browserify")
     }
   },
   module: {
     rules: [
+      {
+          test: /\.tsx?$/,
+          use: 'ts-loader',
+          exclude: /node_modules/,
+      },
       {
         test: /\.(js|jsx)$/i,
         loader: "babel-loader",

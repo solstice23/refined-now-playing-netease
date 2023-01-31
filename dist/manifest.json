@@ -5,10 +5,10 @@
     "author_links": ["https://github.com/solstice23"],
     "description": "重新设计的正在播放页面 (如果无法安装请更新最新测试版 BetterNCM)",
     "preview": "preview.jpg",
-    "version": "2.2.0",
+    "version": "2.2.1",
     "type": "extension",
-    "requirements": ["liblyric"],
-    "loadAfter": ["liblyric", "LibFrontendPlay"],
+    "requirements": [],
+    "loadAfter": ["LibFrontendPlay"],
     "incompatible": ["Apple-Musiclike-lyrics"],
     "betterncm_version": ">=1.0.0",
     "injects": {

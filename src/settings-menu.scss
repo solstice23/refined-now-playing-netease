@@ -187,6 +187,8 @@
 	padding-top: 4px;
 	padding-bottom: 4px;
 	transition: background-color .3s ease;
+	white-space: nowrap;
+    min-width: 40px;
 }
 .rnp-select-group-btn:first-child {
 	border-radius: 6px 0 0 6px;
@@ -306,7 +308,8 @@ body:not(.rnp-bg-blur) .bg-blur,
 body:not(.rnp-bg-gradient) .gradient-bg-dynamic,
 body:not(.rnp-bg-gradient) .bg-dim-for-gradient-bg,
 body:not(.rnp-bg-blur) .bg-dim, 
-body:not(.rnp-bg-fluid) .bg-dim-for-fluid-bg {
+body:not(.rnp-bg-fluid) .bg-dim-for-fluid-bg,
+body.rnp-bg-none .partial-bg {
 	opacity: 0;
 	height: 0;
 	padding-bottom: 0;

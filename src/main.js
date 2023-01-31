@@ -2,7 +2,7 @@ import './styles.scss';
 import './FM.scss'
 import settingsMenuHTML from './settings-menu.html';
 import './settings-menu.scss';
-import {normalizeColor, calcWhiteShadeColor, getGradientFromPalette, argb2Rgb, rgb2Argb} from './color-utils.js';
+import { argb2Rgb, rgb2Argb} from './color-utils.js';
 import { getSetting, setSetting, chunk } from './utils.js';
 import { Background } from './background.js';
 import { Lyrics } from './lyrics.js';

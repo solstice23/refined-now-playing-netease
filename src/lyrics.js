@@ -1,4 +1,4 @@
-
+import { parseLyric } from './liblyric/index.ts'
 import { getSetting, setSetting } from './utils.js';
 import './lyrics.scss';
 
@@ -20,10 +20,10 @@ window.onProcessLyrics = (lyrics) => {
 	const processedLyrics = preProcessLyrics(lyrics);
 	if (!_isEqual(processedLyrics, currentRawLyrics)) {
 		currentRawLyrics = processedLyrics;
-		console.log('update raw lyrics', currentRawLyrics);
+		//console.log('update raw lyrics', currentRawLyrics);
 		setTimeout(async () => {
 			currentLyrics = await processLyrics(processedLyrics);
-			console.log('update lyrics', currentLyrics);
+			console.log('update processed lyrics', currentLyrics);
 			document.dispatchEvent(new CustomEvent('lyrics-updated', {detail: currentLyrics}));
 		}, 0);
 	}
@@ -40,14 +40,14 @@ const preProcessLyrics = (lyrics) => {
 	const dynamic = lyrics?.yrc?.lyric ?? '';
 	const approxLines = original.match(/\[(.*?)\]/g)?.length ?? 0;
 
-	const parsed = loadedPlugins.liblyric.parseLyric(
+	const parsed = parseLyric(
 		original,
 		translation,
 		roma,
 		dynamic
 	);
-	if (approxLines - parsed.length > approxLines * 0.2) { // 某些特殊情况（逐字歌词残缺不全）
-		return loadedPlugins.liblyric.parseLyric(
+	if (approxLines - parsed.length > approxLines * 0.7) { // 某些特殊情况（逐字歌词残缺不全）
+		return parseLyric(
 			original,
 			translation,
 			roma

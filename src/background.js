@@ -69,6 +69,9 @@ export function Background(props) {
 			{type === 'fluid' && (
 				<FluidBackground url={url} />
 			)}
+			{type === 'none' && (
+				<></>
+			)}
 		</>
 	);
 }

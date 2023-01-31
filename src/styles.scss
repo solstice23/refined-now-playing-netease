@@ -357,6 +357,8 @@ body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
 			margin-left: 2px;
 			margin-right: 3px;
 			transform: none;
+			-webkit-mask-image: none;
+			background: transparent;
 		}
 		.inf {
 			transform: translateY(16px);
