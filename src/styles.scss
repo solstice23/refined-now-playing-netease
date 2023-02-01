@@ -4,50 +4,60 @@ body {
 
 
 body.rnp-dark, body:not(.rnp-light), body.rnp-auto.rnp-system-dark {
-    --rnp-accent-color: var(--rnp-accent-color-dark);
-    --rnp-accent-color-rgb: var(--rnp-accent-color-dark-rgb);
-    --rnp-accent-color-on-primary: var(--rnp-accent-color-on-primary-dark);
-    --rnp-accent-color-on-primary-rgb: var(--rnp-accent-color-on-primary-dark-rgb);
-    --rnp-accent-color-shade-1: var(--rnp-accent-color-shade-1-dark);
-    --rnp-accent-color-shade-1-rgb: var(--rnp-accent-color-shade-1-dark-rgb);
-    --rnp-accent-color-shade-2: var(--rnp-accent-color-shade-2-dark);
-    --rnp-accent-color-shade-2-rgb: var(--rnp-accent-color-shade-2-dark-rgb);
-	--rnp-accent-color-overlay: #000;
-	--rnp-accent-color-contrast: #fff;
+	> * {
+		--rnp-accent-color: var(--rnp-accent-color-dark);
+		--rnp-accent-color-rgb: var(--rnp-accent-color-dark-rgb);
+		--rnp-accent-color-on-primary: var(--rnp-accent-color-on-primary-dark);
+		--rnp-accent-color-on-primary-rgb: var(--rnp-accent-color-on-primary-dark-rgb);
+		--rnp-accent-color-shade-1: var(--rnp-accent-color-shade-1-dark);
+		--rnp-accent-color-shade-1-rgb: var(--rnp-accent-color-shade-1-dark-rgb);
+		--rnp-accent-color-shade-2: var(--rnp-accent-color-shade-2-dark);
+		--rnp-accent-color-shade-2-rgb: var(--rnp-accent-color-shade-2-dark-rgb);
+		--rnp-accent-color-overlay: #000;
+		--rnp-accent-color-contrast: #fff;
+		--rnp-drop-shadow: drop-shadow(0px 4px 5px rgba(0, 0, 0, 0.3));
+	}
 	&:not(.enable-accent-color), &:not([style*='--rnp-accent-color']) {
-		--rnp-accent-color: #aaa !important;
-		--rnp-accent-color-rgb: 170, 170, 170 !important;
-		--rnp-accent-color-on-primary: #eee !important;
-		--rnp-accent-color-on-primary-rgb: 238, 238, 238 !important;
-		--rnp-accent-color-shade-1: #eee !important;
-		--rnp-accent-color-shade-1-rgb: 238, 238, 238 !important;
-		--rnp-accent-color-shade-2: #fff !important;
-		--rnp-accent-color-shade-2-rgb: 255, 255, 255 !important;
+		> * {
+			--rnp-accent-color: #aaa !important;
+			--rnp-accent-color-rgb: 170, 170, 170 !important;
+			--rnp-accent-color-on-primary: #eee !important;
+			--rnp-accent-color-on-primary-rgb: 238, 238, 238 !important;
+			--rnp-accent-color-shade-1: #eee !important;
+			--rnp-accent-color-shade-1-rgb: 238, 238, 238 !important;
+			--rnp-accent-color-shade-2: #fff !important;
+			--rnp-accent-color-shade-2-rgb: 255, 255, 255 !important;
+		}
 	}
 }
 body.rnp-light, body.rnp-auto.rnp-system-light {
-    --rnp-accent-color: var(--rnp-accent-color-light);
-    --rnp-accent-color-rgb: var(--rnp-accent-color-light-rgb);
-    --rnp-accent-color-on-primary: var(--rnp-accent-color-on-primary-light);
-    --rnp-accent-color-on-primary-rgb: var(--rnp-accent-color-on-primary-light-rgb);
-    --rnp-accent-color-shade-1: var(--rnp-accent-color-shade-1-light);
-    --rnp-accent-color-shade-1-rgb: var(--rnp-accent-color-shade-1-light-rgb);
-    --rnp-accent-color-shade-2: var(--rnp-accent-color-shade-2-light);
-    --rnp-accent-color-shade-2-rgb: var(--rnp-accent-color-shade-2-light-rgb);
-	--rnp-accent-color-overlay: #fff;
-	--rnp-accent-color-contrast: #000;
-	&:not(.enable-accent-color), &:not([style*='--rnp-accent-color']) {
-		--rnp-accent-color: #323232 !important;
-		--rnp-accent-color-rgb: 50, 50, 50 !important;
-		--rnp-accent-color-on-primary: #000 !important;
-		--rnp-accent-color-on-primary-rgb: 0, 0, 0 !important;
-		--rnp-accent-color-shade-1: #232323 !important;
-		--rnp-accent-color-shade-1-rgb: 35, 35, 35 !important;
-		--rnp-accent-color-shade-2: #0f0f0f !important;
-		--rnp-accent-color-shade-2-rgb: 15, 15, 15 !important;
+	> * {
+		--rnp-accent-color: var(--rnp-accent-color-light);
+		--rnp-accent-color-rgb: var(--rnp-accent-color-light-rgb);
+		--rnp-accent-color-on-primary: var(--rnp-accent-color-on-primary-light);
+		--rnp-accent-color-on-primary-rgb: var(--rnp-accent-color-on-primary-light-rgb);
+		--rnp-accent-color-shade-1: var(--rnp-accent-color-shade-1-light);
+		--rnp-accent-color-shade-1-rgb: var(--rnp-accent-color-shade-1-light-rgb);
+		--rnp-accent-color-shade-2: var(--rnp-accent-color-shade-2-light);
+		--rnp-accent-color-shade-2-rgb: var(--rnp-accent-color-shade-2-light-rgb);
+		--rnp-accent-color-overlay: #fff;
+		--rnp-accent-color-contrast: #000;
+		--rnp-drop-shadow: drop-shadow(0px 4px 5px rgba(255, 255, 255, 0.25));
+		.rnp-settings-menu {
+			background: #00000066;
+		}
 	}
-	.rnp-settings-menu {
-		background: #00000066;
+	&:not(.enable-accent-color), &:not([style*='--rnp-accent-color']) {
+		> * {
+			--rnp-accent-color: #323232 !important;
+			--rnp-accent-color-rgb: 50, 50, 50 !important;
+			--rnp-accent-color-on-primary: #000 !important;
+			--rnp-accent-color-on-primary-rgb: 0, 0, 0 !important;
+			--rnp-accent-color-shade-1: #232323 !important;
+			--rnp-accent-color-shade-1-rgb: 35, 35, 35 !important;
+			--rnp-accent-color-shade-2: #0f0f0f !important;
+			--rnp-accent-color-shade-2-rgb: 15, 15, 15 !important;
+		}
 	}
 }
 
@@ -323,6 +333,7 @@ body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
 			// max-width: calc(100% - 10px);
 			animation: none;
 			overflow: hidden;
+			width: 100%;
 		}
 		.inf .title h1 .tag-wrap {
 			display: inline-block;
@@ -625,7 +636,8 @@ body.mq-playing .m-pinfo .btn-love.loved svg{
 	display: none;
 }
 .m-pinfo .btn {
-	border-color: rgba(var(--rnp-accent-color-shade-2-rgb), 0.1) !important;
+	// border-color: rgba(var(--rnp-accent-color-shade-2-rgb), 0.1) !important;
+	border-color: transparent !important;
 	svg {
 		fill: rgba(var(--rnp-accent-color-rgb), 0.8) !important;
 	}
@@ -917,5 +929,50 @@ body.rnp-light {
 				background: rgba(0, 0, 0, 0.08) !important;
 			}
 		}
+	}
+	&.mq-playing {
+		.m-player .brt .brttext.local {
+			border: 1px solid rgba(0, 0, 0, 0.8);
+			color: rgba(0, 0, 0, 0.8);
+		}
+	}
+}
+
+body.rnp-shadow {
+	.rnp-lyrics-line > div,
+	.g-single-track .g-singlec-ct .n-single .mn .head .inf .title,
+	.g-single-track .g-singlec-ct .n-single .mn .head .inf .info,
+	.m-fm > .g-play .fmlrc {
+		filter: var(--rnp-drop-shadow);
+	}
+}
+
+body.horizontal-align-center {
+	.g-single-track .g-singlec-ct .n-single .mn .head .inf .info ul li {
+		text-align: center;
+	}
+	.g-single-track .g-singlec-ct .n-single .mn .head .inf .info .alias {
+		text-align: center;
+	}
+	.g-single-track .g-singlec-ct .n-single .mn .head .inf .title h1 .name .name-inner {
+		text-align: center;
+	}
+	.g-single-track .g-singlec-ct .n-single .mn .head .inf .title h1 .tag-wrap {
+		text-align: center;
+		width: 100%;
+	}
+	.g-single-track .g-singlec-ct .n-single .sd {
+		margin-left: calc(22.5% + 36px);
+		.sd-wrap {
+			transform: translateX(-50%);
+		}
+	}
+	.m-fm > .g-play .fmplay > * {
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.m-playlrc .inf {
+		text-align: center;
+		margin-left: 60px;
 	}
 }

@@ -660,6 +660,7 @@ function Line(props) {
 		if (!karaokeLineRef.current) return;
 		karaokeLineRef.current.classList.add('force-refresh');
 		setTimeout(() => {
+			if (!karaokeLineRef.current) return;
 			karaokeLineRef.current.classList.remove('force-refresh');
 		}, 6);
 	}, [props.useKaraokeLyrics, props.seekCounter]);

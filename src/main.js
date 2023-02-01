@@ -438,6 +438,7 @@ const addSettingsMenu = async (isFM = false) => {
 		const hideComments = getOptionDom('#hide-comments');
 		const partialBg = getOptionDom('#partial-bg');
 		const gradientBgDynamic = getOptionDom('#gradient-bg-dynamic');
+		const textShadow = getOptionDom('#text-shadow');
 
 		bindCheckboxToClass(rectangleCover, 'rectangle-cover', true);
 		bindCheckboxToClass(enableAccentColor, 'enable-accent-color', true);
@@ -445,6 +446,7 @@ const addSettingsMenu = async (isFM = false) => {
 		bindCheckboxToClass(hideComments, 'hide-comments', false);
 		bindCheckboxToClass(partialBg, 'partial-bg', false);
 		bindCheckboxToClass(gradientBgDynamic, 'gradient-bg-dynamic', true);
+		bindCheckboxToClass(textShadow, 'rnp-shadow', false);
 		
 		bindCheckboxToFunction(lyricBlur, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-lyric-blur', { detail: x }));
@@ -482,9 +484,11 @@ const addSettingsMenu = async (isFM = false) => {
 		}, 32, 'change'); 
 
 		const verticalAlign = getOptionDom('#vertical-align');
+		const horizontalAlign = getOptionDom('#horizontal-align');
 		const backgroundType = getOptionDom('#background-type');
 		const colorScheme = getOptionDom('#color-scheme');
 		bindSelectGroupToClasses(verticalAlign, 'bottom', (x) => { return 'vertical-align-' + x }, () => { recalculateVerticalAlignMiddleOffset() });
+		bindSelectGroupToClasses(horizontalAlign, 'left', (x) => { return 'horizontal-align-' + x });
 		bindSelectGroupToClasses(backgroundType, 'fluid', (x) => `rnp-bg-${x}`, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-background-type', { detail: { type: x } }));
 		});

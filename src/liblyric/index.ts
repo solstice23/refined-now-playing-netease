@@ -48,6 +48,8 @@ export const PURE_MUSIC_LYRIC_DATA = {
 
 const simularityCache: Record<string, number> = {};
 function calcSimularity(a: string, b: string) {
+	if (typeof(a) === "undefined") a = "";
+	if (typeof(b) === "undefined") b = "";
 	const key = `${a}::${b}`;
 	if (simularityCache[key] !== undefined) {
 		return simularityCache[key];

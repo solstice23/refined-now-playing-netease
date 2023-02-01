@@ -15,8 +15,15 @@
 			<label for="enable-accent-color" class="rnp-checkbox-label">沉浸主题色</label>
 		</div>
 		<div class="rnp-checkbox-wrapper">
-			<input id="rectangle-cover" type="checkbox" class="rnp-checkbox">
-			<label for="rectangle-cover" class="rnp-checkbox-label">方形专辑封面</label>
+			<input id="text-shadow" type="checkbox" class="rnp-checkbox">
+			<label for="text-shadow" class="rnp-checkbox-label">文字阴影</label>
+		</div>
+		<div class="rnp-select-group-wrapper">
+			<label for="horizontal-align" class="rnp-select-group-label">封面水平对齐</label>
+			<div class="rnp-select-group" id="horizontal-align">
+				<button class="rnp-select-group-btn selected" value="bottom">居左</button>
+				<button class="rnp-select-group-btn" value="center">居中</button>
+			</div>
 		</div>
 		<div class="rnp-select-group-wrapper">
 			<label for="vertical-align" class="rnp-select-group-label">封面垂直对齐</label>
@@ -26,10 +33,9 @@
 			</div>
 		</div>
 		<div class="rnp-checkbox-wrapper">
-			<input id="use-notosans" type="checkbox" class="rnp-checkbox">
-			<label for="use-notosans" class="rnp-checkbox-label">思源黑体</label>
+			<input id="rectangle-cover" type="checkbox" class="rnp-checkbox">
+			<label for="rectangle-cover" class="rnp-checkbox-label">方形专辑封面</label>
 		</div>
-		<span class="rnp-checkbox-note">需要电脑中有此字体</span>
 	</div>
 
 	<div class="rnp-group">
@@ -110,6 +116,11 @@
 			<input id="hide-comments" type="checkbox" class="rnp-checkbox">
 			<label for="hide-comments" class="rnp-checkbox-label">隐藏评论区</label>
 		</div>
+		<div class="rnp-checkbox-wrapper">
+			<input id="use-notosans" type="checkbox" class="rnp-checkbox">
+			<label for="use-notosans" class="rnp-checkbox-label">思源黑体</label>
+		</div>
+		<span class="rnp-checkbox-note">需要电脑中有此字体</span>
 		<div class="rnp-slider-wrapper album-size with-ticks">
 			<label for="album-size" class="rnp-slider-label">专辑封面清晰度<button class="rnp-slider-reset"></button></label>
 			<input id="album-size" type="range" class="rnp-slider" min="200" max="800" value="200" default="200" step="200">
