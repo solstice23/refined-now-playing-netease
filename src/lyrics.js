@@ -7,7 +7,8 @@ import _isEqual from 'lodash/isEqual';
 const useState = React.useState;
 const useEffect = React.useEffect;
 const useLayoutEffect = React.useLayoutEffect;
-const useMemo  = React.useMemo;
+const useMemo = React.useMemo;
+const useCallback = React.useCallback;
 const useRef = React.useRef;
 
 
@@ -32,7 +33,8 @@ window.onProcessLyrics = (lyrics) => {
 
 const preProcessLyrics = (lyrics) => {
 	if (!lyrics) return null;
-	if (!lyrics.lrc) return null;
+	if (!lyrics.lrc) lyrics.lrc = {};
+
 	
 	const original = (lyrics?.lrc?.lyric ?? '').replace(/\u3000/g, ' ');
 	const translation = lyrics?.ytlrc?.lyric ?? lyrics?.ttlrc?.lyric ?? lyrics?.tlyric?.lyric ?? '';
@@ -137,6 +139,11 @@ export function Lyrics(props) {
 	const [showTranslation, setShowTranslation] = useState(getSetting('show-translation', true));
 	const [showRomaji, setShowRomaji] = useState(getSetting('show-romaji', true));
 	const [useKaraokeLyrics, setUseKaraokeLyrics] = useState(getSetting('use-karaoke-lyrics', true));
+
+	const [overviewMode, setOverviewMode] = useState(false);
+	const [overviewModeScrolling, setOverviewModeScrolling] = useState(false);
+	const exitOverviewModeScrollingTimeout = useRef(null);
+	const overviewContainerRef = useRef(null);
 
 	const [lineTransforms, setLineTransforms] = useState([]);
 	const shouldTransit = useRef(true);
@@ -420,7 +427,7 @@ export function Lyrics(props) {
 		}
 	});
 
-	const jumpToTime = React.useCallback((time) => {
+	const jumpToTime = useCallback((time) => {
 		time -= globalOffset;
 		shouldTransit.current = true;
 		setScrollingMode(false);
@@ -442,8 +449,9 @@ export function Lyrics(props) {
 		}
 	}, [songId, playState, globalOffset]);
 
+	// Scrolling mode
 	
-	const exitScrollingModeSoon = React.useCallback((timeout = 2000) => {
+	const exitScrollingModeSoon = useCallback((timeout = 2000) => {
 		cancelExitScrollingModeTimeout();
 		exitScrollingModeTimeout.current = setTimeout(() => {
 			setScrollingMode(false);
@@ -452,14 +460,14 @@ export function Lyrics(props) {
 		}, timeout);
 	}, [currentLine]);
 
-	const cancelExitScrollingModeTimeout = React.useCallback(() => {
+	const cancelExitScrollingModeTimeout = useCallback(() => {
 		if (exitScrollingModeTimeout.current) {
 			clearTimeout(exitScrollingModeTimeout.current);
 			exitScrollingModeTimeout.current = null;
 		}
 	}, []);
 
-	const scrollingFocusOnLine = React.useCallback((line) => {
+	const scrollingFocusOnLine = useCallback((line) => {
 		if (line == null) return;
 		setScrollingMode(true);
 		setScrollingFocusLine(line);
@@ -542,12 +550,48 @@ export function Lyrics(props) {
 		}
 	}, []);
 
+	// Overview mode related
+
+	useEffect(() => {
+		if (!overviewMode) return;
+		if (overviewModeScrolling) return;
+		if (!overviewContainerRef.current) return;
+		const container = overviewContainerRef.current;
+		const current = container.querySelector('.rnp-lyrics-overview-line.current');
+		if (!current) return;
+		const scrollTop = current.offsetTop - container.clientHeight / 2 + current.clientHeight / 2;
+		container.scrollTo({ top: scrollTop, behavior: 'smooth' });
+	}, [currentLine, overviewMode, overviewModeScrolling, showRomaji, showTranslation]);
+
+	const exitOverviewModeScrollingSoon = useCallback((timeout = 3000) => {
+		cancelExitOverviewModeScrollingTimeout();
+		exitOverviewModeScrollingTimeout.current = setTimeout(() => {
+			setOverviewModeScrolling(false);
+		}, timeout);
+	}, []);
+
+	const cancelExitOverviewModeScrollingTimeout = useCallback(() => {
+		if (exitOverviewModeScrollingTimeout.current) {
+			clearTimeout(exitOverviewModeScrollingTimeout.current);
+			exitOverviewModeScrollingTimeout.current = null;
+		}
+	}, []);
+
+	const overviewModeSelectAll = useCallback(() => {
+		const container = overviewContainerRef.current;
+		const selection = window.getSelection();
+		const range = document.createRange();
+		range.selectNodeContents(container);
+		selection.removeAllRanges();
+		selection.addRange(range);
+	}, [overviewContainerRef]);
+
 	const length = lyrics?.length ?? 0;
 
 	return (
 		<>
 			<div
-				className={`rnp-lyrics ${isPureMusic ? 'pure-music' : ''}`}
+				className={`rnp-lyrics ${isPureMusic ? 'pure-music' : ''} ${overviewMode ? 'overview-mode-hide' : ''}`}
 				ref={containerRef}
 				style={{
 					fontSize: `${fontSize}px`,
@@ -580,41 +624,85 @@ export function Lyrics(props) {
 				scrollingFocusLine={scrollingFocusLine}
 				scrollingFocusOnLine={scrollingFocusOnLine}
 				exitScrollingModeSoon={exitScrollingModeSoon}
+				overviewMode={overviewMode}
 			/>
 			<div className="rnp-lyrics-switch">
-				{/*<button className="rnp-lyrics-switch-btn" onClick={() => setFontSize(fontSize + 1)}>+</button>
-				<button className="rnp-lyrics-switch-btn" onClick={() => setFontSize(fontSize - 1)}>-</button>*/}
+				<button
+					className={`
+						rnp-lyrics-switch-btn
+						rnp-lyrics-switch-btn-top
+						rnp-lyrics-switch-btn-overview-mode
+						${overviewMode ? 'active' : ''}
+					`}
+					title="复制模式"
+					onClick={() => {
+						setOverviewMode(!overviewMode);
+					}}>
+					<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20"><path d="M4.146 14.854v-1.396h6.792v1.396Zm0-2.937v-1.396h11.729v1.396Zm0-2.959V7.562h11.729v1.396Zm0-2.937V4.625h11.729v1.396Z"/></svg>
+				</button>
+				{
+					overviewMode &&
+					<button
+						className={`
+							rnp-lyrics-switch-btn
+							rnp-lyrics-switch-btn-top
+							rnp-lyrics-switch-btn-select-all
+						`}
+						title="全选"
+						onClick={() => {
+							overviewModeSelectAll();
+						}}>
+						<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20"><path d="M4.583 16.833q-.583 0-.989-.406t-.406-.989h1.395Zm-1.395-3v-1.479h1.395v1.479Zm0-3.083V9.271h1.395v1.479Zm0-3.083V6.188h1.395v1.479Zm0-3.084q0-.583.406-.989t.989-.406v1.395Zm2.874 9.375V6.062h7.896v7.896Zm.126 2.875v-1.395h1.479v1.395Zm0-12.25V3.188h1.479v1.395Zm1.27 7.979h5.104V7.458H7.458Zm1.813 4.271v-1.395h1.479v1.395Zm0-12.25V3.188h1.479v1.395Zm3.083 12.25v-1.395h1.479v1.395Zm0-12.25V3.188h1.479v1.395Zm3.084 12.25v-1.395h1.395q0 .583-.406.989t-.989.406Zm0-3v-1.479h1.395v1.479Zm0-3.083V9.271h1.395v1.479Zm0-3.083V6.188h1.395v1.479Zm0-3.084V3.188q.583 0 .989.406t.406.989Z" transform="scale(0.8)"/></svg>
+					</button>
+				}
+				<div className="rnp-lyrics-switch-btn-divider"/>
 				<button
 					className={`
 						rnp-lyrics-switch-btn
 						${showTranslation ? 'active' : ''}
 						${hasTranslation ? '' : 'unavailable'}
 					`}
+					title="翻译"
 					onClick={() => {
-					setSetting("show-translation", !showTranslation);
-					setShowTranslation(!showTranslation);
-				}}>译</button>
+						setSetting("show-translation", !showTranslation);
+						setShowTranslation(!showTranslation);
+					}}>译</button>
 				<button 
 					className={`
 						rnp-lyrics-switch-btn
 						${showRomaji ? 'active' : ''}
 						${hasRomaji ? '' : 'unavailable'}
 					`}
+					title="罗马音"
 					onClick={() => {
-					setSetting("show-romaji", !showRomaji);
-					setShowRomaji(!showRomaji);
-				}}>音</button>
+						setSetting("show-romaji", !showRomaji);
+						setShowRomaji(!showRomaji);
+					}}>音</button>
 				<button 
 					className={
 						`rnp-lyrics-switch-btn
 						${useKaraokeLyrics ? 'active' : ''}
 						${hasKaraoke ? '' : 'unavailable'}
 					`}
+					title="逐字歌词"
 					onClick={() => {
-					setSetting("use-karaoke-lyrics", !useKaraokeLyrics);
-					setUseKaraokeLyrics(!useKaraokeLyrics);
-				}}>逐字</button>
+						setSetting("use-karaoke-lyrics", !useKaraokeLyrics);
+						setUseKaraokeLyrics(!useKaraokeLyrics);
+					}}>逐字</button>
 			</div>
+			{
+				overviewMode &&
+				<LyricOverview
+					lyrics={lyrics}
+					currentLine={currentLine}
+					showRomaji={showRomaji}
+					showTranslation={showTranslation}
+					jumpToTime={jumpToTime}
+					overviewContainerRef={overviewContainerRef}
+					setOverviewModeScrolling={setOverviewModeScrolling}
+					exitOverviewModeScrollingSoon={exitOverviewModeScrollingSoon}
+				/>
+			}
 		</>
 	);
 }
@@ -672,6 +760,34 @@ function Line(props) {
 			className={`rnp-lyrics-line ${props.line.isInterlude ? 'rnp-interlude' : ''}`}
 			offset={offset}
 			onClick={() => props.jumpToTime(props.line.time + 50)}
+			onContextMenu={(e) => {
+				e.preventDefault();
+				if (props.line.isInterlude || !props.line.originalLyric) return;
+				let str = props.line.originalLyric;
+				if (props.showRomaji && props.line.romanLyric) str += '\n' + props.line.romanLyric;
+				if (props.showTranslation && props.line.translatedLyric) str += '\n' + props.line.translatedLyric;
+				let textarea = document.createElement('textarea');
+				textarea.style.position = 'fixed';
+				textarea.style.top = '0';
+				textarea.style.left = '0';
+				textarea.style.opacity = '0';
+				textarea.style.pointerEvents = 'none';
+				textarea.value = str;
+				document.body.appendChild(textarea);
+				textarea.select();
+				document.execCommand('copy', true);
+				document.body.removeChild(textarea);
+				if (document.querySelector('.rnp-lyrics-copy-tip')) return;
+				let tip = document.createElement('div');
+				tip.className = 'rnp-lyrics-copy-tip';
+				tip.innerText = '已复制';
+				tip.style.top = (e.clientY + 12) + 'px';
+				tip.style.left = (e.clientX + 12) + 'px';
+				document.body.appendChild(tip);
+				setTimeout(() => {
+					document.body.removeChild(tip);
+				}, 1000);
+			}}
 			style={{
 				display: props.outOfRangeScrolling ? 'none' : 'block',
 				transform: `
@@ -844,7 +960,9 @@ function Scrollbar(props) {
 	}, [props.nonInterludeToAll, props.allToNonInterlude, props.containerHeight]);
 
 	return (
-		<div className="rnp-lyrics-scrollbar" ref={scrollbarRef}>
+		<div 
+			className={`rnp-lyrics-scrollbar ${props.overviewMode ? 'overview-mode-hide' : ''}`}
+			ref={scrollbarRef}>
 			<div 
 				className={`rnp-lyrics-scrollbar-thumb ${totalSteps > 1 ? '' : 'no-scroll'}`}
 				ref={thumbRef}
@@ -855,4 +973,70 @@ function Scrollbar(props) {
 			{/*<div>{ props.allToNonInterlude[currentLine] }</div>*/}
 		</div>
 	)
+}
+
+function LyricOverview(props) {
+	useEffect(() => {
+		const container = props.overviewContainerRef.current;
+		let selecting = false;
+		const onWheel = () => {
+			props.setOverviewModeScrolling(true);
+			if (!selecting) props.exitOverviewModeScrollingSoon();
+		};
+		const onMouseDown = (e) => {
+			if (e.button != 0) return;
+			const line = e.target.closest('.rnp-lyrics-overview-line');
+			if (!line) return;
+			selecting = true;
+			props.setOverviewModeScrolling(true);
+			document.addEventListener('mousemove', onMouseMove);
+			document.addEventListener('mouseup', onMouseUp);
+		};
+		const onMouseMove = (e) => {
+			if (!selecting) return;
+			props.setOverviewModeScrolling(true);
+		};
+		const onMouseUp = (e) => {
+			if (!selecting) return;
+			selecting = false;
+			props.setOverviewModeScrolling(true);
+			props.exitOverviewModeScrollingSoon();
+			document.removeEventListener('mousemove', onMouseMove);
+			document.removeEventListener('mouseup', onMouseUp);
+		};
+		container.addEventListener('wheel', onWheel);
+		container.addEventListener('mousedown', onMouseDown);
+		return () => {
+			container.removeEventListener('wheel', onWheel);
+			container.removeEventListener('mousedown', onMouseDown);
+			document.removeEventListener('mousemove', onMouseMove);
+			document.removeEventListener('mouseup', onMouseUp);
+		};
+	}, []);
+
+	return (
+		<div className="rnp-lyrics rnp-lyrics-overview-container" ref={props.overviewContainerRef}>
+			<div className="rnp-lyrics-overview">
+				{props.lyrics.map((line, index) => {
+					return <div 
+						key={index}
+						className={`
+							rnp-lyrics-overview-line
+							${index == props.currentLine ? 'current' : ''}
+							${index < props.currentLine ? 'passed' : ''}
+							${line.isInterlude ? 'interlude' : ''}
+						`}
+						onContextMenu={(e) => {
+							e.preventDefault();
+							props.jumpToTime(line.time + 50);
+							props.exitOverviewModeScrollingSoon(0);
+						}}>
+							{ !line.isInterlude && <div className="rnp-lyrics-overview-line-original">{line.originalLyric}</div> }
+							{ line.romanLyric && props.showRomaji && <div className="rnp-lyrics-overview-line-romaji">{line.romanLyric}</div> }
+							{ line.translatedLyric && props.showTranslation && <div className="rnp-lyrics-overview-line-translation">{line.translatedLyric}</div> }
+					</div>
+				})}
+			</div>
+		</div>
+	);
 }

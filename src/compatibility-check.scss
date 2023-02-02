@@ -50,6 +50,13 @@
 	}
 	.rnp-compatibility-check__content p {
 		margin-bottom: 10px;
+		b {
+			font-weight: bold;
+		}
+		li::before {
+			content: "•";
+			margin-right: 5px;
+		}
 	}
 	p.pass {
 		color: #04aa6d;

@@ -102,7 +102,7 @@ function Wizard(props) {
 					)
 				}
 				{
-					<Button text="启用 Hijack JS 注入" disabledAfterDone={true} onClick={async () => {
+					<Button text="启用 Hijack JS 注入" disabledAfterDone={true} disabled={!isHijackDisabled} onClick={async () => {
 						await betterncm.app.writeConfig("cc.microblock.betterncm.cpp_side_inject_feature_disabled", "false");
 						setIsHijackDisabled(false);
 					}} clickedText="已启用 Hijack JS 注入" />
@@ -113,6 +113,18 @@ function Wizard(props) {
 							betterncm_native.app.reloadIgnoreCache();
 						}}/>
 					)
+				}
+				<h1>性能</h1>
+				{
+					<>
+						<p>Refined Now Playing 的某些效果依赖 GPU 渲染，如果设备 GPU 性能较差，会造成低帧率、高占用等问题。</p>
+						<p>如果已完成上述步骤，<b>但仍然出现性能问题，请尝试在播放页面右上角菜单中，避免开启以下选项：</b></p>
+						<ul>
+							<li><b>流体背景</b></li>
+							<li>歌词模糊</li>
+							<li>文字阴影</li>
+						</ul>
+					</>
 				}
 				<h1>完成</h1>
 				{
@@ -161,7 +173,7 @@ function Button(props) {
 	return (
 		<button
 			class="action-button"
-			disabled={disabled}
+			disabled={disabled || props.disabled}
 			onClick={async () => {
 				if (disabled) return;
 				setDisabled(true);

@@ -173,17 +173,22 @@ export function parseLyric(
 				
 				//console.log(sequence);
 
-				let minSimilarity = 1000000000;
+				//let minSimilarity = 1000000000;
+				let minWeight = 1000000000;
 
 				for (let index of sequence) {
 					const v = processed[index];
 					const similarity = calcSimularity(line.originalLyric as string, v.originalLyric as string);
+					const weight = similarity * 1000 + (v[field] ? 1 : 0);
 					//console.log("similarity", similarity, line.originalLyric, v.originalLyric);
-					if (similarity < minSimilarity) {
-						minSimilarity = similarity;
+					//console.log("weight", index, weight, line.originalLyric, v.originalLyric);
+					if (weight < minWeight) {
+						minWeight = weight;
 						targetIndex = index;
 					}
 				}
+
+				//console.log(targetIndex);
 
 				const target = processed[targetIndex];
 

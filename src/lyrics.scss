@@ -26,7 +26,7 @@
     justify-content: flex-end;
 	transition: opacity .25s ease;
 	.rnp-lyrics-switch-btn {
-		background-color: rgba(var(--rnp-accent-color-rgb), 0.3);
+		background-color: rgba(var(--rnp-accent-color-shade-2-rgb), 0.3);
 		color: var(--rnp-accent-color-on-primary);
 		border: none;
 		font-size: 14px;
@@ -37,13 +37,29 @@
 		width: 20px;
 		box-sizing: border-box;
 		transition: background-color .2s ease, color .2s ease;
+		svg {
+			fill: var(--rnp-accent-color-on-primary);
+		}
 		&.active {
-			background-color: rgba(var(--rnp-accent-color-rgb), 0.8);
+			background-color: rgba(var(--rnp-accent-color-shade-2-rgb), 0.8);
 			color: var(--rnp-accent-color-on-primary);
+			svg {
+				fill: var(--rnp-accent-color-on-primary);
+			}
 		}
 		&.unavailable {
 			opacity: .1;
 		}
+	}
+
+	.rnp-lyrics-switch-btn-divider {
+		flex: 1;
+	}
+	.rnp-lyrics-switch-btn-overview-mode svg{
+		transform: translate(-2px, -2px);
+	}
+	.rnp-lyrics-switch-btn-select-all svg{
+		transform: translate(-1px, 0px);
 	}
 }
 .lyric:not(:hover) .rnp-lyrics-switch {
@@ -225,7 +241,7 @@
 		right: 0;
 		width: 100%;
 		background-color: var(--rnp-accent-color-contrast);
-		opacity: .2;
+		opacity: .15;
 		border-radius: 100px;
 		transition-property: top, opacity;
 		transition-timing-function: ease;
@@ -243,3 +259,98 @@
 	opacity: 0;
 }
 
+.rnp-lyrics-copy-tip {
+	position: fixed;
+	z-index: 200000000;
+	font-size: 16px;
+	padding: 8px 12px;
+	border-radius: 8px;
+	background-color: #00000066;
+	color: #fff;
+	backdrop-filter: blur(16px);
+	pointer-events: none;
+	animation: rnp-lyrics-copy-tip-fade 0.6s ease;
+	animation-fill-mode: forwards;
+}
+@keyframes rnp-lyrics-copy-tip-fade {
+	0% {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	30%, 60% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+	100% {
+		opacity: 0;
+		transform: translateY(0);
+	}
+}
+
+.overview-mode-hide {
+	visibility: hidden;
+	pointer-events: none;
+}
+.rnp-lyrics-overview-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    max-height: 100%;
+    width: 100%;
+    font-size: 24px;
+    overflow-y: auto;
+    user-select: text;
+    display: flex;
+	overscroll-behavior: contain;
+	&::-webkit-scrollbar {
+		width: 8px;
+	}
+	&::-webkit-scrollbar-thumb {
+		background-color: rgba(var(--rnp-accent-color-contrast-rgb), 0.15);
+		border-radius: 100px;
+		transition: background-color .25s ease;
+		&:hover {
+			//background-color: rgba(var(--rnp-accent-color-contrast-rgb), 0.6);
+		}
+	}
+}
+.lyric:not(:hover) .rnp-lyrics-overview-container::-webkit-scrollbar-thumb {
+	background-color: rgba(var(--rnp-accent-color-contrast-rgb), 0);
+}
+.rnp-lyrics-overview {
+	padding-top: 20px;
+	padding-bottom: 20px;
+	margin-top: auto;
+	margin-bottom: auto;
+    line-height: 1.25;
+	::selection {
+		background-color: rgba(var(--rnp-accent-color-shade-2-rgb), 0.3);
+	}
+
+	.rnp-lyrics-overview-line {
+		margin-bottom: 10px;
+		opacity: .4;
+		transition: opacity .5s ease;
+		&.passed, &.current {
+			opacity: 1;
+		}
+		&.interlude {
+			margin-bottom: 25px;
+			&:first-child, &:last-child {
+				display: none;
+				margin: 0;
+			}
+		}
+
+		> .rnp-lyrics-overview-line-original {
+			font-weight: bold;
+		}
+		> .rnp-lyrics-overview-line-romaji {
+			font-size: 0.6em;
+		}
+		> *:last-child:not(.rnp-lyrics-overview-line-original) {
+			margin-bottom: 20px;
+		}
+	}
+}
