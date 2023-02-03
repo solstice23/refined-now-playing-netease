@@ -32,8 +32,8 @@ const config = {
               to: path.resolve(__dirname, "dist", "manifest.json"),
             },
             {
-              from: path.resolve(__dirname, "src", "preview.jpg"),
-              to: path.resolve(__dirname, "dist", "preview.jpg"),
+              from: path.resolve(__dirname, "src", "preview.gif"),
+              to: path.resolve(__dirname, "dist", "preview.gif"),
             }
         ]
     }),
