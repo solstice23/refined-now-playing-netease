@@ -55,12 +55,6 @@
 	.rnp-lyrics-switch-btn-divider {
 		flex: 1;
 	}
-	.rnp-lyrics-switch-btn-overview-mode svg{
-		transform: translate(-2px, -2px);
-	}
-	.rnp-lyrics-switch-btn-select-all svg{
-		transform: translate(-1px, 0px);
-	}
 }
 .lyric:not(:hover) .rnp-lyrics-switch {
 	opacity: 0;
@@ -336,7 +330,7 @@
 			opacity: 1;
 		}
 		&.interlude {
-			margin-bottom: 25px;
+			margin-bottom: 50px;
 			&:first-child, &:last-child {
 				display: none;
 				margin: 0;

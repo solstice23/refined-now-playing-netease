@@ -42,7 +42,7 @@ body.rnp-light, body.rnp-auto.rnp-system-light {
 		--rnp-accent-color-shade-2-rgb: var(--rnp-accent-color-shade-2-light-rgb);
 		--rnp-accent-color-overlay: #fff;
 		--rnp-accent-color-contrast: #000;
-		--rnp-drop-shadow: drop-shadow(0px 4px 5px rgba(255, 255, 255, 0.25));
+		--rnp-drop-shadow: drop-shadow(0px 4px 5px rgba(0, 0, 0, 0.25));
 		.rnp-settings-menu {
 			background: #00000066;
 		}
@@ -361,7 +361,7 @@ body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
 		.inf .info ul li:nth-of-type(1) a:not(:first-of-type):before {
 			background-image: none;
 			content: '/';
-			color: #fff;
+			color: var(--rnp-accent-color-contrast);
 			filter: none;
 			width: max-content;
 			height: auto;

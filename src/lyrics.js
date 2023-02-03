@@ -12,18 +12,17 @@ const useCallback = React.useCallback;
 const useRef = React.useRef;
 
 
-let currentRawLyrics = null, currentLyrics = null;
+let currentRawLRC = null, currentLyrics = null;
 
 const _onProcessLyrics = window.onProcessLyrics ?? ((x) => x);
 window.onProcessLyrics = (lyrics) => {
 	if (!lyrics) return _onProcessLyrics(lyrics);
-	console.log('update original lyrics', lyrics);
-	const processedLyrics = preProcessLyrics(lyrics);
-	if (!_isEqual(processedLyrics, currentRawLyrics)) {
-		currentRawLyrics = processedLyrics;
-		//console.log('update raw lyrics', currentRawLyrics);
+	if ((lyrics?.lrc?.lyric ?? '') != currentRawLRC) {
+		console.log('update raw lyrics', lyrics);
+		currentRawLRC = (lyrics?.lrc?.lyric ?? '') ;
+		const preprocessedLyrics = preProcessLyrics(lyrics);
 		setTimeout(async () => {
-			currentLyrics = await processLyrics(processedLyrics);
+			currentLyrics = await processLyrics(preprocessedLyrics);
 			console.log('update processed lyrics', currentLyrics);
 			document.dispatchEvent(new CustomEvent('lyrics-updated', {detail: currentLyrics}));
 		}, 0);
@@ -163,6 +162,8 @@ export function Lyrics(props) {
 		else containerRef.current.classList.remove('scrolling');
 		_setScrollingMode(x);
 	}
+
+	const [fullScreen, setFullScreen] = useState(false);
 
 	const isPureMusic = lyrics && (
 		lyrics.length === 1 ||
@@ -552,6 +553,17 @@ export function Lyrics(props) {
 
 	// Overview mode related
 
+	useLayoutEffect(() => {
+		if (!overviewMode) return;
+		if (overviewModeScrolling) return;
+		if (!overviewContainerRef.current) return;
+		const container = overviewContainerRef.current;
+		const current = container.querySelector('.rnp-lyrics-overview-line.current');
+		if (!current) return;
+		const scrollTop = current.offsetTop - container.clientHeight / 2 + current.clientHeight / 2;
+		container.scrollTop = scrollTop;
+	}, [overviewMode]);
+
 	useEffect(() => {
 		if (!overviewMode) return;
 		if (overviewModeScrolling) return;
@@ -561,7 +573,7 @@ export function Lyrics(props) {
 		if (!current) return;
 		const scrollTop = current.offsetTop - container.clientHeight / 2 + current.clientHeight / 2;
 		container.scrollTo({ top: scrollTop, behavior: 'smooth' });
-	}, [currentLine, overviewMode, overviewModeScrolling, showRomaji, showTranslation]);
+	}, [currentLine, overviewModeScrolling, showRomaji, showTranslation]);
 
 	const exitOverviewModeScrollingSoon = useCallback((timeout = 3000) => {
 		cancelExitOverviewModeScrollingTimeout();
@@ -631,6 +643,38 @@ export function Lyrics(props) {
 					className={`
 						rnp-lyrics-switch-btn
 						rnp-lyrics-switch-btn-top
+						rnp-lyrics-switch-btn-fullscreen
+						${fullScreen ? 'active' : ''}
+					`}
+					title={fullScreen ? '退出全屏' : '全屏'}
+					onClick={() => {
+						if (!document.fullscreenElement) {
+							document.documentElement.requestFullscreen();
+							setFullScreen(true);
+							if (loadedPlugins['RoundCornerNCM']) {
+								betterncm.app.setRoundedCorner(false)
+							}
+						} else {
+							if (document.exitFullscreen) {
+								document.exitFullscreen();
+								setFullScreen(false);
+								if (loadedPlugins['RoundCornerNCM']) {
+									betterncm.app.setRoundedCorner(true)
+								}
+							}
+						}
+					}}>
+					{
+						!fullScreen ?
+						<svg style={{transform: 'translate(-1.5px, -1px)'}} xmlns="http://www.w3.org/2000/svg" height="20" width="20"><path d="M4.083 15.917v-3.938h1.396v2.542h2.542v1.396Zm0-7.896V4.083h3.938v1.396H5.479v2.542Zm7.896 7.896v-1.396h2.542v-2.542h1.396v3.938Zm2.542-7.896V5.479h-2.542V4.083h3.938v3.938Z" transform="scale(0.85)"/></svg>
+						:
+						<svg style={{transform: 'translate(-2px, -1px)'}} xmlns="http://www.w3.org/2000/svg" height="20" width="20"><path d="M7.125 15.417v-2.542H4.583v-1.396h3.938v3.938Zm4.354 0v-3.938h3.938v1.396h-2.542v2.542ZM4.583 8.521V7.125h2.542V4.583h1.396v3.938Zm6.896 0V4.583h1.396v2.542h2.542v1.396Z" transform="scale(0.9)"/></svg>
+					}
+				</button>
+				<button
+					className={`
+						rnp-lyrics-switch-btn
+						rnp-lyrics-switch-btn-top
 						rnp-lyrics-switch-btn-overview-mode
 						${overviewMode ? 'active' : ''}
 					`}
@@ -638,7 +682,7 @@ export function Lyrics(props) {
 					onClick={() => {
 						setOverviewMode(!overviewMode);
 					}}>
-					<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20"><path d="M4.146 14.854v-1.396h6.792v1.396Zm0-2.937v-1.396h11.729v1.396Zm0-2.959V7.562h11.729v1.396Zm0-2.937V4.625h11.729v1.396Z"/></svg>
+					<svg style={{transform: 'translate(-2px, -2px)'}} xmlns="http://www.w3.org/2000/svg" height="20" width="20"><path d="M4.146 14.854v-1.396h6.792v1.396Zm0-2.937v-1.396h11.729v1.396Zm0-2.959V7.562h11.729v1.396Zm0-2.937V4.625h11.729v1.396Z"/></svg>
 				</button>
 				{
 					overviewMode &&
@@ -652,7 +696,7 @@ export function Lyrics(props) {
 						onClick={() => {
 							overviewModeSelectAll();
 						}}>
-						<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20"><path d="M4.583 16.833q-.583 0-.989-.406t-.406-.989h1.395Zm-1.395-3v-1.479h1.395v1.479Zm0-3.083V9.271h1.395v1.479Zm0-3.083V6.188h1.395v1.479Zm0-3.084q0-.583.406-.989t.989-.406v1.395Zm2.874 9.375V6.062h7.896v7.896Zm.126 2.875v-1.395h1.479v1.395Zm0-12.25V3.188h1.479v1.395Zm1.27 7.979h5.104V7.458H7.458Zm1.813 4.271v-1.395h1.479v1.395Zm0-12.25V3.188h1.479v1.395Zm3.083 12.25v-1.395h1.479v1.395Zm0-12.25V3.188h1.479v1.395Zm3.084 12.25v-1.395h1.395q0 .583-.406.989t-.989.406Zm0-3v-1.479h1.395v1.479Zm0-3.083V9.271h1.395v1.479Zm0-3.083V6.188h1.395v1.479Zm0-3.084V3.188q.583 0 .989.406t.406.989Z" transform="scale(0.8)"/></svg>
+						<svg style={{transform: 'translate(-1px, 0px)'}} xmlns="http://www.w3.org/2000/svg" height="20" width="20"><path d="M4.583 16.833q-.583 0-.989-.406t-.406-.989h1.395Zm-1.395-3v-1.479h1.395v1.479Zm0-3.083V9.271h1.395v1.479Zm0-3.083V6.188h1.395v1.479Zm0-3.084q0-.583.406-.989t.989-.406v1.395Zm2.874 9.375V6.062h7.896v7.896Zm.126 2.875v-1.395h1.479v1.395Zm0-12.25V3.188h1.479v1.395Zm1.27 7.979h5.104V7.458H7.458Zm1.813 4.271v-1.395h1.479v1.395Zm0-12.25V3.188h1.479v1.395Zm3.083 12.25v-1.395h1.479v1.395Zm0-12.25V3.188h1.479v1.395Zm3.084 12.25v-1.395h1.395q0 .583-.406.989t-.989.406Zm0-3v-1.479h1.395v1.479Zm0-3.083V9.271h1.395v1.479Zm0-3.083V6.188h1.395v1.479Zm0-3.084V3.188q.583 0 .989.406t.406.989Z" transform="scale(0.8)"/></svg>
 					</button>
 				}
 				<div className="rnp-lyrics-switch-btn-divider"/>
@@ -702,6 +746,20 @@ export function Lyrics(props) {
 					setOverviewModeScrolling={setOverviewModeScrolling}
 					exitOverviewModeScrollingSoon={exitOverviewModeScrollingSoon}
 				/>
+			}
+			{
+				fullScreen &&
+				<style>
+					{`
+						header, .m-winctrl {
+							display: none;
+						}
+						
+						.g-singlec-hd {
+							pointer-events: none;
+						}
+					`}
+				</style>
 			}
 		</>
 	);

@@ -13,11 +13,13 @@
 
 https://user-images.githubusercontent.com/23134847/202904157-74c344c9-a3de-44d4-bc49-bf502e12232c.mp4
 
-![screenshot1](screenshot1.png)
+![screenshot1](screenshot1.jpg)
 
-![screenshot2](screenshot2.png)
+![screenshot2](screenshot3.jpg)
 
-![screenshot2](screenshot3.png)
+![screenshot3](screenshot2.jpg)
+
+![screenshot4](screenshot4.jpg)
 
 # TODO
 

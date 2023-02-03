@@ -154,8 +154,8 @@ body.gradient-bg-dynamic .rnp-bg .rnp-background-gradient {
 
 
 
-body.rnp-light {
+body.rnp-light, body.rnp-auto.rnp-system-light {
 	.rnp-background-fluid-rect {
-		filter: saturate(1.3) brightness(1.2) url(#fluid-filter) !important;
+		filter: saturate(1.3) brightness(1.08) url(#fluid-filter) !important;
 	}
 }
