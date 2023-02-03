@@ -95,6 +95,9 @@ const isFMSession = () => {
 }
 // TODO: 监听 DOM 更改以缓存此函数
 
+const customBlurFunc = localStorage.getItem('rnp-custom-blur-func', null) ? new Function('offset', localStorage.getItem('rnp-custom-blur-func')) : null;
+const customScaleFunc = localStorage.getItem('rnp-custom-scale-func', null) ? new Function('offset', localStorage.getItem('rnp-custom-scale-func')) : null;
+
 export function Lyrics(props) {
 	const isFM = props.isFM ?? false;
 
@@ -285,12 +288,26 @@ export function Lyrics(props) {
 		const space = fontSize * 1.2;
 		const scaleByOffset = (offset) => {
 			if (!lyricZoom) return 1;
+			if (customScaleFunc) {
+				try {
+					return customScaleFunc(offset);
+				} catch (e) {
+					console.error('Error in custom blur function', e);
+				}
+			}
 			offset = Math.abs(offset);
 			offset =  Math.max(1 - offset * 0.2, 0);
 			return offset * offset * offset /* offset*/ * 0.3 + 0.7;
 		};
 		const blurByOffset = (offset) => {
 			if (!lyricBlur || scrollingMode) return 0;
+			if (customBlurFunc) {
+				try {
+					return customBlurFunc(offset);
+				} catch (e) {
+					console.error('Error in custom blur function', e);
+				}
+			}				
 			offset = Math.abs(offset);
 			if (offset == 0) return 0;
 			return Math.min(0.5 + 1 * offset, 4.5);
@@ -381,7 +398,7 @@ export function Lyrics(props) {
 		}
 		//console.log("new progress", id, progress);
 		//setSongId(id);
-		const lastTime = currentTime.current + globalOffset;
+		const lastTime = currentTime.current;
 		currentTime.current = ((progress * 1000) || 0);
 		const currentTimeWithOffset = currentTime.current + globalOffset;
 		if (!_lyrics.current) return;
@@ -542,7 +559,7 @@ export function Lyrics(props) {
 
 	useEffect(() => {
 		const onGlobalOffsetChange = (e) => {
-			setGlobalOffset(e.detail ?? 0);
+			setGlobalOffset(parseInt(e.detail) ?? 0);
 			setSeekCounter(+new Date());
 		}
 		document.addEventListener("rnp-global-offset", onGlobalOffsetChange);
@@ -562,7 +579,7 @@ export function Lyrics(props) {
 		if (!current) return;
 		const scrollTop = current.offsetTop - container.clientHeight / 2 + current.clientHeight / 2;
 		container.scrollTop = scrollTop;
-	}, [overviewMode]);
+	}, [overviewMode, showRomaji, showTranslation]);
 
 	useEffect(() => {
 		if (!overviewMode) return;
@@ -573,7 +590,7 @@ export function Lyrics(props) {
 		if (!current) return;
 		const scrollTop = current.offsetTop - container.clientHeight / 2 + current.clientHeight / 2;
 		container.scrollTo({ top: scrollTop, behavior: 'smooth' });
-	}, [currentLine, overviewModeScrolling, showRomaji, showTranslation]);
+	}, [currentLine, overviewModeScrolling]);
 
 	const exitOverviewModeScrollingSoon = useCallback((timeout = 3000) => {
 		cancelExitOverviewModeScrollingTimeout();

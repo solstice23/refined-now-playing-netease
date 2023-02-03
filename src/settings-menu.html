@@ -99,12 +99,15 @@
 				<label class="rnp-checkbox-label">全局偏移</label>
 				<button class="rnp-slider-reset" id="rnp-lyric-offset-reset"></button>
 				<div style="flex:1;"></div>
-				<button id="rnp-lyric-offset-sub">-</button>
-				<button id="rnp-lyric-offset-add">+</button>
+				<label id="rnp-lyric-offset-number">0s</label>
+			</div>
+			<div class="rnp-slider-wrapper">
+				<input id="rnp-lyric-offset-slider" type="range" class="rnp-slider" min="-10000" max="10000" step="100" value="0" default="0">
 			</div>
 			<div>
-				<label id="rnp-lyric-offset-number">0s</label>
-				<label id="rnp-lyric-offset-tip">未设置偏移</label>
+				<button id="rnp-lyric-offset-sub">-</button>
+				<label id="rnp-lyric-offset-tip">未设置</label>
+				<button id="rnp-lyric-offset-add">+</button>
 			</div>
 		</div>
 	</div>

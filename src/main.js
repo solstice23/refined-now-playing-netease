@@ -311,13 +311,14 @@ const addSettingsMenu = async (isFM = false) => {
 	}
 
 	const sliderEnhance = (slider) => {
+		const isMidSlider = slider.classList.contains("mid-slider");
 		slider.addEventListener("input", e => {
 			const value = e.target.value;
 			const min = e.target.min;
 			const max = e.target.max;
 			const percent = (value - min) / (max - min);
-			const bg = `linear-gradient(90deg, var(--rnp-accent-color) ${percent * 100}%, #dfe1e422 ${percent * 100}%)`;
-			e.target.style.background = bg;
+			let bg = `linear-gradient(90deg, var(--rnp-accent-color) ${percent * 100}%, #dfe1e422 ${percent * 100}%)`;
+			if (!isMidSlider) e.target.style.background = bg;
 
 			if (value != e.target.getAttribute("default")) {
 				e.target.parentElement.classList.add("changed");
@@ -325,12 +326,14 @@ const addSettingsMenu = async (isFM = false) => {
 				e.target.parentElement.classList.remove("changed");
 			}
 		});
-		slider.parentElement.querySelector(".rnp-slider-reset").addEventListener("click", e => {
-			const slider = e.target.parentElement.parentElement.querySelector(".rnp-slider");
-			slider.value = slider.getAttribute("default");
-			slider.dispatchEvent(new Event("input"));
-			slider.dispatchEvent(new Event("change"));
-		});
+		if (slider.parentElement.querySelector(".rnp-slider-reset")) {
+			slider.parentElement.querySelector(".rnp-slider-reset").addEventListener("click", e => {
+				const slider = e.target.parentElement.parentElement.querySelector(".rnp-slider");
+				slider.value = slider.getAttribute("default");
+				slider.dispatchEvent(new Event("input"));
+				slider.dispatchEvent(new Event("change"));
+			});
+		}
 		slider.dispatchEvent(new Event("input"));
 	}
 	const bindCheckboxToClass = (checkbox, className, defaultValue = false) => {
@@ -495,33 +498,37 @@ const addSettingsMenu = async (isFM = false) => {
 		bindSelectGroupToClasses(colorScheme, 'auto', (x) => `rnp-${x}`);
 
 
+		const lyricOffsetSlider = getOptionDom('#rnp-lyric-offset-slider');
 		const lyricOffsetAdd = getOptionDom('#rnp-lyric-offset-add');
 		const lyricOffsetSub = getOptionDom('#rnp-lyric-offset-sub');
 		const lyricOffsetReset = getOptionDom('#rnp-lyric-offset-reset');
 		const lyricOffsetNumber = getOptionDom('#rnp-lyric-offset-number');
 		const lyricOffsetTip = getOptionDom('#rnp-lyric-offset-tip');
-		const setLyricOffsetValue = (ms, save = false) => {
-			lyricOffsetNumber.innerHTML = `${['-', '', '+'][Math.sign(ms) + 1]}${(Math.abs(ms) / 1000).toFixed(1).replace(/\.0$/, '')}s`;
-			if (ms == 0) lyricOffsetTip.innerHTML = '未设置偏移';
-			else lyricOffsetTip.innerHTML = (ms > 0 ? '歌词提前' : '歌词延后');
-			if (ms == 0) lyricOffsetAdd.classList.remove('active'), lyricOffsetSub.classList.remove('active'), lyricOffsetReset.classList.remove('active');
-			else if (ms > 0) lyricOffsetAdd.classList.add('active'), lyricOffsetSub.classList.remove('active'), lyricOffsetReset.classList.add('active');
-			else lyricOffsetAdd.classList.remove('active'), lyricOffsetSub.classList.add('active'), lyricOffsetReset.classList.add('active');
+		bindSliderToFunction(lyricOffsetSlider, (ms) => {
+			console.log('lyric offset', ms);
 			document.dispatchEvent(new CustomEvent('rnp-global-offset', { detail: ms }));
-			if (save) {
-				shouldSettingMenuReload[isFM ? 1 : 0] = true;
-				setSetting('lyric-offset', ms);
-			}
+			lyricOffsetNumber.innerHTML = `${['-', '', '+'][Math.sign(ms) + 1]}${(Math.abs(ms) / 1000).toFixed(1).replace(/\.0$/, '')}s`;
+			if (ms == 0) lyricOffsetTip.innerHTML = '未设置';
+			else lyricOffsetTip.innerHTML = (ms > 0 ? '歌词提前' : '歌词滞后');
+			if (ms == 0) lyricOffsetReset.classList.remove('active');
+			else lyricOffsetReset.classList.add('active');
+			shouldSettingMenuReload[isFM ? 1 : 0] = true;
+			setSetting('lyric-offset', ms);
+		}, getSetting('lyric-offset', 0), 'change');
+
+		const setLyricOffsetValue = (ms) => {
+			lyricOffsetSlider.value = ms;
+			lyricOffsetSlider.dispatchEvent(new Event('input'));
+			lyricOffsetSlider.dispatchEvent(new Event('change'));
 		};
-		setLyricOffsetValue(parseInt(getSetting('lyric-offset', 0)));
 		lyricOffsetAdd.addEventListener('click', () => {
-			setLyricOffsetValue(parseInt(getSetting('lyric-offset', 0)) + 500, true);
+			setLyricOffsetValue(parseInt(getSetting('lyric-offset', 0)) + 100);
 		});
 		lyricOffsetSub.addEventListener('click', () => {
-			setLyricOffsetValue(parseInt(getSetting('lyric-offset', 0)) - 500, true);
+			setLyricOffsetValue(parseInt(getSetting('lyric-offset', 0)) - 100);
 		});
 		lyricOffsetReset.addEventListener('click', () => {
-			setLyricOffsetValue(0, true);
+			setLyricOffsetValue(0);
 		});
 	}
 
