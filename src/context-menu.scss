@@ -1,0 +1,29 @@
+.rnp-context-menu {
+	position: fixed;
+	padding: 0;
+	background-color: #00000055;
+	border-radius: 10px;
+	backdrop-filter: blur(10px);
+	z-index: 1000;
+	overflow: hidden;
+	.rnp-context-menu-item {
+		display: flex;
+		padding: 13px 18px;
+		color: #fff;
+		transition: background-color 0.15s ease;
+		white-space: nowrap;
+		font-size: 16px;
+		&:hover {
+			background-color: #00000055;
+		}
+		.rnp-context-menu-item-icon {
+			margin-right: 10px;
+			opacity: 0.7;
+		}
+	}
+	.rnp-context-menu-devider {
+		height: 1px;
+		background-color: #ffffff22;
+		margin: 0 10px;
+	}
+}

@@ -3,11 +3,12 @@ import './FM.scss'
 import settingsMenuHTML from './settings-menu.html';
 import './settings-menu.scss';
 import { argb2Rgb, rgb2Argb} from './color-utils.js';
-import { getSetting, setSetting, chunk } from './utils.js';
+import { getSetting, setSetting, chunk, copyTextToClipboard } from './utils.js';
 import { Background } from './background.js';
 import { Lyrics } from './lyrics.js';
 import { themeFromSourceColor, QuantizerCelebi, Hct, Score } from "@importantimport/material-color-utilities";
 import { compatibilityWizard } from './compatibility-check.js';
+import { showContextMenu } from './context-menu.js';
 
 let pluginPath;
 const loadFile = async (path) => {
@@ -41,6 +42,18 @@ const loadJsOnce = async (path) => {
 }
 const waitForElement = (selector, fun) => {
 	selector = selector.split(',');
+	let done = true;
+	for (const s of selector) {
+		if (!document.querySelector(s)) {
+			done = false;
+		}
+	}
+	if (done) {
+		for (const s of selector) {
+			fun.call(this, document.querySelector(s));
+		}
+		return;
+	}
 	let interval = setInterval(() => {
 		let done = true;
 		for (const s of selector) {
@@ -154,10 +167,6 @@ const updateCDImage = () => {
 		realCD.classList.add('loading');
 	}
 }
-waitForElement('.n-single .cdimg img', (dom) => {
-	dom.addEventListener('load', updateCDImage);
-	new MutationObserver(updateCDImage).observe(dom, {attributes: true, attributeFilter: ['src']});
-});
 	
 
 
@@ -600,9 +609,84 @@ plugin.onLoad(async (p) => {
 
 	document.body.classList.add('refined-now-playing');
 
-	new MutationObserver(async (mutations) => { // Now playing page
+	new MutationObserver(async () => { // Now playing page
 		if (document.querySelector('.g-single:not(.patched)')) {
 			document.querySelector('.g-single').classList.add('patched');
+			waitForElement('.n-single .cdimg img', (dom) => {
+				dom.addEventListener('load', updateCDImage);
+				new MutationObserver(updateCDImage).observe(dom, {attributes: true, attributeFilter: ['src']});
+
+				dom.addEventListener('contextmenu', (e) => {
+					e.preventDefault();
+					e.stopPropagation();
+					const imageURL = dom.src.replace(/^orpheus:\/\/cache\/\?/, '').replace(/\?.*$/, '');
+					showContextMenu(e.clientX, e.clientY, [
+						{
+							label: '复制图片地址',
+							callback: () => {
+								copyTextToClipboard(imageURL);
+							}
+						},
+						{
+							label: '在浏览器中打开图片',
+							callback: () => {
+								betterncm.app.exec(`${imageURL}`);
+							}
+						}
+					]);					
+				});
+			});
+
+			waitForElement('.g-single .g-singlec-ct .n-single .mn .head .inf', (dom) => {
+				const addCopySelectionToItems = (items, closetSelector) => {
+					const selection = window.getSelection();
+					if (selection.toString().trim() && selection.baseNode.parentElement.closest(closetSelector)) {
+						const selectedText = selection.toString().trim();												
+						items.unshift({
+							label: '复制',
+							callback: () => {
+								copyTextToClipboard(selectedText);
+							}
+						});
+					}
+				};
+				dom.addEventListener('contextmenu', (e) => {
+					e.preventDefault();
+					e.stopPropagation();
+
+					if (e.target.closest('.title .name')) {
+						const songName = dom.querySelector('.title .name').innerText;
+						const items = [
+							{
+								label: '复制歌曲名',
+								callback: () => {
+									copyTextToClipboard(songName);
+								}
+							}
+						];
+						addCopySelectionToItems(items, '.title .name');
+						showContextMenu(e.clientX, e.clientY, items);
+						return;
+					}
+
+					if (e.target.closest('.info .alias')) {
+						const songAlias = dom.querySelector('.info .alias').innerText;
+						const items = [
+							{
+								label: '复制歌曲别名',
+								callback: () => {
+									copyTextToClipboard(songAlias);
+								}
+							}
+						];
+						addCopySelectionToItems(items, '.info .alias');
+						showContextMenu(e.clientX, e.clientY, items);
+						return;
+					}
+				});
+			});
+
+
 			const background = document.createElement('div');
 			background.classList.add('rnp-bg');
 			ReactDOM.render(
@@ -620,6 +704,7 @@ plugin.onLoad(async (p) => {
 			, background);
 			document.querySelector('.g-single').appendChild(background);
 
+
 			const lyrics = document.createElement('div');
 			lyrics.classList.add('lyric');
 			ReactDOM.render(<Lyrics />, lyrics);
@@ -628,6 +713,7 @@ plugin.onLoad(async (p) => {
 				oldLyrics.parentNode.insertBefore(lyrics, oldLyrics.nextSibling);
 				oldLyrics.remove();
 			}
+
 			addSettingsMenu();
 		}
 	}).observe(document.body, { childList: true });

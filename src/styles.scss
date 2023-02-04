@@ -106,6 +106,7 @@ body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
 			opacity: 0;
 			transition: opacity 0.3s ease 0.2s;
 			will-change: opacity;
+			pointer-events: none;
 		}
 		&::after {
 			content: '';
@@ -120,6 +121,7 @@ body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
 			opacity: 0;
 			transition: opacity 0.3s ease;
 			will-change: opacity;
+			pointer-events: none;
 		}
 		&.loading {
 			//opacity: 0.35;

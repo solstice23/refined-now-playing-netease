@@ -25,3 +25,16 @@ export const chunk = (input, size) => {
 			: [...arr.slice(0, -1), [...arr.slice(-1)[0], item]];
 	}, []);
 };
+export const copyTextToClipboard = (text) => {
+	const textarea = document.createElement('textarea');
+	textarea.style.position = 'fixed';
+	textarea.style.top = '0';
+	textarea.style.left = '0';
+	textarea.style.opacity = '0';
+	textarea.style.pointerEvents = 'none';
+	textarea.value = text;
+	document.body.appendChild(textarea);
+	textarea.select();
+	document.execCommand('copy', true);
+	document.body.removeChild(textarea);
+}

@@ -1,5 +1,6 @@
 import { parseLyric } from './liblyric/index.ts'
-import { getSetting, setSetting } from './utils.js';
+import { getSetting, setSetting, copyTextToClipboard } from './utils.js';
+import { showContextMenu } from './context-menu';
 import './lyrics.scss';
 
 import _isEqual from 'lodash/isEqual';
@@ -838,30 +839,45 @@ function Line(props) {
 			onContextMenu={(e) => {
 				e.preventDefault();
 				if (props.line.isInterlude || !props.line.originalLyric) return;
-				let str = props.line.originalLyric;
-				if (props.showRomaji && props.line.romanLyric) str += '\n' + props.line.romanLyric;
-				if (props.showTranslation && props.line.translatedLyric) str += '\n' + props.line.translatedLyric;
-				let textarea = document.createElement('textarea');
-				textarea.style.position = 'fixed';
-				textarea.style.top = '0';
-				textarea.style.left = '0';
-				textarea.style.opacity = '0';
-				textarea.style.pointerEvents = 'none';
-				textarea.value = str;
-				document.body.appendChild(textarea);
-				textarea.select();
-				document.execCommand('copy', true);
-				document.body.removeChild(textarea);
-				if (document.querySelector('.rnp-lyrics-copy-tip')) return;
-				let tip = document.createElement('div');
-				tip.className = 'rnp-lyrics-copy-tip';
-				tip.innerText = '已复制';
-				tip.style.top = (e.clientY + 12) + 'px';
-				tip.style.left = (e.clientX + 12) + 'px';
-				document.body.appendChild(tip);
-				setTimeout(() => {
-					document.body.removeChild(tip);
-				}, 1000);
+				let all = props.line.originalLyric;
+				if (props.showRomaji && props.line.romanLyric) all += '\n' + props.line.romanLyric;
+				if (props.showTranslation && props.line.translatedLyric) all += '\n' + props.line.translatedLyric;
+				const items = [
+					{
+						label: '复制该句歌词',
+						callback: () => {
+							copyTextToClipboard(all);
+						}
+					},
+				];
+				if (props.line.romanLyric || props.line.translatedLyric) {
+					items.push({
+						divider: true
+					});
+					items.push({
+						label: '复制原文',
+						callback: () => {
+							copyTextToClipboard(props.line.originalLyric);
+						}
+					});
+					if (props.line.romanLyric) {
+						items.push({
+							label: '复制罗马音',
+							callback: () => {
+								copyTextToClipboard(props.line.romanLyric);
+							}
+						});
+					}
+					if (props.line.translatedLyric) {
+						items.push({
+							label: '复制翻译',
+							callback: () => {
+								copyTextToClipboard(props.line.translatedLyric);
+							}
+						});
+					}
+				}
+				showContextMenu(e.clientX, e.clientY, items);
 			}}
 			style={{
 				display: props.outOfRangeScrolling ? 'none' : 'block',
