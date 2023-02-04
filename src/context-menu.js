@@ -19,8 +19,6 @@ function ContextMenu(props) {
 		const {x, y} = position;
 		const {width, height} = menu.getBoundingClientRect();
 		const {innerWidth, innerHeight} = window;
-
-		console.log(x, y, width, height, innerWidth, innerHeight);
 		
 		menu.style.left = '';
 		menu.style.right = '';
@@ -45,7 +43,6 @@ function ContextMenu(props) {
 			anchor += 'top';
 		}
 		menu.style.transformOrigin = anchor;
-		// use web animation to animate the width and height
 		menu.animate([
 			{width: '0px', height: '0px', opacity: 0.3},
 			{width: `${width}px`, height: `${height}px`, opacity: 1}
@@ -72,11 +69,6 @@ function ContextMenu(props) {
 	}, []);
 
 	useEffect(() => {
-		const clickAway = (e) => {
-			if (!menuRef.current.contains(e.target)) {
-				closeMenu();
-			}
-		}
 		menuRef.current.focus();
 		menuRef.current.addEventListener('blur', closeMenu);
 		return () => {
