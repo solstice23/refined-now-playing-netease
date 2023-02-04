@@ -505,7 +505,6 @@ const addSettingsMenu = async (isFM = false) => {
 		const lyricOffsetNumber = getOptionDom('#rnp-lyric-offset-number');
 		const lyricOffsetTip = getOptionDom('#rnp-lyric-offset-tip');
 		bindSliderToFunction(lyricOffsetSlider, (ms) => {
-			console.log('lyric offset', ms);
 			document.dispatchEvent(new CustomEvent('rnp-global-offset', { detail: ms }));
 			lyricOffsetNumber.innerHTML = `${['-', '', '+'][Math.sign(ms) + 1]}${(Math.abs(ms) / 1000).toFixed(1).replace(/\.0$/, '')}s`;
 			if (ms == 0) lyricOffsetTip.innerHTML = '未设置';
@@ -724,7 +723,6 @@ plugin.onLoad(async (p) => {
 			FMObserver.disconnect();
 			return;
 		}
-		console.log('private fm');
 		for (let i = 0; i < 10; i++) {
 			setTimeout(() => {
 				window.dispatchEvent(new Event('recalc-lyrics'));
