@@ -34,6 +34,7 @@
 	}
 	.info {
 		overflow: hidden;
+		line-height: 1.5;
 		> * {
 			overflow: hidden;
 			white-space: nowrap;
@@ -41,7 +42,6 @@
 		}
 		.title {
 			font-size: 18px;
-			margin-bottom: 5px;
 		}
 		.artist {
 			font-size: 15px;
