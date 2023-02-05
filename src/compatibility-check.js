@@ -105,6 +105,7 @@ function Wizard(props) {
 					<Button text="启用 Hijack JS 注入" disabledAfterDone={true} disabled={!isHijackDisabled} onClick={async () => {
 						await betterncm.app.writeConfig("cc.microblock.betterncm.cpp_side_inject_feature_disabled", "false");
 						setIsHijackDisabled(false);
+						betterncm_native.app.reloadIgnoreCache();
 					}} clickedText="已启用 Hijack JS 注入" />
 				}
 				{
@@ -144,7 +145,7 @@ function Wizard(props) {
 					className="finish"
 					onClick={() => {
 						localStorage.setItem("refined-now-playing-wizard-done", "true");
-						betterncm_native.app.reloadIgnoreCache();
+						betterncm_native.app.restart();
 					}}
 					disabled={isBetterNCMOutdated || isGPUDisabled || isHijackDisabled}
 				>

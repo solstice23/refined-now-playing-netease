@@ -1,0 +1,75 @@
+.rnp-mini-song-info {
+	position: fixed;
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	top: 8px;
+	left: 50vw;
+	transform: translateX(-50%);
+	height: 55px;
+	max-width: calc(100vw - 600px);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity .3s ease;
+	color: var(--rnp-accent-color-shade-2);
+	.album img {
+		height: 46px;
+		width: 46px;
+		border-radius: 8px;
+		box-shadow: 0 5px 5px rgb(0 0 0 / 5%), 0 0px 10px rgb(0 0 0 / 6%);
+		position: relative;
+		overflow: hidden;
+		&::after { 
+			content: '';
+			display: block;
+			position: absolute;
+			z-index: 2;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: var(--rnp-accent-color);
+			filter: brightness(.2);
+		}
+	}
+	.info {
+		overflow: hidden;
+		> * {
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		}
+		.title {
+			font-size: 18px;
+			margin-bottom: 5px;
+		}
+		.artist {
+			font-size: 15px;
+			opacity: 0.6;
+		}
+	}
+}
+body.rnp-light, body.rnp-auto.rnp-system-light {
+	.rnp-mini-song-info {
+		.album img::after {
+			background-color: var(--rnp-accent-color-shade-2-dark);
+			filter: brightness(1);
+		}
+	}
+}
+body:not(.lyric-only) .rnp-mini-song-info {
+	opacity: 0;
+}
+body.lyric-only {
+	&:not(:hover) .rnp-mini-song-info {
+		opacity: 0;
+		transition-delay: .3s;
+	}
+	&.mq-playing-scroll .rnp-mini-song-info {
+		opacity: 0 !important;
+		transition-delay: 0s;
+	}
+	&:hover .rnp-mini-song-info {
+		opacity: 1;
+	}
+}

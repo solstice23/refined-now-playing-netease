@@ -661,33 +661,10 @@ export function Lyrics(props) {
 					className={`
 						rnp-lyrics-switch-btn
 						rnp-lyrics-switch-btn-top
-						rnp-lyrics-switch-btn-fullscreen
-						${fullScreen ? 'active' : ''}
+						rnp-lyrics-switch-btn-placeholder
 					`}
-					title={fullScreen ? '退出全屏' : '全屏'}
-					onClick={() => {
-						if (!document.fullscreenElement) {
-							document.documentElement.requestFullscreen();
-							setFullScreen(true);
-							if (loadedPlugins['RoundCornerNCM']) {
-								betterncm.app.setRoundedCorner(false)
-							}
-						} else {
-							if (document.exitFullscreen) {
-								document.exitFullscreen();
-								setFullScreen(false);
-								if (loadedPlugins['RoundCornerNCM']) {
-									betterncm.app.setRoundedCorner(true)
-								}
-							}
-						}
-					}}>
-					{
-						!fullScreen ?
-						<svg style={{transform: 'translate(-1.5px, -1px)'}} xmlns="http://www.w3.org/2000/svg" height="20" width="20"><path d="M4.083 15.917v-3.938h1.396v2.542h2.542v1.396Zm0-7.896V4.083h3.938v1.396H5.479v2.542Zm7.896 7.896v-1.396h2.542v-2.542h1.396v3.938Zm2.542-7.896V5.479h-2.542V4.083h3.938v3.938Z" transform="scale(0.85)"/></svg>
-						:
-						<svg style={{transform: 'translate(-2px, -1px)'}} xmlns="http://www.w3.org/2000/svg" height="20" width="20"><path d="M7.125 15.417v-2.542H4.583v-1.396h3.938v3.938Zm4.354 0v-3.938h3.938v1.396h-2.542v2.542ZM4.583 8.521V7.125h2.542V4.583h1.396v3.938Zm6.896 0V4.583h1.396v2.542h2.542v1.396Z" transform="scale(0.9)"/></svg>
-					}
+					style={{visibility: 'hidden'}}
+				>
 				</button>
 				<button
 					className={`
@@ -764,20 +741,6 @@ export function Lyrics(props) {
 					setOverviewModeScrolling={setOverviewModeScrolling}
 					exitOverviewModeScrollingSoon={exitOverviewModeScrollingSoon}
 				/>
-			}
-			{
-				fullScreen &&
-				<style>
-					{`
-						header, .m-winctrl {
-							display: none;
-						}
-						
-						.g-singlec-hd {
-							pointer-events: none;
-						}
-					`}
-				</style>
 			}
 		</>
 	);

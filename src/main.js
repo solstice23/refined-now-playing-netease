@@ -1,4 +1,5 @@
 import './styles.scss';
+import './exclusive-modes.scss';
 import './FM.scss'
 import settingsMenuHTML from './settings-menu.html';
 import './settings-menu.scss';
@@ -9,13 +10,9 @@ import { Lyrics } from './lyrics.js';
 import { themeFromSourceColor, QuantizerCelebi, Hct, Score } from "@importantimport/material-color-utilities";
 import { compatibilityWizard } from './compatibility-check.js';
 import { showContextMenu } from './context-menu.js';
+import { MiniSongInfo } from './mini-song-info.js';
 
 let pluginPath;
-const loadFile = async (path) => {
-	let fullPath = pluginPath + '/' + path;
-	fullPath = fullPath.replace(/\\/g, '/');
-    return await betterncm.fs.readFileText(fullPath);
-}
 
 const injectCSS = (css) => {
 	const style = document.createElement('style');
@@ -28,17 +25,6 @@ const injectHTML = (type, html, parent, fun = (dom) => {}) => {
 	fun.call(this, dom);
 
 	parent.appendChild(dom);
-}
-var loadedJs = {};
-const loadJsOnce = async (path) => {
-	if (loadedJs[path]) {
-		return;
-	}
-	loadedJs[path] = true;
-	const js = await loadFile(path);
-	const script = document.createElement('script');
-	script.innerHTML = js;
-	document.body.appendChild(script);
 }
 const waitForElement = (selector, fun) => {
 	selector = selector.split(',');
@@ -153,7 +139,7 @@ const updateCDImage = () => {
 
 	const update = () => {
 		const cdImage = imgDom.src;
-		if (cdImage == lastCDImage) {
+		if (cdImage === lastCDImage) {
 			return;
 		}
 		lastCDImage = cdImage;
@@ -198,7 +184,8 @@ const recalculateTitleSize = (forceRefresh = false) => {
 	const minThreshold = 24;
 	const targetWidth = document.querySelector('.g-single-track .g-singlec-ct .n-single .mn .head .inf .title').clientWidth;
 
-	let l = 1, r = 61;
+	let l = 1; 
+	let r = 61;
 	while (l < r) {
 		const mid = Math.floor((l + r) / 2);
 		testDiv.style.fontSize = `${mid}px`;
@@ -223,29 +210,9 @@ const recalculateTitleSize = (forceRefresh = false) => {
 const verticalAlignMiddleController = document.createElement('style');
 verticalAlignMiddleController.innerHTML = '';
 document.head.appendChild(verticalAlignMiddleController);
-const recalculateVerticalAlignMiddleOffset = () => {
-	if (!document.body.classList.contains('vertical-align-middle')) {
-		return;
-	}
-	if (!document.querySelector('.g-single')) {
-		return;
-	}
-	const page_height = document.querySelector('.g-single .g-singlec-ct').clientHeight;
-	const inner_height = document.querySelector('.g-single .content').clientHeight;
-	let offset = ( page_height - parseInt(getComputedStyle(document.querySelector(".g-single-track .content")).bottom) - inner_height ) - (page_height / 2 - inner_height / 2 );
-
-	verticalAlignMiddleController.innerHTML = `
-		body.vertical-align-middle .g-single-track .g-singlec-ct .n-single .sd .sd-wrap > *:not([class*="together"]),
-		body.vertical-align-middle .g-single-track .g-singlec-ct .n-single .mn .head {
-			transform: translateY(-${offset}px);
-		}
-	`;
-}
-recalculateVerticalAlignMiddleOffset();
 
 window.addEventListener('resize', () => {
 	recalculateTitleSize(true);
-	recalculateVerticalAlignMiddleOffset();
 });
 
 const moveTags = () => {
@@ -329,7 +296,7 @@ const addSettingsMenu = async (isFM = false) => {
 			let bg = `linear-gradient(90deg, var(--rnp-accent-color) ${percent * 100}%, #dfe1e422 ${percent * 100}%)`;
 			if (!isMidSlider) e.target.style.background = bg;
 
-			if (value != e.target.getAttribute("default")) {
+			if (value !== e.target.getAttribute("default")) {
 				e.target.parentElement.classList.add("changed");
 			} else {
 				e.target.parentElement.classList.remove("changed");
@@ -425,7 +392,7 @@ const addSettingsMenu = async (isFM = false) => {
 		});
 		const value = getSetting(selectGroup.id, defaultValue);
 		buttons.forEach(button => {
-			if (button.getAttribute("value") == value) {
+			if (button.getAttribute("value") === value) {
 				button.classList.add("selected");
 				document.body.classList.add(mapping(value));
 			} else {
@@ -451,6 +418,7 @@ const addSettingsMenu = async (isFM = false) => {
 		const partialBg = getOptionDom('#partial-bg');
 		const gradientBgDynamic = getOptionDom('#gradient-bg-dynamic');
 		const textShadow = getOptionDom('#text-shadow');
+		const centerLyric = getOptionDom('#center-lyric');
 
 		bindCheckboxToClass(rectangleCover, 'rectangle-cover', true);
 		bindCheckboxToClass(enableAccentColor, 'enable-accent-color', true);
@@ -459,6 +427,7 @@ const addSettingsMenu = async (isFM = false) => {
 		bindCheckboxToClass(partialBg, 'partial-bg', false);
 		bindCheckboxToClass(gradientBgDynamic, 'gradient-bg-dynamic', true);
 		bindCheckboxToClass(textShadow, 'rnp-shadow', false);
+		bindCheckboxToClass(centerLyric, 'center-lyric', false);
 		
 		bindCheckboxToFunction(lyricBlur, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-lyric-blur', { detail: x }));
@@ -476,7 +445,7 @@ const addSettingsMenu = async (isFM = false) => {
 		const albumSize = getOptionDom('#album-size');
 		const lyricFontSize = getOptionDom('#lyric-font-size');
 
-		bindSliderToCSSVariable(bgBlur, '--bg-blur', 36, 'change', (x) => { return x + 'px' });
+		bindSliderToCSSVariable(bgBlur, '--bg-blur', 36, 'change', (x) => { return `${x}px` });
 		bindSliderToCSSVariable(bgDim, '--bg-dim', 55, 'input', (x) => { return x / 100 });
 		bindSliderToCSSVariable(bgDimForGradientBg, '--bg-dim-for-gradient-bg', 45, 'input', (x) => { return x / 100 });
 		bindSliderToCSSVariable(bgDimForFluidBg, '--bg-dim-for-fluid-bg', 30, 'input', (x) => { return x / 100 });
@@ -487,10 +456,10 @@ const addSettingsMenu = async (isFM = false) => {
 			if (!img?.src) return;
 			const currentSrc = img.src;
 			const newSrc = currentSrc.replace(/thumbnail=\d+y\d+/g, `thumbnail=${window.albumSize}y${window.albumSize}`);
-			if (currentSrc != newSrc) {
+			if (currentSrc !== newSrc) {
 				img.src = newSrc;
 			}
-		}, 200, 'change', (x) => { return x == 200 ? 210 : x });
+		}, 200, 'change', (x) => { return x === 200 ? 210 : x });
 		bindSliderToFunction(lyricFontSize, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-lyric-font-size', { detail: x }));
 		}, 32, 'change'); 
@@ -499,12 +468,17 @@ const addSettingsMenu = async (isFM = false) => {
 		const horizontalAlign = getOptionDom('#horizontal-align');
 		const backgroundType = getOptionDom('#background-type');
 		const colorScheme = getOptionDom('#color-scheme');
-		bindSelectGroupToClasses(verticalAlign, 'bottom', (x) => { return 'vertical-align-' + x }, () => { recalculateVerticalAlignMiddleOffset() });
-		bindSelectGroupToClasses(horizontalAlign, 'left', (x) => { return 'horizontal-align-' + x });
+		const exclusiveModes = getOptionDom('#exclusive-modes');
+		bindSelectGroupToClasses(verticalAlign, 'bottom', (x) => { return `vertical-align-${x}` }, () => { recalculateTitleSize();});
+		bindSelectGroupToClasses(horizontalAlign, 'left', (x) => { return `horizontal-align-${x}` }, () => { recalculateTitleSize();});
 		bindSelectGroupToClasses(backgroundType, 'fluid', (x) => `rnp-bg-${x}`, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-background-type', { detail: { type: x } }));
 		});
 		bindSelectGroupToClasses(colorScheme, 'auto', (x) => `rnp-${x}`);
+		bindSelectGroupToClasses(exclusiveModes, 'none', (x) => x === 'all' ? 'no-exclusive-mode' : x, () => {
+			window.dispatchEvent(new Event('recalc-lyrics'));
+			recalculateTitleSize();
+		});
 
 
 		const lyricOffsetSlider = getOptionDom('#rnp-lyric-offset-slider');
@@ -514,15 +488,16 @@ const addSettingsMenu = async (isFM = false) => {
 		const lyricOffsetNumber = getOptionDom('#rnp-lyric-offset-number');
 		const lyricOffsetTip = getOptionDom('#rnp-lyric-offset-tip');
 		bindSliderToFunction(lyricOffsetSlider, (ms) => {
+			ms = parseInt(ms);
 			document.dispatchEvent(new CustomEvent('rnp-global-offset', { detail: ms }));
 			lyricOffsetNumber.innerHTML = `${['-', '', '+'][Math.sign(ms) + 1]}${(Math.abs(ms) / 1000).toFixed(1).replace(/\.0$/, '')}s`;
-			if (ms == 0) lyricOffsetTip.innerHTML = '未设置';
+			if (ms === 0) lyricOffsetTip.innerHTML = '未设置';
 			else lyricOffsetTip.innerHTML = (ms > 0 ? '歌词提前' : '歌词滞后');
-			if (ms == 0) lyricOffsetReset.classList.remove('active');
+			if (ms === 0) lyricOffsetReset.classList.remove('active');
 			else lyricOffsetReset.classList.add('active');
 			shouldSettingMenuReload[isFM ? 1 : 0] = true;
 			setSetting('lyric-offset', ms);
-		}, getSetting('lyric-offset', 0), 'change');
+		}, parseInt(getSetting('lyric-offset', 0)), 'change');
 
 		const setLyricOffsetValue = (ms) => {
 			lyricOffsetSlider.value = ms;
@@ -538,7 +513,44 @@ const addSettingsMenu = async (isFM = false) => {
 		lyricOffsetReset.addEventListener('click', () => {
 			setLyricOffsetValue(0);
 		});
+
+		const versionNumber = getOptionDom('#rnp-version-number');
+		versionNumber.innerHTML = loadedPlugins.RefinedNowPlaying.manifest.version;
 	}
+	const initTabs = (menu) => {
+		const tabs = menu.querySelectorAll('.rnp-settings-menu-tabs .rnp-settings-menu-tab');
+		const container = menu.querySelector('.rnp-settings-menu-inner');
+		const sections = container.querySelectorAll('.rnp-group');
+		let active = container.querySelector('.rnp-group.active')?.dataset?.tab ?? 'appearance';
+		const setActive = (name) => {
+			if (name === active) return;
+			active = name;
+			tabs.forEach((x) => {
+				if (x.dataset.tab === name) x.classList.add('active');
+				else x.classList.remove('active');
+			});			
+		};
+		tabs.forEach((x) => {
+			x.addEventListener('click', () => {
+				const top = container.querySelector(`.rnp-group[data-tab="${x.dataset.tab}"]`).offsetTop;
+				container.scrollTo({ top, behavior: 'smooth' });
+			});
+		});
+		container.addEventListener('scroll', () => {
+			const top = container.scrollTop;
+			if (top + container.clientHeight >= container.scrollHeight) {
+				setActive(sections[sections.length - 1].dataset.tab);
+				return;
+			}
+			let name = active;
+			sections.forEach((x) => {
+				if (x.offsetTop <= top) name = x.dataset.tab;
+			});
+			setActive(name);
+		});
+	};
+
+
 
 	const settingsMenu = document.createElement('div');
 	if (isFM) {
@@ -556,7 +568,8 @@ const addSettingsMenu = async (isFM = false) => {
 	if (!isFM) document.querySelector('.g-single').appendChild(settingsMenu);
 	else document.querySelector('#page_pc_userfm_songplay').appendChild(settingsMenu);
 	initSettings();
-	channel.call(
+	initTabs(settingsMenu);
+	/*channel.call(
 		"app.getLocalConfig", 
 		(GpuAccelerationEnabled) => {
 			if (!~~GpuAccelerationEnabled) {
@@ -564,21 +577,35 @@ const addSettingsMenu = async (isFM = false) => {
 			}
 		}, 
 		["setting", "hardware-acceleration"]
-	);
+	);*/
 };
 
-const removeNbspFromLyrics = (dom) => {
-	if (dom.childElementCount == 0) {
-		if (!dom.innerHTML.includes('&nbsp;')) {
-			return;
+const addFullScreenButton = () => {
+	const fullScreenButton = document.createElement('div');
+	fullScreenButton.classList.add('rnp-full-screen-button');
+	fullScreenButton.title = '全屏';
+	fullScreenButton.addEventListener('click', () => {
+		if (!document.fullscreenElement) {
+			document.documentElement.requestFullscreen();
+			if (loadedPlugins['RoundCornerNCM']) {
+				betterncm.app.setRoundedCorner(false);
+			}
+			document.body.classList.add('rnp-full-screen');
+			fullScreenButton.title = '退出全屏';
+		} else {
+			if (document.exitFullscreen) {
+				document.exitFullscreen();
+				if (loadedPlugins['RoundCornerNCM']) {
+					betterncm.app.setRoundedCorner(true);
+				}
+				document.body.classList.remove('rnp-full-screen');
+				fullScreenButton.title = '全屏';
+			}
 		}
-		dom.innerHTML = dom.innerHTML.replace(/&nbsp;/g, ' ');
-	} else {
-		dom.querySelectorAll('.lyric-next-p').forEach(node => {
-			removeNbspFromLyrics(node);
-		});
-	}
-}
+	});
+	document.body.appendChild(fullScreenButton); 
+};
+
 
 // intercept src setter of HTMLImageElement
 const _src = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
@@ -594,7 +621,7 @@ Object.defineProperty(HTMLImageElement.prototype, 'src', {
 			}
 			src = src.replace(/thumbnail=\d+y\d+/g, `thumbnail=${window.albumSize}y${window.albumSize}`);
 			if (src.startsWith('data:image/gif;')) {
-				src = `orpheus://cache/?https://p1.music.126.net/UeTuwE7pvjBpypWLudqukA==/3132508627578625.jpg`;
+				src = 'orpheus://cache/?https://p1.music.126.net/UeTuwE7pvjBpypWLudqukA==/3132508627578625.jpg';
 			}
 		}
 		return _src.set.call(this, src);
@@ -692,14 +719,7 @@ plugin.onLoad(async (p) => {
 			ReactDOM.render(
 				<Background
 					type={getSetting('background-type', 'fluid')}
-					image={
-						await (async () => {
-							if (document.querySelector(".n-single .cdimg img")) {
-								return document.querySelector(".n-single .cdimg img");
-							}
-							return await betterncm.utils.waitForElement(".n-single .cdimg img");
-						})()
-					}
+					image={ await waitForElementAsync('.n-single .cdimg img') }
 				/>
 			, background);
 			document.querySelector('.g-single').appendChild(background);
@@ -714,21 +734,31 @@ plugin.onLoad(async (p) => {
 			ReactDOM.render(<Lyrics />, lyrics);
 			document.querySelector('.g-single-track .g-singlec-ct .n-single .wrap').appendChild(lyrics);
 
+			const miniSongInfo = document.createElement('div');
+			miniSongInfo.classList.add('rnp-mini-song-info');
+			ReactDOM.render(
+				<MiniSongInfo
+					image={ await waitForElementAsync('.n-single .cdimg img') }
+					infContainer={ await waitForElementAsync('.g-single .g-singlec-ct .n-single .mn .head .inf') }
+				/>
+			, miniSongInfo);
+			document.querySelector('.g-single').appendChild(miniSongInfo);
+
 			addSettingsMenu();
+			addFullScreenButton(document.querySelector('.g-single'));
 		}
 	}).observe(document.body, { childList: true });
 
 	new MutationObserver((mutations) => {
 		recalculateTitleSize();
 		calcTitleScroll();
-		recalculateVerticalAlignMiddleOffset();
 		mutations.forEach(mutation => {
 			mutation.addedNodes.forEach(node => {
-				if (node.classList && node.classList.contains('j-line')) {
+				if (node.classList?.contains('j-line')) {
 					removeNbspFromLyrics(node);
 				}
 			});
-			if (mutation?.target?.classList && mutation.target.classList.contains('lyric-next-p')) {
+			if (mutation.target.classList?.contains('lyric-next-p')) {
 				removeNbspFromLyrics(mutation.target);
 			}
 		});
@@ -740,11 +770,11 @@ plugin.onLoad(async (p) => {
 	document.head.appendChild(lightThemeFixStyle);
 	new MutationObserver(() => {
 		if (document.body.classList.contains('mq-playing')) {
-			if (lightThemeFixStyle.href != 'orpheus://orpheus/style/res/less/default/css/skin.ls.css') {
+			if (lightThemeFixStyle.href !== 'orpheus://orpheus/style/res/less/default/css/skin.ls.css') {
 				lightThemeFixStyle.href = 'orpheus://orpheus/style/res/less/default/css/skin.ls.css';
 			}
 		} else {
-			if (lightThemeFixStyle.href != '') {
+			if (lightThemeFixStyle.href !== '') {
 				lightThemeFixStyle.href = '';
 			}
 		}
@@ -754,7 +784,7 @@ plugin.onLoad(async (p) => {
 	let previousHasClass = document.body.classList.contains('mq-playing');
 	new MutationObserver(() => {
 		const hasClass = document.body.classList.contains('mq-playing');
-		if (hasClass != previousHasClass) {
+		if (hasClass !== previousHasClass) {
 			previousHasClass = hasClass;
 			if (hasClass) {
 				for (let i = 0; i < 10; i++) {

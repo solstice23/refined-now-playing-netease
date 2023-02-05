@@ -177,8 +177,10 @@
 			height: 0.7em !important;
 			aspect-ratio: 1/1;
 			border-radius: 100%;
-			margin-right: 0.5em;
 			background-color: var(--rnp-accent-color-shade-2);
+			&:not(:last-child) {
+				margin-right: 0.5em;
+			}
 		}
 		.force-refresh > .rnp-interlude-dot {
 			transition: all 0s !important;

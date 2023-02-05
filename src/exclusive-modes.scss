@@ -1,0 +1,51 @@
+// lyric-only mode
+
+body.lyric-only {
+	.n-single > .wrap > *:not(.lyric) {
+		visibility: hidden;
+		pointer-events: none;
+	}
+	.n-single > .wrap > .lyric {
+		left: 60px;
+		width: calc(100% - 100px);
+		top: 0;
+		height: unset;
+		bottom: clamp(30px, 5%, 60px);
+	}
+}
+
+// song-info only mode
+body.song-info-only {
+	.n-single > .wrap > .content {
+		width: 100%;
+		max-width: 100%;
+	}
+	.n-single > .wrap > .lyric {
+		visibility: hidden;
+		pointer-events: none;
+	}
+	&.horizontal-align-center {
+		.n-single > .wrap > .content {
+			width: 100%;
+			max-width: 100%;
+			> *, > * > * {
+				margin-left: 0;
+				padding-left: 0;
+			}
+		}
+	}
+}
+
+
+// center lyric (only for lyric-only mode)
+
+body.lyric-only.center-lyric {
+	.rnp-lyrics {
+		display: flex;
+		justify-content: center;
+		text-align: center;
+		.rnp-interlude-inner {
+			transform-origin: center !important;
+		}
+	}
+}
