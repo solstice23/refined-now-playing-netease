@@ -8,7 +8,7 @@
 	left: 0;
 	top: 0;
 	overflow: hidden;
-    z-index: -2;
+    z-index: 0;
 	transition: left 0.3s ease, top 0.3s ease, width 0.3s ease, height 0.3s ease, border-radius 0.3s ease;
 
 	> div {

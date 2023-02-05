@@ -140,14 +140,14 @@ body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
 .g-single-track {
 	.content { // content container
 		flex: 0;
-		width: 100%;
+		width: 45%;
 		position: absolute;
 		//left: min(5vw, 30px);
 		bottom: clamp(30px, 5%, 60px);
 		display: flex;
 		flex-direction: column;
 		flex-wrap: nowrap;
-		max-width: 100%;
+		max-width: 45%;
 	}
 	.g-bd2 { // comment container
 		max-width: min(1500px, 80%);
@@ -164,7 +164,7 @@ body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
 		margin-left: 50px;
 	}
 	.g-singlec-ct .n-single .mn { // song info container
-		width: 45%;
+		width: 100%;
 		display: flex;
 		position: static;
 		flex: 0;
@@ -317,15 +317,14 @@ body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
 		.head .inf {
 			max-width: unset;
 		}
-		.lyric {
-			position: absolute;
-			left: 50vw;
-			width: 40%;
-			bottom: 10px;
-			height: calc(100vh - var(--bottombar-height, 72px) - 120px);
-			overflow: visible;
-			//z-index: -1;
-		}
+	}
+	.lyric {
+		position: absolute;
+		width: calc(45% - 10px);
+		bottom: calc(clamp(30px, 5%, 60px) + 10px);
+		height: calc(100vh - var(--bottombar-height, 72px) - 120px);
+		overflow: visible;
+		left: 50vw;
 	}
 }
 .g-single-track .g-singlec-ct .n-single {
@@ -398,7 +397,7 @@ body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
 		
 	}
 	.sd .cd {
-		-webkit-transform: none !important;
+		-webkit-transform: none;
 		margin-top: 0 !important;
 		-webkit-transition: none !important;
 	}
@@ -951,6 +950,9 @@ body.rnp-shadow {
 }
 
 body.horizontal-align-center {
+	.g-single-track .content {
+		align-items: center;
+	}
 	.g-single-track .g-singlec-ct .n-single .mn .head .inf .info ul li {
 		text-align: center;
 	}
@@ -964,12 +966,12 @@ body.horizontal-align-center {
 		text-align: center;
 		width: 100%;
 	}
-	.g-single-track .g-singlec-ct .n-single .sd {
+	/*.g-single-track .g-singlec-ct .n-single .sd .sd-wrap {
 		margin-left: calc(22.5% + 36px);
 		.sd-wrap {
 			transform: translateX(-50%);
 		}
-	}
+	}*/
 	.m-fm > .g-play .fmplay > * {
 		margin-left: auto;
 		margin-right: auto;

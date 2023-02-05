@@ -235,7 +235,7 @@ const recalculateVerticalAlignMiddleOffset = () => {
 	let offset = ( page_height - parseInt(getComputedStyle(document.querySelector(".g-single-track .content")).bottom) - inner_height ) - (page_height / 2 - inner_height / 2 );
 
 	verticalAlignMiddleController.innerHTML = `
-		body.vertical-align-middle .g-single-track .g-singlec-ct .n-single .sd,
+		body.vertical-align-middle .g-single-track .g-singlec-ct .n-single .sd .sd-wrap > *:not([class*="together"]),
 		body.vertical-align-middle .g-single-track .g-singlec-ct .n-single .mn .head {
 			transform: translateY(-${offset}px);
 		}
@@ -705,14 +705,14 @@ plugin.onLoad(async (p) => {
 			document.querySelector('.g-single').appendChild(background);
 
 
+			const oldLyrics = document.querySelector('.g-single-track .g-singlec-ct .n-single .mn .lyric');
+			if (oldLyrics) {
+				oldLyrics.remove();
+			}
 			const lyrics = document.createElement('div');
 			lyrics.classList.add('lyric');
 			ReactDOM.render(<Lyrics />, lyrics);
-			const oldLyrics = document.querySelector('.g-single-track .g-singlec-ct .n-single .mn .lyric');
-			if (oldLyrics) {
-				oldLyrics.parentNode.insertBefore(lyrics, oldLyrics.nextSibling);
-				oldLyrics.remove();
-			}
+			document.querySelector('.g-single-track .g-singlec-ct .n-single .wrap').appendChild(lyrics);
 
 			addSettingsMenu();
 		}
