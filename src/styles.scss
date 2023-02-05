@@ -4,7 +4,7 @@ body {
 
 
 body.rnp-dark, body:not(.rnp-light), body.rnp-auto.rnp-system-dark {
-	> * {
+	> *, .g-mn > * {
 		--rnp-accent-color: var(--rnp-accent-color-dark);
 		--rnp-accent-color-rgb: var(--rnp-accent-color-dark-rgb);
 		--rnp-accent-color-on-primary: var(--rnp-accent-color-on-primary-dark);
@@ -18,7 +18,7 @@ body.rnp-dark, body:not(.rnp-light), body.rnp-auto.rnp-system-dark {
 		--rnp-drop-shadow: drop-shadow(0px 4px 5px rgba(0, 0, 0, 0.3));
 	}
 	&:not(.enable-accent-color), &:not([style*='--rnp-accent-color']) {
-		> * {
+		> *, .g-mn > * {
 			--rnp-accent-color: #aaa !important;
 			--rnp-accent-color-rgb: 170, 170, 170 !important;
 			--rnp-accent-color-on-primary: #eee !important;
@@ -31,7 +31,7 @@ body.rnp-dark, body:not(.rnp-light), body.rnp-auto.rnp-system-dark {
 	}
 }
 body.rnp-light, body.rnp-auto.rnp-system-light {
-	> * {
+	> *, .g-mn > * {
 		--rnp-accent-color: var(--rnp-accent-color-light);
 		--rnp-accent-color-rgb: var(--rnp-accent-color-light-rgb);
 		--rnp-accent-color-on-primary: var(--rnp-accent-color-on-primary-light);
@@ -48,7 +48,7 @@ body.rnp-light, body.rnp-auto.rnp-system-light {
 		}
 	}
 	&:not(.enable-accent-color), &:not([style*='--rnp-accent-color']) {
-		> * {
+		> *, .g-mn > * {
 			--rnp-accent-color: #323232 !important;
 			--rnp-accent-color-rgb: 50, 50, 50 !important;
 			--rnp-accent-color-on-primary: #000 !important;
