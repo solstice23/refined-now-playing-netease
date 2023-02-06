@@ -60,12 +60,14 @@
 	opacity: 0;
 }
 
-
+:root {
+	--lyric-timing-function: ease;
+}
 
 .rnp-lyrics-line {
 	position: absolute;
 	transform-origin: left center;
-	transition: transform 0.5s ease, filter 0.5s ease;
+	transition: transform 0.5s var(--lyric-timing-function), filter 0.5s ease;
 	will-change: transform, filter;
 }
 .rnp-lyrics-line {

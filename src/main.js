@@ -752,16 +752,6 @@ plugin.onLoad(async (p) => {
 	new MutationObserver((mutations) => {
 		recalculateTitleSize();
 		calcTitleScroll();
-		mutations.forEach(mutation => {
-			mutation.addedNodes.forEach(node => {
-				if (node.classList?.contains('j-line')) {
-					removeNbspFromLyrics(node);
-				}
-			});
-			if (mutation.target.classList?.contains('lyric-next-p')) {
-				removeNbspFromLyrics(mutation.target);
-			}
-		});
 	}).observe(document.body, { childList: true , subtree: true, attributes: true, characterData: true, attributeFilter: ['src']});
 
 	// Fix incomptibility with light theme
