@@ -145,11 +145,13 @@ function Wizard(props) {
 					className="finish"
 					onClick={() => {
 						localStorage.setItem("refined-now-playing-wizard-done", "true");
-						betterncm_native.app.restart();
+						setTimeout(() => {
+							betterncm_native.app.restart();
+						}, 100);
 					}}
 					disabled={isBetterNCMOutdated || isGPUDisabled || isHijackDisabled}
 				>
-					完成并不再提示
+					完成并不再提示 (重启)
 				</button>
 				{
 					(isBetterNCMOutdated || isGPUDisabled || isHijackDisabled) && 
