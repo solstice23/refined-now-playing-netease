@@ -59,6 +59,12 @@ function Wizard(props) {
 		}
 	}, []);
 
+	useEffect(() => {
+		if (isBetterNCMOutdated || isGPUDisabled || isHijackDisabled) {
+			return;
+		}
+		localStorage.setItem("refined-now-playing-wizard-done", "true");
+	}, [isBetterNCMOutdated, isGPUDisabled, isHijackDisabled]);
 	
 
 
@@ -138,6 +144,7 @@ function Wizard(props) {
 						<>
 							<p className="pass">🎉 您的 Refined Now Playing 已经可以正常工作了。</p>
 							<p>点击下方按钮关闭本引导。如果需要，您可以随时可以在插件设置中调出此页面。</p>
+							<p><b>如果不显示歌词，请重启一次网易云。</b></p>
 						</>
 					)
 				}
@@ -145,9 +152,7 @@ function Wizard(props) {
 					className="finish"
 					onClick={() => {
 						localStorage.setItem("refined-now-playing-wizard-done", "true");
-						setTimeout(() => {
-							betterncm_native.app.restart();
-						}, 100);
+						betterncm_native.app.reloadIgnoreCache();
 					}}
 					disabled={isBetterNCMOutdated || isGPUDisabled || isHijackDisabled}
 				>
