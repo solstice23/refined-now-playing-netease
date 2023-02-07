@@ -79,7 +79,7 @@ function Wizard(props) {
 				<p>在开始之前，请依照本提示检查和更正兼容性问题，否则可能会遇到渲染错误、性能降低、功能失效等问题。</p>
 				<h1>BetterNCM 版本</h1>
 				<p>请尽可能将 BetterNCM 更新到最新版本，BetterNCM 版本过低会导致 Refined Now Playing 插件无法运行。</p>
-				<p>目前请使用 Nightly 测试版。在 BetterNCM Installer 中，勾选 “测试通道” 后，点击 “重装/更新” 以更新最新版。</p>
+				<p>目前推荐使用最新稳定版。如果版本过旧，请在 BetterNCM Installer 中，点击 “重装/更新” 以更新最新版。</p>
 				{isBetterNCMOutdated && <p className="warning">检测到您的 BetterNCM 版本过旧，可能会导致 Refined Now Playing 无法正常工作。请更新 BetterNCM。</p>}
 				{!isBetterNCMOutdated && <p className="pass">检测到您的 BetterNCM 版本没有过旧。但如果仍然出现问题，请尝试更新 BetterNCM。</p>}
 				<Button text="下载 BetterNCM Installer" disabledAfterDone={false} onClick={async() => {
@@ -125,9 +125,13 @@ function Wizard(props) {
 				{
 					<>
 						<p>Refined Now Playing 的某些效果依赖 GPU 渲染，如果设备 GPU 性能较差，会造成低帧率、高占用等问题。</p>
-						<p>如果已完成上述步骤，<b>但仍然出现性能问题，请尝试在播放页面右上角菜单中，避免开启以下选项：</b></p>
+						<p>如果已完成上述步骤，<b>但仍然出现性能问题，请尝试在播放页面右上角菜单中，检查以下选项：</b></p>
 						<ul>
-							<li><b>流体背景</b></li>
+							<li><b>打开 "静态流体" 开关，这将大幅减少 GPU 占用</b></li>
+						</ul>
+						<p>如果您仍然觉得占用过高，请避免开启以下选项（一般对性能影响不大）：</p>
+						<ul>
+							<li>流体背景</li>
 							<li>歌词模糊</li>
 							<li>文字阴影</li>
 						</ul>
@@ -144,7 +148,7 @@ function Wizard(props) {
 						<>
 							<p className="pass">🎉 您的 Refined Now Playing 已经可以正常工作了。</p>
 							<p>点击下方按钮关闭本引导。如果需要，您可以随时可以在插件设置中调出此页面。</p>
-							<p><b>如果不显示歌词，请重启一次网易云。</b></p>
+							<p><b>如果不显示歌词，请重启一次网易云。（退出并再次打开）</b></p>
 						</>
 					)
 				}
@@ -156,7 +160,7 @@ function Wizard(props) {
 					}}
 					disabled={isBetterNCMOutdated || isGPUDisabled || isHijackDisabled}
 				>
-					完成并不再提示 (重启)
+					完成并不再提示
 				</button>
 				{
 					(isBetterNCMOutdated || isGPUDisabled || isHijackDisabled) && 

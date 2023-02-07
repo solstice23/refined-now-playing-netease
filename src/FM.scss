@@ -24,9 +24,6 @@
 			.covers::after {
 				display: none;
 			}
-			.playbtn {
-				display: none;
-			}
 			.btnwrap {
 				display: block;
 			}
@@ -40,6 +37,31 @@
 			}
 			.btn:hover {
 				opacity: 1 !important;
+			}
+			.playbtn {
+				right: 20px !important;
+				bottom: 20px !important;
+				left: unset !important;
+				top: unset !important;
+				background: #00000088;
+				backdrop-filter: blur(10px);
+				width: 20% !important;
+				height: 20% !important;
+				transition: opacity .3s ease, transform .25s ease;
+				&:hover {
+					transform: scale(1.05);
+				}
+				&[data-action='pause'] {
+					opacity: 0;
+					pointer-events: none;
+				}
+				svg.play {
+					display: block;
+					opacity: 1;
+				}
+				svg.pause {
+					display: none;
+				}
 			}
 		}
 		.m-playlrc .word {

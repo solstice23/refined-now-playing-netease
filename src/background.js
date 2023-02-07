@@ -71,7 +71,7 @@ export function Background(props) {
 				<GradientBackground url={url} />
 			)}
 			{type === 'fluid' && (
-				<FluidBackground url={url} static={staticFluid} />
+				<FluidBackground url={url} static={staticFluid} isFM={props.isFM} />
 			)}
 			{type === 'solid' && (
 				<SolidBackground />
@@ -135,7 +135,11 @@ function FluidBackground(props) {
 
 	const onPlayStateChange = (id, state) => {
 		//playState.current = (state.split('|')[1] == 'resume');
-		playState.current = document.querySelector("#main-player .btnp").classList.contains("btnp-pause");
+		if (!props.isFM) {
+			playState.current = document.querySelector("#main-player .btnp").classList.contains("btnp-pause");
+		} else {
+			playState.current = document.querySelector(".m-player-fm .btnp").classList.contains("btnp-pause");
+		}
 		setSongId(id);
 		fluidContainer.current.classList.toggle("paused", !playState.current);
 		//console.log(id, playState.current, state.split('|')[1], document.querySelector("#main-player .btnp").classList.contains("btnp-pause"));

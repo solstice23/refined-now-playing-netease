@@ -65,6 +65,10 @@
 		color: #cb2027;
 	}
 
+	li::before {
+		content: '· ';
+	}
+
 	button {
 		color: #333;
 		padding: 2px 15px;

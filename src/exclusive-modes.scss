@@ -12,9 +12,18 @@ body.lyric-only {
 		height: unset;
 		bottom: clamp(30px, 5%, 60px);
 	}
+	.m-fm > .g-play {
+		visibility: hidden;
+		pointer-events: none;
+	}
+	.m-fm .lyric {
+		left: 5%;
+		width: 90%;
+	}
 }
 
 // song-info only mode
+
 body.song-info-only {
 	.n-single > .wrap > .content {
 		width: 100%;
@@ -33,6 +42,13 @@ body.song-info-only {
 				padding-left: 0;
 			}
 		}
+	}
+	.m-fm .lyric {
+		visibility: hidden;
+		pointer-events: none;
+	}
+	.m-fm > .g-play {
+		width: 90%;
 	}
 }
 
