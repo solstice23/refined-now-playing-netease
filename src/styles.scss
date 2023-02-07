@@ -13,6 +13,8 @@ body.rnp-dark, body:not(.rnp-light), body.rnp-auto.rnp-system-dark {
 		--rnp-accent-color-shade-1-rgb: var(--rnp-accent-color-shade-1-dark-rgb);
 		--rnp-accent-color-shade-2: var(--rnp-accent-color-shade-2-dark);
 		--rnp-accent-color-shade-2-rgb: var(--rnp-accent-color-shade-2-dark-rgb);
+		--rnp-accent-color-bg: var(--rnp-accent-color-bg-dark);
+		--rnp-accent-color-bg-rgb: var(--rnp-accent-color-bg-dark-rgb);
 		--rnp-accent-color-overlay: #000;
 		--rnp-accent-color-contrast: #fff;
 		--rnp-drop-shadow: drop-shadow(0px 4px 5px rgba(0, 0, 0, 0.3));
@@ -40,6 +42,8 @@ body.rnp-light, body.rnp-auto.rnp-system-light {
 		--rnp-accent-color-shade-1-rgb: var(--rnp-accent-color-shade-1-light-rgb);
 		--rnp-accent-color-shade-2: var(--rnp-accent-color-shade-2-light);
 		--rnp-accent-color-shade-2-rgb: var(--rnp-accent-color-shade-2-light-rgb);
+		--rnp-accent-color-bg: var(--rnp-accent-color-bg-light);
+		--rnp-accent-color-bg-rgb: var(--rnp-accent-color-bg-light-rgb);
 		--rnp-accent-color-overlay: #fff;
 		--rnp-accent-color-contrast: #000;
 		--rnp-drop-shadow: drop-shadow(0px 4px 5px rgba(0, 0, 0, 0.25));
@@ -72,6 +76,9 @@ body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
 
 
 .n-single {
+	::selection {
+		background-color: rgba(var(--rnp-accent-color-shade-2-rgb), 0.3) !important;
+	}
 	.cdin, .cdimg {
 		width: 95%;
 		height: 95%;
@@ -937,6 +944,13 @@ body.rnp-light, body.rnp-auto.rnp-system-light {
 			border: 1px solid rgba(0, 0, 0, 0.8);
 			color: rgba(0, 0, 0, 0.8);
 		}
+		&.no-material-you-theme {
+			.m-winctrl, .m-leftbox, #main-player > div:not(.btnc):not(.btnp) {
+				svg {
+					filter: invert(1);
+				}
+			}
+		}
 	}
 }
 
@@ -1018,7 +1032,7 @@ body.mq-playing {
 	z-index: 200;
 	opacity: 0;
 }
-body:hover .rnp-full-screen-button {
+body:not(.rnp-idle) .rnp-full-screen-button {
 	opacity: 1;
 }
 body.rnp-full-screen{
@@ -1038,6 +1052,9 @@ body.rnp-full-screen{
 	}
 	.rnp-settings-menu {
 		top: 70px;
+	}
+	.g-singlec-ct::-webkit-scrollbar-thumb:not(:hover) {
+		background: transparent !important;
 	}
 }
 body:not(.mq-playing) .rnp-full-screen-button {

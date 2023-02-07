@@ -1,0 +1,24 @@
+body.material-you-theme.mq-playing:not(.ignore-now-playing) {
+	#main-player, .m-pinfo .btns > .btn,
+	#main-player > .btnp, #time-indicator {
+		transition: transform .3s ease, opacity .3s ease;
+		will-change: transform, opacity;
+	}
+	#time-indicator {
+		transition: transform .3s ease, opacity .3s ease, right .3s ease;
+	}
+	&:not(.bottombar-hover):not(.mq-playing-scroll).rnp-idle {
+		#main-player, .m-pinfo .btns > .btn{
+			transform: translateY(calc(var(--bottombar-height) - 5px));
+		}
+		.m-pinfo .btns > .btn-love {
+			transform: translateY(0) !important;
+		}
+		#main-player > .btnp, #time-indicator {
+			transform: translateY(calc(-50% + 5px - var(--bottombar-height)));
+		}
+	}
+	&:not(.bottombar-hover):not(.mq-playing-scroll) #time-indicator {
+		right: 25px !important;
+	}
+}

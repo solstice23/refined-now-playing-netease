@@ -11,6 +11,7 @@ import { themeFromSourceColor, QuantizerCelebi, Hct, Score } from "@importantimp
 import { compatibilityWizard } from './compatibility-check.js';
 import { showContextMenu } from './context-menu.js';
 import { MiniSongInfo } from './mini-song-info.js';
+import './material-you-compatibility.scss';
 
 let pluginPath;
 
@@ -78,12 +79,14 @@ const useGreyAccentColor = (isFM = false) => {
 	updateAccentColor('rnp-accent-color-on-primary-dark', rgb2Argb(250, 250, 250), isFM);
 	updateAccentColor('rnp-accent-color-shade-1-dark', rgb2Argb(210, 210, 210), isFM);
 	updateAccentColor('rnp-accent-color-shade-2-dark', rgb2Argb(255, 255, 255), isFM);
+	updateAccentColor('rnp-accent-color-bg-dark', rgb2Argb(50, 50, 50), isFM);
 
 	
 	updateAccentColor('rnp-accent-color-light', rgb2Argb(120, 120, 120), isFM);
 	updateAccentColor('rnp-accent-color-on-primary-light', rgb2Argb(10, 10, 10), isFM);
 	updateAccentColor('rnp-accent-color-shade-1-light', rgb2Argb(40, 40, 40), isFM);
 	updateAccentColor('rnp-accent-color-shade-2-light', rgb2Argb(20, 20, 20), isFM);
+	updateAccentColor('rnp-accent-color-bg-light', rgb2Argb(190, 190, 190), isFM);
 }
 
 
@@ -117,11 +120,13 @@ const calcAccentColor = (dom, isFM = false) => {
 	updateAccentColor('rnp-accent-color-on-primary-dark', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 20)).toInt(), isFM);
 	updateAccentColor('rnp-accent-color-shade-1-dark', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 80)).toInt(), isFM);
 	updateAccentColor('rnp-accent-color-shade-2-dark', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 90)).toInt(), isFM);
+	updateAccentColor('rnp-accent-color-bg-dark', (Hct.from(theme.palettes.secondary.hue, theme.palettes.secondary.chroma, 20)).toInt(), isFM);
 
 	updateAccentColor('rnp-accent-color-light', theme.schemes.light.onPrimaryContainer, isFM);
 	updateAccentColor('rnp-accent-color-on-primary-light', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 100)).toInt(), isFM);
 	updateAccentColor('rnp-accent-color-shade-1-light', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 25)).toInt(), isFM);
 	updateAccentColor('rnp-accent-color-shade-2-light', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 15)).toInt(), isFM);
+	updateAccentColor('rnp-accent-color-bg-light', (Hct.from(theme.palettes.secondary.hue, theme.palettes.secondary.chroma, 90)).toInt(), isFM);
 }
 
 var lastCDImage = '';
@@ -312,14 +317,16 @@ const addSettingsMenu = async (isFM = false) => {
 		}
 		slider.dispatchEvent(new Event("input"));
 	}
-	const bindCheckboxToClass = (checkbox, className, defaultValue = false) => {
+	const bindCheckboxToClass = (checkbox, className, defaultValue = false, callback = () => {}) => {
 		checkbox.checked = getSetting(checkbox.id, defaultValue);
 		checkbox.addEventListener("change", e => {
 			shouldSettingMenuReload[isFM ? 1 : 0] = true;
 			setSetting(checkbox.id, e.target.checked);
 			addOrRemoveGlobalClassByOption(className, e.target.checked);
+			callback(e.target.checked);
 		});
 		addOrRemoveGlobalClassByOption(className, checkbox.checked);
+		callback(checkbox.checked);
 	}
 	const bindCheckboxToFunction = (checkbox, func, defaultValue = false) => {
 		checkbox.checked = getSetting(checkbox.id, defaultValue);
@@ -419,6 +426,7 @@ const addSettingsMenu = async (isFM = false) => {
 		const gradientBgDynamic = getOptionDom('#gradient-bg-dynamic');
 		const textShadow = getOptionDom('#text-shadow');
 		const centerLyric = getOptionDom('#center-lyric');
+		const staticFluid = getOptionDom('#static-fluid');
 
 		bindCheckboxToClass(rectangleCover, 'rectangle-cover', true);
 		bindCheckboxToClass(enableAccentColor, 'enable-accent-color', true);
@@ -428,6 +436,9 @@ const addSettingsMenu = async (isFM = false) => {
 		bindCheckboxToClass(gradientBgDynamic, 'gradient-bg-dynamic', true);
 		bindCheckboxToClass(textShadow, 'rnp-shadow', false);
 		bindCheckboxToClass(centerLyric, 'center-lyric', false);
+		bindCheckboxToClass(staticFluid, 'static-fluid', false, (x) => {
+			document.dispatchEvent(new CustomEvent('rnp-static-fluid', { detail: x }));
+		});
 		
 		bindCheckboxToFunction(lyricBlur, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-lyric-blur', { detail: x }));
@@ -580,32 +591,41 @@ const addSettingsMenu = async (isFM = false) => {
 	);*/
 };
 
+const toggleFullScreen = (force = null) => {
+	if (!document.fullscreenElement) {
+		if (force === false) return;
+		document.documentElement.requestFullscreen();
+		if (loadedPlugins['RoundCornerNCM']) {
+			betterncm.app.setRoundedCorner(false);
+		}
+		document.body.classList.add('rnp-full-screen');
+		document.querySelector('.rnp-full-screen-button').title = '退出全屏';
+	} else {
+		if (document.exitFullscreen) {
+			if (force === true) return;
+			document.exitFullscreen();
+			if (loadedPlugins['RoundCornerNCM']) {
+				betterncm.app.setRoundedCorner(true);
+			}
+			document.body.classList.remove('rnp-full-screen');
+			document.querySelector('.rnp-full-screen-button').title = '全屏';
+		}
+	}
+}
+
 const addFullScreenButton = () => {
 	const fullScreenButton = document.createElement('div');
 	fullScreenButton.classList.add('rnp-full-screen-button');
 	fullScreenButton.title = '全屏';
-	fullScreenButton.addEventListener('click', () => {
-		if (!document.fullscreenElement) {
-			document.documentElement.requestFullscreen();
-			if (loadedPlugins['RoundCornerNCM']) {
-				betterncm.app.setRoundedCorner(false);
-			}
-			document.body.classList.add('rnp-full-screen');
-			fullScreenButton.title = '退出全屏';
-		} else {
-			if (document.exitFullscreen) {
-				document.exitFullscreen();
-				if (loadedPlugins['RoundCornerNCM']) {
-					betterncm.app.setRoundedCorner(true);
-				}
-				document.body.classList.remove('rnp-full-screen');
-				fullScreenButton.title = '全屏';
-			}
-		}
-	});
+	fullScreenButton.addEventListener('click', () => {toggleFullScreen()});
 	document.body.appendChild(fullScreenButton); 
 };
 
+new MutationObserver(() => {
+	if (!document.body.classList.contains('mq-playing') && document.body.classList.contains('rnp-full-screen')) {
+		toggleFullScreen(false);
+	}
+}).observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
 // intercept src setter of HTMLImageElement
 const _src = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
@@ -635,6 +655,10 @@ plugin.onLoad(async (p) => {
 	compatibilityWizard();
 
 	document.body.classList.add('refined-now-playing');
+
+	if (!loadedPlugins['MaterialYouTheme']) {
+		document.body.classList.add('no-material-you-theme');
+	}
 
 	new MutationObserver(async () => { // Now playing page
 		if (document.querySelector('.g-single:not(.patched)')) {
@@ -850,6 +874,43 @@ plugin.onLoad(async (p) => {
 	const systemDarkmodeMedia = window.matchMedia('(prefers-color-scheme: dark)');
 	systemDarkmodeMedia.addEventListener('change', () => { toggleSystemDarkmodeClass(systemDarkmodeMedia); });
 	toggleSystemDarkmodeClass(systemDarkmodeMedia);
+
+	// Idle detection
+	const IdleThreshold = 1.5 * 1000;
+	let idleTimer = null;
+	let idle = false;
+	let debounceTime = null;
+	let debounceTimer = null;
+	const resetIdleTimer = () => {
+		if (idleTimer) clearTimeout(idleTimer);
+		idleTimer = setTimeout(() => {
+			idle = true;
+			document.body.classList.add('rnp-idle');
+			if (debounceTimer) clearTimeout(debounceTimer);
+		}, IdleThreshold);
+	}
+	const resetIdle = () => {
+		if (idle) {
+			idle = false;
+			document.body.classList.remove('rnp-idle');
+			debounceTime = new Date().getTime();
+		}
+		resetIdleTimer();
+	}
+	const setIdle = () => {
+		debounceTimer = setTimeout(() => {
+			if (idleTimer) clearTimeout(idleTimer);
+			idle = true;
+			document.body.classList.add('rnp-idle');
+		}, Math.max((debounceTime ?? 0) + 300 - new Date().getTime(), 0));
+	}
+	resetIdleTimer();
+	document.addEventListener('mousemove', resetIdle);
+	document.addEventListener('mouseout', (e) => {
+		if (e.relatedTarget === null) {
+			setIdle();
+		}
+	});
 });
 
 plugin.onConfig((tools) => {

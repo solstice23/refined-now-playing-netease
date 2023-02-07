@@ -335,7 +335,7 @@
 }
 
 
-body:hover .rnp-settings {
+body:not(.rnp-idle) .rnp-settings {
 	opacity: .2;
 }
 .rnp-settings:checked {
@@ -357,6 +357,8 @@ body:not(.rnp-bg-gradient) .gradient-bg-dynamic,
 body:not(.rnp-bg-gradient) .bg-dim-for-gradient-bg,
 body:not(.rnp-bg-blur) .bg-dim, 
 body:not(.rnp-bg-fluid) .bg-dim-for-fluid-bg,
+body:not(.rnp-bg-fluid) .static-fluid,
+body:not(.rnp-bg-fluid) .static-fluid + .rnp-checkbox-note,
 body.rnp-bg-none .partial-bg,
 body:not(.lyric-only) .center-lyric-control {
 	opacity: 0;
