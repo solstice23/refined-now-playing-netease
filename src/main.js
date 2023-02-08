@@ -457,10 +457,10 @@ const addSettingsMenu = async (isFM = false) => {
 		const lyricFontSize = getOptionDom('#lyric-font-size');
 
 		bindSliderToCSSVariable(bgBlur, '--bg-blur', 36, 'change', (x) => { return `${x}px` });
-		bindSliderToCSSVariable(bgDim, '--bg-dim', 55, 'input', (x) => { return x / 100 });
-		bindSliderToCSSVariable(bgDimForGradientBg, '--bg-dim-for-gradient-bg', 45, 'input', (x) => { return x / 100 });
-		bindSliderToCSSVariable(bgDimForFluidBg, '--bg-dim-for-fluid-bg', 30, 'input', (x) => { return x / 100 });
-		bindSliderToCSSVariable(bgOpacity, '--bg-opacity', 0, 'input', (x) => { return 1 - x / 100 });
+		bindSliderToCSSVariable(bgDim, '--bg-dim', 55, 'change', (x) => { return x / 100 });
+		bindSliderToCSSVariable(bgDimForGradientBg, '--bg-dim-for-gradient-bg', 45, 'change', (x) => { return x / 100 });
+		bindSliderToCSSVariable(bgDimForFluidBg, '--bg-dim-for-fluid-bg', 30, 'change', (x) => { return x / 100 });
+		bindSliderToCSSVariable(bgOpacity, '--bg-opacity', 0, 'change', (x) => { return 1 - x / 100 });
 		bindSliderToFunction(albumSize, (x) => {
 			window.albumSize = x;
 			const img = getOptionDom('.n-single .cdimg img');// ?? getOptionDom('.m-fm .fmplay .covers .cvr.j-curr');
@@ -911,6 +911,20 @@ plugin.onLoad(async (p) => {
 			setIdle();
 		}
 	});
+
+	// Listen for now playing open
+	new MutationObserver((mutations) => {
+		mutations.forEach((mutation) => {
+			if (mutation.addedNodes.length > 0) {
+				mutation.addedNodes.forEach((node) => {
+					if (node.classList && node.classList.contains('g-single')) {
+						document.body.classList.add('mq-playing');
+						node.classList.add('z-show');
+					}
+				});
+			}
+		});
+	}).observe(document.body, { childList: true });
 });
 
 plugin.onConfig((tools) => {

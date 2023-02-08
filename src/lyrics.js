@@ -233,7 +233,7 @@ export function Lyrics(props) {
 	}, []);
 
 
-	/*useEffect(() => { // Recalculate height of each line
+	useEffect(() => { // Recalculate height of each line
 		if (!lyrics) return;
 		const container = containerRef.current;
 		const items = container.children;
@@ -243,9 +243,9 @@ export function Lyrics(props) {
 		}
 		heightOfItems.current = heights;
 		//console.log('heightOfItems', heightOfItems.current);
-	}, [lyrics, containerWidth, fontSize, showTranslation, showRomaji, useKaraokeLyrics, recalcCounter]);*/
+	}, [lyrics, containerWidth, fontSize, showTranslation, showRomaji, useKaraokeLyrics, recalcCounter]);
 
-	const recalcHeightOfItems = () => {
+	/*const recalcHeightOfItems = () => {
 		if (!lyrics) return;
 		const container = containerRef.current;
 		const items = container.children;
@@ -255,20 +255,25 @@ export function Lyrics(props) {
 		}
 		heightOfItems.current = heights;
 		//console.log('heightOfItems', heightOfItems.current);
-	}
+	}*/
 	
 	const onResize = () => {
-		shouldTransit.current = true;
+		shouldTransit.current = false;
 		const container = containerRef.current;
 		setContainerHeight(container.clientHeight);
 		setContainerWidth(container.clientWidth);
+		//console.log('resize', container.clientWidth, container.clientHeight);
 	};
 
 	useEffect(() => {
-		onResize();
-		window.addEventListener("resize", onResize);
+		const resizeObserver = new ResizeObserver(() => {
+			onResize();
+		});
+		resizeObserver.observe(containerRef.current);
+		//window.addEventListener("resize", onResize);
 		return () => {
-			window.removeEventListener("resize", onResize);
+			//window.removeEventListener("resize", onResize);
+			resizeObserver.disconnect();
 		}
 	}, []);
 
@@ -293,7 +298,7 @@ export function Lyrics(props) {
 				try {
 					return customScaleFunc(offset);
 				} catch (e) {
-					console.error('Error in custom blur function', e);
+					console.error('Error in custom scale function', e);
 				}
 			}
 			offset = Math.abs(offset);
@@ -335,7 +340,7 @@ export function Lyrics(props) {
 			current = Math.min(Math.max(scrollingFocusLine ?? 0, 0), lyrics.length - 1);
 		}
 
-		if (!scrollingMode) recalcHeightOfItems();
+	//	if (!scrollingMode) recalcHeightOfItems();
 		//console.log(currentLine, current);
 		//transforms[current].top = containerHeight / 2 - heightOfItems.current[current] / 2;
 		transforms[current].top = containerRef.current.clientHeight / 2 - heightOfItems.current[current] / 2;

@@ -1063,3 +1063,36 @@ body.rnp-full-screen{
 body:not(.mq-playing) .rnp-full-screen-button {
 	display: none;
 }
+
+
+
+
+@keyframes now-playing-page {
+    0% {
+        transform: translateY(50%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+@keyframes now-playing-page-reverse {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(50%);
+        opacity: 0;
+    }
+}
+.g-single {
+    animation: now-playing-page 0.5s ease;
+    transition: none;
+	transform: none;
+}
+body:not(.mq-playing) .g-single {
+	animation: now-playing-page-reverse 0.5s ease;
+	animation-fill-mode: forwards;
+}
