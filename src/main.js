@@ -543,7 +543,7 @@ const addSettingsMenu = async (isFM = false) => {
 		};
 		tabs.forEach((x) => {
 			x.addEventListener('click', () => {
-				const top = container.querySelector(`.rnp-group[data-tab="${x.dataset.tab}"]`).offsetTop;
+				const top = container.querySelector(`.rnp-group[data-tab="${x.dataset.tab}"]`).offsetTop + 5;
 				container.scrollTo({ top, behavior: 'smooth' });
 			});
 		});
