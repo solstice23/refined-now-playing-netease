@@ -1,13 +1,24 @@
 import './compatibility-check.scss';
+import { compareVersions } from 'compare-versions';
 
 const useState = React.useState;
 const useEffect = React.useEffect;
 const useRef = React.useRef;
 
 function Wizard(props) {
+	const [isNCMOutdated, setIsNCMOutdated] = useState(false);
 	const [isBetterNCMOutdated, setIsBetterNCMOutdated] = useState(false);
 	const [isGPUDisabled, setIsGPUDisabled] = useState(false);
 	const [isHijackDisabled, setIsHijackDisabled] = useState(false);
+
+	useEffect(async () => {
+		try {
+			if (compareVersions(betterncm.ncm.getNCMVersion(), "2.10.6") < 0) {
+				setIsNCMOutdated(true);
+			}
+		} catch (e) {
+		}
+	}, []);
 
 	useEffect(async () => {
 		try {
@@ -60,11 +71,11 @@ function Wizard(props) {
 	}, []);
 
 	useEffect(() => {
-		if (isBetterNCMOutdated || isGPUDisabled || isHijackDisabled) {
+		if (isNCMOutdated || isBetterNCMOutdated || isGPUDisabled || isHijackDisabled) {
 			return;
 		}
 		localStorage.setItem("refined-now-playing-wizard-done", "true");
-	}, [isBetterNCMOutdated, isGPUDisabled, isHijackDisabled]);
+	}, [isNCMOutdated, isBetterNCMOutdated, isGPUDisabled, isHijackDisabled]);
 	
 
 
@@ -77,6 +88,16 @@ function Wizard(props) {
 			<div class="rnp-compatibility-check__content">
 				<p>欢迎使用 Refined Now Playing。</p>
 				<p>在开始之前，请依照本提示检查和更正兼容性问题，否则可能会遇到渲染错误、性能降低、功能失效等问题。</p>
+				{isNCMOutdated && 
+					<>
+						<h1>网易云版本</h1>
+						<p>Refined Now Playing 需要 2.10.6 及以上版本的网易云才能正常工作。</p>
+						<p className="warning">检测到您的网易云版本过旧，将会导致 Refined Now Playing 无法正常工作。请更新网易云。</p>
+						<Button text="下载新版网易云" disabledAfterDone={false} onClick={async() => {
+							await betterncm.app.exec("https://music.163.com/#/download");
+						}}/>
+					</>
+				}
 				<h1>BetterNCM 版本</h1>
 				<p>请尽可能将 BetterNCM 更新到最新版本，BetterNCM 版本过低会导致 Refined Now Playing 插件无法运行。</p>
 				<p>目前推荐使用最新稳定版。如果版本过旧，请在 BetterNCM Installer 中，点击 “重装/更新” 以更新最新版。</p>
@@ -139,7 +160,7 @@ function Wizard(props) {
 				}
 				<h1>完成</h1>
 				{
-					isBetterNCMOutdated || isGPUDisabled || isHijackDisabled ? (
+					isNCMOutdated || isBetterNCMOutdated || isGPUDisabled || isHijackDisabled ? (
 						<>
 							<p className="warning">请先完成上述检查步骤，然后点击完成。</p>
 							<p>您也可以选择跳过。如果出现问题需要修复，可以在插件设置中调出此页面。</p>
@@ -158,12 +179,12 @@ function Wizard(props) {
 						localStorage.setItem("refined-now-playing-wizard-done", "true");
 						betterncm_native.app.reloadIgnoreCache();
 					}}
-					disabled={isBetterNCMOutdated || isGPUDisabled || isHijackDisabled}
+					disabled={isNCMOutdated || isBetterNCMOutdated || isGPUDisabled || isHijackDisabled}
 				>
 					完成并不再提示
 				</button>
 				{
-					(isBetterNCMOutdated || isGPUDisabled || isHijackDisabled) && 
+					(isNCMOutdated || isBetterNCMOutdated || isGPUDisabled || isHijackDisabled) && 
 					<>
 						<Button text="跳过" disabledAfterDone={true} onClick={() => {
 							document.querySelector("#refined-now-playing-wizard").remove();
