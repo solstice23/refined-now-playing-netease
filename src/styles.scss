@@ -328,13 +328,21 @@ body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
 			max-width: unset;
 		}
 	}
-	.lyric {
+	.g-singlec-ct .lyric {
 		position: absolute;
 		width: calc(45% - 10px);
 		bottom: calc(clamp(30px, 5%, 60px) + 10px);
 		height: calc(100vh - var(--bottombar-height, 72px) - 120px);
 		overflow: visible;
 		left: min(50vw, 60%);
+	}
+	.g-singlec-hd .wrap {
+		.name {
+			color: var(--rnp-accent-color-shade-2);
+		}
+		.lyric {
+			color: rgba(var(--rnp-accent-color-shade-2-rgb), 0.5);
+		}
 	}
 }
 .g-single-track .g-singlec-ct .n-single {
