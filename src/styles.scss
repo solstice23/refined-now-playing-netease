@@ -143,6 +143,9 @@ body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
 	> .wrap {
 		max-width: min(max(80vw, 1500px), calc(100vw - max(50px, 5vw)));
 	}
+	> .wrap, .wrap:not(.x) { // add selector weight
+		margin: auto !important;
+	}
 }
 .g-single-track {
 	.content { // content container

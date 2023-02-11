@@ -3,8 +3,9 @@ import './exclusive-modes.scss';
 import './FM.scss'
 import settingsMenuHTML from './settings-menu.html';
 import './settings-menu.scss';
-import { argb2Rgb, rgb2Argb} from './color-utils.js';
-import { getSetting, setSetting, chunk, copyTextToClipboard } from './utils.js';
+import { argb2Rgb, rgb2Argb } from './color-utils.js';
+import { waitForElement, waitForElementAsync, getSetting, setSetting, chunk, copyTextToClipboard } from './utils.js';
+import './refined-control-bar.js';
 import { Background } from './background.js';
 import { Lyrics } from './lyrics.js';
 import { themeFromSourceColor, QuantizerCelebi, Hct, Score } from "@importantimport/material-color-utilities";
@@ -26,41 +27,6 @@ const injectHTML = (type, html, parent, fun = (dom) => {}) => {
 	fun.call(this, dom);
 
 	parent.appendChild(dom);
-}
-const waitForElement = (selector, fun) => {
-	selector = selector.split(',');
-	let done = true;
-	for (const s of selector) {
-		if (!document.querySelector(s)) {
-			done = false;
-		}
-	}
-	if (done) {
-		for (const s of selector) {
-			fun.call(this, document.querySelector(s));
-		}
-		return;
-	}
-	let interval = setInterval(() => {
-		let done = true;
-		for (const s of selector) {
-			if (!document.querySelector(s)) {
-				done = false;
-			}
-		}
-		if (done) {
-			clearInterval(interval);
-			for (const s of selector) {
-				fun.call(this, document.querySelector(s));
-			}
-		}
-	}, 100);
-}
-const waitForElementAsync = async (selector) => {
-	if (document.querySelector(selector)) {
-		return document.querySelector(selector);
-	}
-	return await betterncm.utils.waitForElement(selector);
 }
 
 const updateAccentColor = (name, argb, isFM = false) => {
@@ -427,6 +393,7 @@ const addSettingsMenu = async (isFM = false) => {
 		const textShadow = getOptionDom('#text-shadow');
 		const centerLyric = getOptionDom('#center-lyric');
 		const staticFluid = getOptionDom('#static-fluid');
+		const refinedControlBar = getOptionDom('#refined-control-bar');
 
 		bindCheckboxToClass(rectangleCover, 'rectangle-cover', true);
 		bindCheckboxToClass(enableAccentColor, 'enable-accent-color', true);
@@ -439,6 +406,7 @@ const addSettingsMenu = async (isFM = false) => {
 		bindCheckboxToClass(staticFluid, 'static-fluid', false, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-static-fluid', { detail: x }));
 		});
+		bindCheckboxToClass(refinedControlBar, 'refined-control-bar', true);
 		
 		bindCheckboxToFunction(lyricBlur, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-lyric-blur', { detail: x }));

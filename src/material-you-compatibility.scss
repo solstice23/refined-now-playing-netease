@@ -1,11 +1,12 @@
-body.material-you-theme.mq-playing:not(.ignore-now-playing) {
+body.material-you-theme.mq-playing:not(.ignore-now-playing),
+body:not(.material-you-theme).refined-control-bar.mq-playing {
 	#main-player, .m-pinfo .btns > .btn,
 	#main-player > .btnp, #time-indicator {
-		transition: transform .3s ease, opacity .3s ease;
+		transition: transform .3s ease, opacity .3s ease !important;
 		will-change: transform, opacity;
 	}
 	#time-indicator {
-		transition: transform .3s ease, opacity .3s ease, right .3s ease;
+		transition: transform .3s ease, opacity .3s ease, right .3s ease !important;
 	}
 	&:not(.bottombar-hover):not(.mq-playing-scroll).rnp-idle {
 		#main-player, .m-pinfo .btns > .btn{

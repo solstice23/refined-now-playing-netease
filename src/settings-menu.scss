@@ -360,7 +360,8 @@ body:not(.rnp-bg-fluid) .bg-dim-for-fluid-bg,
 body:not(.rnp-bg-fluid) .static-fluid,
 body:not(.rnp-bg-fluid) .static-fluid + .rnp-checkbox-note,
 body.rnp-bg-none .partial-bg,
-body:not(.lyric-only) .center-lyric-control {
+body:not(.lyric-only) .center-lyric-control,
+body.material-you-theme .refined-control-bar-switch {
 	opacity: 0;
 	height: 0;
 	padding-bottom: 0;

@@ -245,7 +245,7 @@ export function Lyrics(props) {
 		const delayByOffset = (offset) => {
 			let sign = currentLine - previousFocusedLineRef.current > 0 ? 1 : -1;
 			//console.log(currentLine, previousFocusedLineRef.current);
-			if (currentLine == previousFocusedLineRef.current) {
+			if (currentLine == previousFocusedLineRef.current || scrollingMode) {
 				return 0;
 			}
 			offset = Math.max(-4, Math.min(4, offset)) * sign + 4;
@@ -288,7 +288,7 @@ export function Lyrics(props) {
 			transforms[i].delay = delayByOffset(i - current);
 		}
 		heightOfItems.current[current] = currentLineHeight;
-		if (!shouldTransit.current) {
+		if (!shouldTransit.current && !scrollingMode) {
 			for (let i = 0; i < lyrics.length; i++) {
 				transforms[i].delay = 0;
 				transforms[i].duration = 0;
