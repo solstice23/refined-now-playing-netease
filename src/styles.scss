@@ -325,7 +325,7 @@ body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
 			max-width: unset;
 		}
 	}
-	.lyric {
+	.g-singlec-ct .lyric {
 		position: absolute;
 		width: calc(45% - 10px);
 		bottom: calc(clamp(30px, 5%, 60px) + 10px);
