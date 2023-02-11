@@ -333,6 +333,14 @@ body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
 		overflow: visible;
 		left: min(50vw, 60%);
 	}
+	.g-singlec-hd .wrap {
+		.name {
+			color: var(--rnp-accent-color-shade-2);
+		}
+		.lyric {
+			color: rgba(var(--rnp-accent-color-shade-2-rgb), 0.5);
+		}
+	}
 }
 .g-single-track .g-singlec-ct .n-single {
 	.mn .head {
