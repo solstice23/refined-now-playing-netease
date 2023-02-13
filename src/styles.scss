@@ -617,6 +617,11 @@ body.mq-playing {
 		opacity: 0;
 		transition: opacity .3s ease, background .3s ease;
 	}
+	&:not(.bottombar-hover):not(.mq-playing-scroll) {
+		#main-player > .brt {
+			opacity: 0 !important;
+		}
+	}
 }
 body.bottombar-hover, body.mq-playing-scroll {
 	.m-pinfo .btn:not(.btn-love),

@@ -448,6 +448,8 @@ const addSettingsMenu = async (isFM = false) => {
 		const backgroundType = getOptionDom('#background-type');
 		const colorScheme = getOptionDom('#color-scheme');
 		const exclusiveModes = getOptionDom('#exclusive-modes');
+		const karaokeAnimation = getOptionDom('#karaoke-animation');
+		const currentLyricAlignmentPercentage = getOptionDom('#current-lyric-alignment-percentage');
 		bindSelectGroupToClasses(verticalAlign, 'bottom', (x) => { return `vertical-align-${x}` }, () => { recalculateTitleSize();});
 		bindSelectGroupToClasses(horizontalAlign, 'left', (x) => { return `horizontal-align-${x}` }, () => { recalculateTitleSize();});
 		bindSelectGroupToClasses(backgroundType, 'fluid', (x) => `rnp-bg-${x}`, (x) => {
@@ -457,6 +459,12 @@ const addSettingsMenu = async (isFM = false) => {
 		bindSelectGroupToClasses(exclusiveModes, 'none', (x) => x === 'all' ? 'no-exclusive-mode' : x, () => {
 			window.dispatchEvent(new Event('recalc-lyrics'));
 			recalculateTitleSize();
+		});
+		bindSelectGroupToClasses(karaokeAnimation, 'float', (x) => `rnp-karaoke-animation-${x}`, (x) => {
+			document.dispatchEvent(new CustomEvent('rnp-karaoke-animation', { detail: x }));
+		});
+		bindSelectGroupToClasses(currentLyricAlignmentPercentage, '50', (x) => `rnp-current-lyric-alignment-${x}`, (x) => {
+			document.dispatchEvent(new CustomEvent('rnp-current-lyric-alignment-percentage', { detail: parseInt(x) }));
 		});
 
 

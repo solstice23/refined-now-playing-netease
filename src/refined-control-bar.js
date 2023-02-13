@@ -59,8 +59,7 @@ const updateTimeIndicatorPosition = () => {
 }
 
 const init = () => {
-	if (document.body.classList.contains('material-you-theme') || loadedPlugins.MaterialYouTheme) {
-		console.log('material you theme');
+	if (document.body.classList.contains('material-you-theme') || loadedPlugins.MaterialYouTheme || loadedPlugins['ark-theme']) {
 		return;
 	}
 

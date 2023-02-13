@@ -63,6 +63,8 @@ export function Lyrics(props) {
 	const [showTranslation, setShowTranslation] = useState(getSetting('show-translation', true));
 	const [showRomaji, setShowRomaji] = useState(getSetting('show-romaji', true));
 	const [useKaraokeLyrics, setUseKaraokeLyrics] = useState(getSetting('use-karaoke-lyrics', true));
+	const [karaokeAnimation, setKaraokeAnimation] = useState(getSetting('karaoke-animation', false));
+	const [currentLyricAlignmentPercentage, setCurrentLyricAlignmentPercentage] = useState(parseInt(getSetting('current-lyric-alignment-percentage', 50)));
 
 	const [overviewMode, setOverviewMode] = useState(false);
 	const [overviewModeScrolling, setOverviewModeScrolling] = useState(false);
@@ -88,7 +90,6 @@ export function Lyrics(props) {
 		_setScrollingMode(x);
 	}
 
-	const [fullScreen, setFullScreen] = useState(false);
 
 	const isPureMusic = lyrics && (
 		lyrics.length === 1 ||
@@ -165,7 +166,7 @@ export function Lyrics(props) {
 		}
 		heightOfItems.current = heights;
 		//console.log('heightOfItems', heightOfItems.current);
-	}, [lyrics, containerWidth, fontSize, showTranslation, showRomaji, useKaraokeLyrics, recalcCounter]);
+	}, [lyrics, containerWidth, fontSize, showTranslation, showRomaji, useKaraokeLyrics, karaokeAnimation, recalcCounter]);
 
 	/*const recalcHeightOfItems = () => {
 		if (!lyrics) return;
@@ -265,7 +266,9 @@ export function Lyrics(props) {
 	//	if (!scrollingMode) recalcHeightOfItems();
 		//console.log(currentLine, current);
 		//transforms[current].top = containerHeight / 2 - heightOfItems.current[current] / 2;
-		transforms[current].top = containerRef.current.clientHeight / 2 - heightOfItems.current[current] / 2;
+		transforms[current].top = 
+			containerRef.current.clientHeight * (currentLyricAlignmentPercentage * 0.01) - 
+			heightOfItems.current[current] / 2;
 		transforms[current].scale = 1;
 		transforms[current].delay = delayByOffset(0);
 		transforms[current].blur = blurByOffset(0);
@@ -303,6 +306,7 @@ export function Lyrics(props) {
 		fontSize, lyricZoom, lyricBlur,
 		showTranslation, showRomaji, useKaraokeLyrics,
 		scrollingMode, scrollingFocusLine,
+		currentLyricAlignmentPercentage,
 		recalcCounter,
 		lyrics
 	]);
@@ -334,6 +338,8 @@ export function Lyrics(props) {
 		let startIndex = 0;
 		if (currentTimeWithOffset - lastTime > 0 && currentTimeWithOffset - lastTime < 50) {
 			startIndex = Math.max(0, cur - 1);
+		} else {
+			setSeekCounter(+new Date());
 		}
 		for (let i = startIndex; i < _lyrics.current.length; i++) {
 			if (_lyrics.current[i].time <= currentTimeWithOffset) {
@@ -402,6 +408,7 @@ export function Lyrics(props) {
 		exitScrollingModeTimeout.current = setTimeout(() => {
 			setScrollingMode(false);
 			setScrollingFocusLine(_currentLine.current);
+			shouldTransit.current = true;
 			_scrollingFocusLine.current = _currentLine.current;
 		}, timeout);
 	}, [currentLine]);
@@ -415,6 +422,7 @@ export function Lyrics(props) {
 
 	const scrollingFocusOnLine = useCallback((line) => {
 		if (line == null) return;
+		shouldTransit.current = true;
 		setScrollingMode(true);
 		setScrollingFocusLine(line);
 		_scrollingFocusLine.current = line;
@@ -475,13 +483,26 @@ export function Lyrics(props) {
 		const onLyricBlurChange = (e) => {
 			setLyricBlur(e.detail ?? false);
 		}
+		const onKaraokeAnimationChange = (e) => {
+			setKaraokeAnimation(e.detail ?? 'float');
+			setTimeout(() => {
+				window.dispatchEvent(new CustomEvent("recalc-lyrics"));
+			}, 0);
+		}
+		const onCurrentLyricAlignmentPercentageChange = (e) => {
+			setCurrentLyricAlignmentPercentage(parseInt(e.detail) ?? 50);
+		}
 		document.addEventListener("rnp-lyric-font-size", onLyricFontSizeChange);
 		document.addEventListener("rnp-lyric-zoom", onLyricZoomChange);
 		document.addEventListener("rnp-lyric-blur", onLyricBlurChange);
+		document.addEventListener("rnp-karaoke-animation", onKaraokeAnimationChange);
+		document.addEventListener("rnp-current-lyric-alignment-percentage", onCurrentLyricAlignmentPercentageChange);
 		return () => {
 			document.removeEventListener("rnp-lyric-font-size", onLyricFontSizeChange);
 			document.removeEventListener("rnp-lyric-zoom", onLyricZoomChange);
 			document.removeEventListener("rnp-lyric-blur", onLyricBlurChange);
+			document.removeEventListener("rnp-karaoke-animation", onKaraokeAnimationChange);
+			document.removeEventListener("rnp-current-lyric-alignment-percentage", onCurrentLyricAlignmentPercentageChange);
 		}
 	}, []);
 
@@ -567,6 +588,7 @@ export function Lyrics(props) {
 						useKaraokeLyrics={useKaraokeLyrics}
 						jumpToTime={isPureMusic ? () => {} : jumpToTime}
 						transforms={lineTransforms[index] ?? { top: 0, scale: 1, delay: 0, blur: 0 }}
+						karaokeAnimation={karaokeAnimation}
 						outOfRangeScrolling={scrollingMode && length > 100 && Math.abs(index - scrollingFocusLine) > 20}
 						outOfRangeKaraoke={/*length > 100 && */Math.abs(index - currentLine) > 10}
 					/>
@@ -687,7 +709,7 @@ function Line(props) {
 		props.line.isInterlude = true;
 	}
 	const offset = props.id - props.currentLine;
-	const karaokeAnimation = (word) => {
+	const karaokeAnimationFloat = (word) => {
 		if (props.currentLine != props.id){
 			return {
 				transitionDuration: `200ms`,
@@ -707,6 +729,33 @@ function Line(props) {
 			transitionDelay: `${word.time - props.currentTime}ms`
 		};
 	};
+	const karaokeAnimationSlide = (word) => {
+		if (props.currentLine != props.id){
+			return {
+				transitionDuration: `0ms`,
+				transitionDelay: `0ms`,
+			};
+		}
+		if (props.playState == false && word.time + word.duration - props.currentTime > 0) {
+			return {
+				transitionDuration: `0s`,
+				transitionDelay: `0ms`,
+				transform: `translateY(-${Math.max((props.currentTime - word.time) / word.duration * 1, 0)}px)`,
+				WebkitMaskPositionX: `${100 - Math.max((props.currentTime - word.time) / word.duration * 100, 0)}%`
+			};
+		}
+		return {
+			transitionDuration: `${word.duration}ms, ${word.duration * 0.8}ms`,
+			transitionDelay: `${word.time - props.currentTime}ms, ${word.time - props.currentTime + word.duration * 0.5}ms`
+		};
+	};
+	const getKaraokeAnimation = (word) => {
+		if (props.karaokeAnimation == 'float') {
+			return karaokeAnimationFloat(word);
+		} else if (props.karaokeAnimation == 'slide') {
+			return karaokeAnimationSlide(word);
+		}
+	};
 
 	const karaokeLineRef = useRef(null);
 	useEffect(() => {
@@ -717,7 +766,7 @@ function Line(props) {
 			if (!karaokeLineRef.current) return;
 			karaokeLineRef.current.classList.remove('force-refresh');
 		}, 6);
-	}, [props.useKaraokeLyrics, props.seekCounter]);
+	}, [props.useKaraokeLyrics, props.seekCounter, props.karaokeAnimation]);
 
 	const CJKRegex = /([\p{Unified_Ideograph}|\u3040-\u309F|\u30A0-\u30FF])/gu;
 
@@ -782,9 +831,9 @@ function Line(props) {
 			{ props.line.dynamicLyric && props.useKaraokeLyrics && !props.outOfRangeKaraoke && <div className="rnp-lyrics-line-karaoke" ref={karaokeLineRef}>
 				{props.line.dynamicLyric.map((word, index) => {
 					return <span
-						key={index}
+						key={`${props.karaokeAnimation} ${index}`}
 						className={`rnp-karaoke-word ${CJKRegex.test(word.word) ? 'is-cjk' : ''} ${word.word.endsWith(' ') ? 'end-with-space' : ''}`}
-						style={karaokeAnimation(word)}>
+						style={getKaraokeAnimation(word)}>
 							{word.word}
 					</span>
 				})}

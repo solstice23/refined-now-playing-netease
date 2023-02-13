@@ -1,5 +1,46 @@
 body.material-you-theme.mq-playing:not(.ignore-now-playing),
-body:not(.material-you-theme).refined-control-bar.mq-playing {
+body.refined-control-bar.mq-playing:not(.material-you-theme) {
+	#main-player {
+		background-color: transparent !important;
+	}
+	&:not(.bottombar-hover):not(.mq-playing-scroll) {
+		#main-player > .brt {
+			opacity: 0 !important;
+		}
+	}
+	&.mq-playing .m-player {
+		.btnp {
+			transition: background-color .25s ease;
+		}
+		.prg-spk {
+			box-shadow: none;
+			background: #00000015;
+			backdrop-filter: blur(36px);
+			border-radius: 100px;
+		}
+		.prg-spk::before {
+			display: none;
+		}
+		.prg-spk::after {
+			display: none;
+		}
+		.prg-spk .track::before {
+			background: rgba(var(--rnp-accent-color-rgb), 0.1);
+		}
+		.prg-spk .has::before {
+			background: var(--rnp-accent-color);
+		}
+		.prg-spk .ctrl {
+			background-color: var(--rnp-accent-color);
+		}
+		.brt .brttext.vip {
+			color: var(--rnp-accent-color);
+			border-color: var(--rnp-accent-color);
+		}
+	}
+	
+
+
 	#main-player, .m-pinfo .btns > .btn,
 	#main-player > .btnp, #time-indicator {
 		transition: transform .3s ease, opacity .3s ease !important;
