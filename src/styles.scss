@@ -1048,7 +1048,8 @@ body.mq-playing {
 	z-index: 200;
 	opacity: 0;
 }
-body:not(.rnp-idle):not(.always-show-bottombar) .rnp-full-screen-button {
+body:not(.rnp-idle) .rnp-full-screen-button,
+body.always-show-bottombar .rnp-full-screen-button  {
 	opacity: 1;
 }
 body.rnp-full-screen{
