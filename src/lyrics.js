@@ -330,7 +330,7 @@ export function Lyrics(props) {
 		}
 		//console.log("new progress", id, progress);
 		//setSongId(id);
-		const lastTime = currentTime.current;
+		const lastTime = currentTime.current + globalOffset;
 		currentTime.current = ((progress * 1000) || 0);
 		const currentTimeWithOffset = currentTime.current + globalOffset;
 		if (!_lyrics.current) return;
@@ -338,7 +338,8 @@ export function Lyrics(props) {
 		let startIndex = 0;
 		if (currentTimeWithOffset - lastTime > 0 && currentTimeWithOffset - lastTime < 50) {
 			startIndex = Math.max(0, cur - 1);
-		} else {
+		}
+		if (currentTimeWithOffset < lastTime - 10) {
 			setSeekCounter(+new Date());
 		}
 		for (let i = startIndex; i < _lyrics.current.length; i++) {
