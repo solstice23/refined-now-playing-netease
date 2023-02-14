@@ -617,13 +617,13 @@ body.mq-playing {
 		opacity: 0;
 		transition: opacity .3s ease, background .3s ease;
 	}
-	&:not(.bottombar-hover):not(.mq-playing-scroll) {
+	&:not(.bottombar-hover):not(.mq-playing-scroll):not(.always-show-bottombar) {
 		#main-player > .brt {
 			opacity: 0 !important;
 		}
 	}
 }
-body.bottombar-hover, body.mq-playing-scroll {
+body.bottombar-hover, body.mq-playing-scroll, body.always-show-bottombar {
 	.m-pinfo .btn:not(.btn-love),
 	#main-player>*:not(.f-cp, .prg, time),
 	#main-player>.audioEffect,
@@ -716,7 +716,7 @@ body.mq-playing .m-player {
 		}
 	}
 }
-body.bottombar-hover, body.mq-playing-scroll {
+body.bottombar-hover, body.mq-playing-scroll, body.always-show-bottombar {
 	.m-player {
 		.btnc, .btnp, .type, .word {
 			svg {
@@ -1048,7 +1048,7 @@ body.mq-playing {
 	z-index: 200;
 	opacity: 0;
 }
-body:not(.rnp-idle) .rnp-full-screen-button {
+body:not(.rnp-idle):not(.always-show-bottombar) .rnp-full-screen-button {
 	opacity: 1;
 }
 body.rnp-full-screen{
@@ -1080,8 +1080,11 @@ body:not(.mq-playing) .rnp-full-screen-button {
 	display: none;
 }
 
-
-
+body.hide-song-alias-name {
+	.g-single-track .g-singlec-ct .n-single .mn .head .inf .info .alias {
+		display: none;
+	}
+}
 
 @keyframes now-playing-page {
     0% {

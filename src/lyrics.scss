@@ -71,6 +71,7 @@
 	will-change: transform, filter;
 }
 .rnp-lyrics-line {
+	line-height: 1.2;
 	.rnp-lyrics-line-karaoke, .rnp-lyrics-line-original {
 		font-weight: 600;
 	}
@@ -219,7 +220,15 @@ body.rnp-karaoke-animation-float .rnp-lyrics-line {
 	}
 }
 body.rnp-karaoke-animation-slide .rnp-lyrics-line {
-	line-height: 1.5;
+	.rnp-lyrics-line-karaoke {
+		line-height: 1.5;
+		display: flex;
+		flex-wrap: wrap;
+		.rnp-karaoke-word{
+			margin-top: -0.15em;
+			margin-bottom: -0.15em;
+		}
+	}
 	.rnp-karaoke-word {
 		$fade-width: 20;
 		-webkit-mask-image: linear-gradient(to right,

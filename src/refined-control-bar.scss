@@ -59,7 +59,7 @@ body:not(.material-you-theme).refined-control-bar.mq-playing {
 	.g-single {
 		margin: 0 !important;
 	}
-	&:not(.bottombar-hover):not(.mq-playing-scroll) {
+	&:not(.bottombar-hover):not(.mq-playing-scroll):not(.always-show-bottombar) {
 		#main-player > .brt {
 			opacity: 0 !important;
 		}
@@ -140,7 +140,7 @@ body:not(.material-you-theme).refined-control-bar.mq-playing {
 			display: none;
 		}
 	}
-	#time-indicator {
+	#rnp-time-indicator {
 		right: 240px;
 		top: 50%;
 		transform: translateY(-50%);

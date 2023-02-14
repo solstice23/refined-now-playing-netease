@@ -55,8 +55,11 @@ const useGreyAccentColor = (isFM = false) => {
 	updateAccentColor('rnp-accent-color-bg-light', rgb2Argb(190, 190, 190), isFM);
 }
 
-
+let lastDom = null, lastIsFM = false;
 const calcAccentColor = (dom, isFM = false) => {
+	lastDom = dom.cloneNode(true);
+	lastIsFM = isFM;
+
 	const canvas = document.createElement('canvas');
 	canvas.width = 50;
 	canvas.height = 50;
@@ -81,18 +84,25 @@ const calcAccentColor = (dom, isFM = false) => {
 	const top = ranked[0];
 	const theme = themeFromSourceColor(top);
 
+	const variant = window.accentColorVariant ?? 'primary';
+
 	// theme.schemes.light.bgDarken = (Hct.from(theme.palettes.neutral.hue, theme.palettes.neutral.chroma, 97.5)).toInt();
-	updateAccentColor('rnp-accent-color-dark', theme.schemes.dark.primary, isFM);
-	updateAccentColor('rnp-accent-color-on-primary-dark', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 20)).toInt(), isFM);
-	updateAccentColor('rnp-accent-color-shade-1-dark', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 80)).toInt(), isFM);
-	updateAccentColor('rnp-accent-color-shade-2-dark', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 90)).toInt(), isFM);
+	updateAccentColor('rnp-accent-color-dark', theme.schemes.dark[variant], isFM);
+	updateAccentColor('rnp-accent-color-on-primary-dark', (Hct.from(theme.palettes[variant].hue, theme.palettes[variant].chroma, 20)).toInt(), isFM);
+	updateAccentColor('rnp-accent-color-shade-1-dark', (Hct.from(theme.palettes[variant].hue, theme.palettes[variant].chroma, 80)).toInt(), isFM);
+	updateAccentColor('rnp-accent-color-shade-2-dark', (Hct.from(theme.palettes[variant].hue, theme.palettes[variant].chroma, 90)).toInt(), isFM);
 	updateAccentColor('rnp-accent-color-bg-dark', (Hct.from(theme.palettes.secondary.hue, theme.palettes.secondary.chroma, 20)).toInt(), isFM);
 
 	updateAccentColor('rnp-accent-color-light', theme.schemes.light.onPrimaryContainer, isFM);
-	updateAccentColor('rnp-accent-color-on-primary-light', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 100)).toInt(), isFM);
-	updateAccentColor('rnp-accent-color-shade-1-light', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 25)).toInt(), isFM);
-	updateAccentColor('rnp-accent-color-shade-2-light', (Hct.from(theme.palettes.primary.hue, theme.palettes.primary.chroma, 15)).toInt(), isFM);
+	updateAccentColor('rnp-accent-color-on-primary-light', (Hct.from(theme.palettes[variant].hue, theme.palettes[variant].chroma, 100)).toInt(), isFM);
+	updateAccentColor('rnp-accent-color-shade-1-light', (Hct.from(theme.palettes[variant].hue, theme.palettes[variant].chroma, 25)).toInt(), isFM);
+	updateAccentColor('rnp-accent-color-shade-2-light', (Hct.from(theme.palettes[variant].hue, theme.palettes[variant].chroma, 15)).toInt(), isFM);
 	updateAccentColor('rnp-accent-color-bg-light', (Hct.from(theme.palettes.secondary.hue, theme.palettes.secondary.chroma, 90)).toInt(), isFM);
+}
+const recalcAccentColor = () => {
+	if (lastDom) {
+		calcAccentColor(lastDom, lastIsFM);
+	}
 }
 
 var lastCDImage = '';
@@ -382,31 +392,68 @@ const addSettingsMenu = async (isFM = false) => {
 
 
 	const initSettings = () => {
-		const rectangleCover = getOptionDom('#rectangle-cover');
-		const lyricBlur = getOptionDom('#lyric-blur');
-		const lyricZoom = getOptionDom('#lyric-zoom');
-		const enableAccentColor = getOptionDom('#enable-accent-color');
-		const useNotosans = getOptionDom('#use-notosans');
-		const hideComments = getOptionDom('#hide-comments');
-		const partialBg = getOptionDom('#partial-bg');
-		const gradientBgDynamic = getOptionDom('#gradient-bg-dynamic');
-		const textShadow = getOptionDom('#text-shadow');
+		// 外观
+		const exclusiveModes = getOptionDom('#exclusive-modes');
 		const centerLyric = getOptionDom('#center-lyric');
-		const staticFluid = getOptionDom('#static-fluid');
+		const colorScheme = getOptionDom('#color-scheme');
+		const accentColorVariant = getOptionDom('#accent-color-variant');
+		const textShadow = getOptionDom('#text-shadow');
 		const refinedControlBar = getOptionDom('#refined-control-bar');
-
-		bindCheckboxToClass(rectangleCover, 'rectangle-cover', true);
-		bindCheckboxToClass(enableAccentColor, 'enable-accent-color', true);
-		bindCheckboxToClass(useNotosans, 'use-notosans', false);
-		bindCheckboxToClass(hideComments, 'hide-comments', false);
-		bindCheckboxToClass(partialBg, 'partial-bg', false);
-		bindCheckboxToClass(gradientBgDynamic, 'gradient-bg-dynamic', true);
-		bindCheckboxToClass(textShadow, 'rnp-shadow', false);
+		const alwaysShowBottomBar = getOptionDom('#always-show-bottombar');
+		bindSelectGroupToClasses(exclusiveModes, 'none', (x) => x === 'all' ? 'no-exclusive-mode' : x, () => {
+			window.dispatchEvent(new Event('recalc-lyrics'));
+			recalculateTitleSize();
+		});
 		bindCheckboxToClass(centerLyric, 'center-lyric', false);
+		bindSelectGroupToClasses(colorScheme, 'auto', (x) => `rnp-${x}`);
+		bindSelectGroupToClasses(accentColorVariant, 'primary', (x) => `accent-color-${x}`, (x) => {
+			if (x == 'off') document.body.classList.remove('enable-accent-color');
+			else document.body.classList.add('enable-accent-color');
+			window.accentColorVariant = (x == 'off') ? 'primary' : x;
+			recalcAccentColor();
+		});
+		bindCheckboxToClass(textShadow, 'rnp-shadow', false);
+		bindCheckboxToClass(refinedControlBar, 'refined-control-bar', true);
+		bindCheckboxToClass(alwaysShowBottomBar, 'always-show-bottombar', false);
+
+
+		// 封面
+		const horizontalAlign = getOptionDom('#horizontal-align');
+		const verticalAlign = getOptionDom('#vertical-align');
+		const rectangleCover = getOptionDom('#rectangle-cover');
+		bindSelectGroupToClasses(horizontalAlign, 'left', (x) => { return `horizontal-align-${x}` }, () => { recalculateTitleSize();});
+		bindSelectGroupToClasses(verticalAlign, 'bottom', (x) => { return `vertical-align-${x}` }, () => { recalculateTitleSize();});
+		bindCheckboxToClass(rectangleCover, 'rectangle-cover', true);
+
+		// 背景
+		const backgroundType = getOptionDom('#background-type');const bgBlur = getOptionDom('#bg-blur');
+		const bgDim = getOptionDom('#bg-dim');
+		const bgDimForGradientBg = getOptionDom('#bg-dim-for-gradient-bg');
+		const bgDimForFluidBg = getOptionDom('#bg-dim-for-fluid-bg');
+		const bgOpacity = getOptionDom('#bg-opacity');
+		// const partialBg = getOptionDom('#partial-bg');
+		const gradientBgDynamic = getOptionDom('#gradient-bg-dynamic');
+		const staticFluid = getOptionDom('#static-fluid');
+		bindSelectGroupToClasses(backgroundType, 'fluid', (x) => `rnp-bg-${x}`, (x) => {
+			document.dispatchEvent(new CustomEvent('rnp-background-type', { detail: { type: x } }));
+		});
+		bindSliderToCSSVariable(bgBlur, '--bg-blur', 36, 'change', (x) => { return `${x}px` });
+		bindSliderToCSSVariable(bgDim, '--bg-dim', 55, 'change', (x) => { return x / 100 });
+		bindSliderToCSSVariable(bgDimForGradientBg, '--bg-dim-for-gradient-bg', 45, 'change', (x) => { return x / 100 });
+		bindSliderToCSSVariable(bgDimForFluidBg, '--bg-dim-for-fluid-bg', 30, 'change', (x) => { return x / 100 });
+		bindSliderToCSSVariable(bgOpacity, '--bg-opacity', 0, 'change', (x) => { return 1 - x / 100 });
+		// bindCheckboxToClass(partialBg, 'partial-bg', false);
+		bindCheckboxToClass(gradientBgDynamic, 'gradient-bg-dynamic', true);
 		bindCheckboxToClass(staticFluid, 'static-fluid', false, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-static-fluid', { detail: x }));
 		});
-		bindCheckboxToClass(refinedControlBar, 'refined-control-bar', true);
+
+		// 歌词
+		const lyricBlur = getOptionDom('#lyric-blur');
+		const lyricZoom = getOptionDom('#lyric-zoom');
+		const lyricFontSize = getOptionDom('#lyric-font-size');
+		const karaokeAnimation = getOptionDom('#karaoke-animation');
+		const currentLyricAlignmentPercentage = getOptionDom('#current-lyric-alignment-percentage');
 		
 		bindCheckboxToFunction(lyricBlur, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-lyric-blur', { detail: x }));
@@ -414,59 +461,15 @@ const addSettingsMenu = async (isFM = false) => {
 		bindCheckboxToFunction(lyricZoom, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-lyric-zoom', { detail: x }));
 		}, false);
-
-
-		const bgBlur = getOptionDom('#bg-blur');
-		const bgDim = getOptionDom('#bg-dim');
-		const bgDimForGradientBg = getOptionDom('#bg-dim-for-gradient-bg');
-		const bgDimForFluidBg = getOptionDom('#bg-dim-for-fluid-bg');
-		const bgOpacity = getOptionDom('#bg-opacity');
-		const albumSize = getOptionDom('#album-size');
-		const lyricFontSize = getOptionDom('#lyric-font-size');
-
-		bindSliderToCSSVariable(bgBlur, '--bg-blur', 36, 'change', (x) => { return `${x}px` });
-		bindSliderToCSSVariable(bgDim, '--bg-dim', 55, 'change', (x) => { return x / 100 });
-		bindSliderToCSSVariable(bgDimForGradientBg, '--bg-dim-for-gradient-bg', 45, 'change', (x) => { return x / 100 });
-		bindSliderToCSSVariable(bgDimForFluidBg, '--bg-dim-for-fluid-bg', 30, 'change', (x) => { return x / 100 });
-		bindSliderToCSSVariable(bgOpacity, '--bg-opacity', 0, 'change', (x) => { return 1 - x / 100 });
-		bindSliderToFunction(albumSize, (x) => {
-			window.albumSize = x;
-			const img = getOptionDom('.n-single .cdimg img');// ?? getOptionDom('.m-fm .fmplay .covers .cvr.j-curr');
-			if (!img?.src) return;
-			const currentSrc = img.src;
-			const newSrc = currentSrc.replace(/thumbnail=\d+y\d+/g, `thumbnail=${window.albumSize}y${window.albumSize}`);
-			if (currentSrc !== newSrc) {
-				img.src = newSrc;
-			}
-		}, 200, 'change', (x) => { return x === 200 ? 210 : x });
 		bindSliderToFunction(lyricFontSize, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-lyric-font-size', { detail: x }));
 		}, 32, 'change'); 
-
-		const verticalAlign = getOptionDom('#vertical-align');
-		const horizontalAlign = getOptionDom('#horizontal-align');
-		const backgroundType = getOptionDom('#background-type');
-		const colorScheme = getOptionDom('#color-scheme');
-		const exclusiveModes = getOptionDom('#exclusive-modes');
-		const karaokeAnimation = getOptionDom('#karaoke-animation');
-		const currentLyricAlignmentPercentage = getOptionDom('#current-lyric-alignment-percentage');
-		bindSelectGroupToClasses(verticalAlign, 'bottom', (x) => { return `vertical-align-${x}` }, () => { recalculateTitleSize();});
-		bindSelectGroupToClasses(horizontalAlign, 'left', (x) => { return `horizontal-align-${x}` }, () => { recalculateTitleSize();});
-		bindSelectGroupToClasses(backgroundType, 'fluid', (x) => `rnp-bg-${x}`, (x) => {
-			document.dispatchEvent(new CustomEvent('rnp-background-type', { detail: { type: x } }));
-		});
-		bindSelectGroupToClasses(colorScheme, 'auto', (x) => `rnp-${x}`);
-		bindSelectGroupToClasses(exclusiveModes, 'none', (x) => x === 'all' ? 'no-exclusive-mode' : x, () => {
-			window.dispatchEvent(new Event('recalc-lyrics'));
-			recalculateTitleSize();
-		});
 		bindSelectGroupToClasses(karaokeAnimation, 'float', (x) => `rnp-karaoke-animation-${x}`, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-karaoke-animation', { detail: x }));
 		});
 		bindSelectGroupToClasses(currentLyricAlignmentPercentage, '50', (x) => `rnp-current-lyric-alignment-${x}`, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-current-lyric-alignment-percentage', { detail: parseInt(x) }));
 		});
-
 
 		const lyricOffsetSlider = getOptionDom('#rnp-lyric-offset-slider');
 		const lyricOffsetAdd = getOptionDom('#rnp-lyric-offset-add');
@@ -501,6 +504,26 @@ const addSettingsMenu = async (isFM = false) => {
 			setLyricOffsetValue(0);
 		});
 
+		// 杂项
+		const useNotosans = getOptionDom('#use-notosans');
+		const hideComments = getOptionDom('#hide-comments');
+		const hideSongAliasName = getOptionDom('#hide-song-alias-name');
+		const albumSize = getOptionDom('#album-size');
+		bindCheckboxToClass(useNotosans, 'use-notosans', false);
+		bindCheckboxToClass(hideComments, 'hide-comments', false);
+		bindCheckboxToClass(hideSongAliasName, 'hide-song-alias-name', false);
+		bindSliderToFunction(albumSize, (x) => {
+			window.albumSize = x;
+			const img = getOptionDom('.n-single .cdimg img');// ?? getOptionDom('.m-fm .fmplay .covers .cvr.j-curr');
+			if (!img?.src) return;
+			const currentSrc = img.src;
+			const newSrc = currentSrc.replace(/thumbnail=\d+y\d+/g, `thumbnail=${window.albumSize}y${window.albumSize}`);
+			if (currentSrc !== newSrc) {
+				img.src = newSrc;
+			}
+		}, 200, 'change', (x) => { return x === 200 ? 210 : x });
+
+		// 关于
 		const versionNumber = getOptionDom('#rnp-version-number');
 		versionNumber.innerHTML = loadedPlugins.RefinedNowPlaying.manifest.version;
 	}

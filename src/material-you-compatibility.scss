@@ -3,7 +3,7 @@ body.refined-control-bar.mq-playing:not(.material-you-theme) {
 	#main-player {
 		background-color: transparent !important;
 	}
-	&:not(.bottombar-hover):not(.mq-playing-scroll) {
+	&:not(.bottombar-hover):not(.mq-playing-scroll):not(.always-show-bottombar) {
 		#main-player > .brt {
 			opacity: 0 !important;
 		}
@@ -42,25 +42,27 @@ body.refined-control-bar.mq-playing:not(.material-you-theme) {
 
 
 	#main-player, .m-pinfo .btns > .btn,
-	#main-player > .btnp, #time-indicator {
+	#main-player > .btnp, #time-indicator, #rnp-time-indicator {
 		transition: transform .3s ease, opacity .3s ease !important;
 		will-change: transform, opacity;
 	}
-	#time-indicator {
+	#time-indicator, #rnp-time-indicator {
 		transition: transform .3s ease, opacity .3s ease, right .3s ease !important;
 	}
-	&:not(.bottombar-hover):not(.mq-playing-scroll).rnp-idle {
+	&:not(.bottombar-hover):not(.mq-playing-scroll):not(.always-show-bottombar).rnp-idle {
 		#main-player, .m-pinfo .btns > .btn{
 			transform: translateY(calc(var(--bottombar-height) - 5px));
 		}
 		.m-pinfo .btns > .btn-love {
 			transform: translateY(0) !important;
 		}
-		#main-player > .btnp, #time-indicator {
+		#main-player > .btnp, #time-indicator, #rnp-time-indicator {
 			transform: translateY(calc(-50% + 5px - var(--bottombar-height)));
 		}
 	}
-	&:not(.bottombar-hover):not(.mq-playing-scroll) #time-indicator {
-		right: 25px !important;
+	&:not(.bottombar-hover):not(.mq-playing-scroll):not(.always-show-bottombar) {
+		#time-indicator, #rnp-time-indicator {
+			right: 25px !important;
+		}
 	}
 }

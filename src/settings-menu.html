@@ -31,9 +31,14 @@
 					<button class="rnp-select-group-btn selected" value="auto">系统</button>
 				</div>
 			</div>
-			<div class="rnp-checkbox-wrapper">
-				<input id="enable-accent-color" type="checkbox" class="rnp-checkbox">
-				<label for="enable-accent-color" class="rnp-checkbox-label">沉浸主题色</label>
+			<div class="rnp-select-group-wrapper">
+				<label for="accent-color-variant" class="rnp-select-group-label">沉浸主题色</label>
+				<div class="rnp-select-group" id="accent-color-variant">
+					<button class="rnp-select-group-btn selected" value="off">关</button>
+					<button class="rnp-select-group-btn selected" value="primary">鲜艳</button>
+					<button class="rnp-select-group-btn" value="secondary">柔和</button>
+					<button class="rnp-select-group-btn" value="tertiary">偏色</button>
+				</div>
 			</div>
 			<div class="rnp-checkbox-wrapper">
 				<input id="text-shadow" type="checkbox" class="rnp-checkbox">
@@ -42,6 +47,10 @@
 			<div class="rnp-checkbox-wrapper refined-control-bar-switch" style="--estimated-height: 20px;">
 				<input id="refined-control-bar" type="checkbox" class="rnp-checkbox">
 				<label for="refined-control-bar" class="rnp-checkbox-label">优化底栏</label>
+			</div>
+			<div class="rnp-checkbox-wrapper">
+				<input id="always-show-bottombar" type="checkbox" class="rnp-checkbox">
+				<label for="always-show-bottombar" class="rnp-checkbox-label">不自动隐藏底栏</label>
 			</div>
 		</div>
 
@@ -108,10 +117,10 @@
 				<label for="bg-opacity" class="rnp-slider-label">透明度<button class="rnp-slider-reset"></button></label>
 				<input id="bg-opacity" type="range" class="rnp-slider" min="0" max="100" value="0" default="0">
 			</div>
-			<div class="rnp-checkbox-wrapper partial-bg" style="--estimated-height: 20px;">
+			<!--<div class="rnp-checkbox-wrapper partial-bg" style="--estimated-height: 20px;">
 				<input id="partial-bg" type="checkbox" class="rnp-checkbox">
 				<label for="partial-bg" class="rnp-checkbox-label">局部背景</label>
-			</div>
+			</div>-->
 		</div>
 
 		
@@ -167,6 +176,10 @@
 			<div class="rnp-checkbox-wrapper">
 				<input id="hide-comments" type="checkbox" class="rnp-checkbox">
 				<label for="hide-comments" class="rnp-checkbox-label">隐藏评论区</label>
+			</div>
+			<div class="rnp-checkbox-wrapper">
+				<input id="hide-song-alias-name" type="checkbox" class="rnp-checkbox">
+				<label for="hide-song-alias-name" class="rnp-checkbox-label">隐藏歌曲别名/译名</label>
 			</div>
 			<div class="rnp-checkbox-wrapper with-note">
 				<input id="use-notosans" type="checkbox" class="rnp-checkbox">
