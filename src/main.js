@@ -454,6 +454,7 @@ const addSettingsMenu = async (isFM = false) => {
 		const lyricFontSize = getOptionDom('#lyric-font-size');
 		const karaokeAnimation = getOptionDom('#karaoke-animation');
 		const currentLyricAlignmentPercentage = getOptionDom('#current-lyric-alignment-percentage');
+		const lyricStagger = getOptionDom('#lyric-stagger');
 		
 		bindCheckboxToFunction(lyricBlur, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-lyric-blur', { detail: x }));
@@ -470,6 +471,9 @@ const addSettingsMenu = async (isFM = false) => {
 		bindSelectGroupToClasses(currentLyricAlignmentPercentage, '50', (x) => `rnp-current-lyric-alignment-${x}`, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-current-lyric-alignment-percentage', { detail: parseInt(x) }));
 		});
+		bindCheckboxToFunction(lyricStagger, (x) => {
+			document.dispatchEvent(new CustomEvent('rnp-lyric-stagger', { detail: x }));
+		}, true);
 
 		const lyricOffsetSlider = getOptionDom('#rnp-lyric-offset-slider');
 		const lyricOffsetAdd = getOptionDom('#rnp-lyric-offset-add');
@@ -747,15 +751,15 @@ plugin.onLoad(async (p) => {
 			, background);
 			document.querySelector('.g-single').appendChild(background);
 
-
-			const oldLyrics = document.querySelector('.g-single-track .g-singlec-ct .n-single .mn .lyric');
-			if (oldLyrics) {
+			waitForElement('.g-single-track .g-singlec-ct .n-single .mn .lyric', (oldLyrics) => {
 				oldLyrics.remove();
-			}
+			});
 			const lyrics = document.createElement('div');
 			lyrics.classList.add('lyric');
 			ReactDOM.render(<Lyrics />, lyrics);
-			document.querySelector('.g-single-track .g-singlec-ct .n-single .wrap').appendChild(lyrics);
+			waitForElement('.g-single-track .g-singlec-ct .n-single .wrap', (dom) => {
+				dom.appendChild(lyrics);
+			});
 
 			const miniSongInfo = document.createElement('div');
 			miniSongInfo.classList.add('rnp-mini-song-info');

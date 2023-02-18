@@ -49,6 +49,7 @@ export function Lyrics(props) {
 		_currentLine.current = x;
 		_setCurrentLine(x);
 	}
+	const [currentLineForScrolling, setCurrentLineForScrolling] = useState(0);	// 为提前 0.2s 滚动，使滚动 delay 与逐词歌词对应 而设置的 提前的，仅用于滚动的 currentLine
 
 	const [globalOffset, setGlobalOffset] = useState(parseInt(getSetting('lyric-offset', 0)));
 
@@ -65,6 +66,7 @@ export function Lyrics(props) {
 	const [useKaraokeLyrics, setUseKaraokeLyrics] = useState(getSetting('use-karaoke-lyrics', true));
 	const [karaokeAnimation, setKaraokeAnimation] = useState(getSetting('karaoke-animation', false));
 	const [currentLyricAlignmentPercentage, setCurrentLyricAlignmentPercentage] = useState(parseInt(getSetting('current-lyric-alignment-percentage', 50)));
+	const [lyricStagger, setLyricStagger] = useState(getSetting('lyric-stagger', true));
 
 	const [overviewMode, setOverviewMode] = useState(false);
 	const [overviewModeScrolling, setOverviewModeScrolling] = useState(false);
@@ -133,6 +135,7 @@ export function Lyrics(props) {
 		setScrollingMode(false);
 		preProcessMapping(e.detail);
 		setCurrentLine(0);
+		setCurrentLineForScrolling(0);
 		setLyrics(e.detail);
 		setHasTranslation(e.detail.some((x) => x.translatedLyric));
 		setHasRomaji(e.detail.some((x) => x.romanLyric));
@@ -215,6 +218,18 @@ export function Lyrics(props) {
 		if (!lyrics?.length) return;
 
 		const space = fontSize * 1.2;
+		const delayByOffset = (offset) => {
+			//console.log(currentLine, previousFocusedLineRef.current);
+			if (currentLineForScrolling == previousFocusedLineRef.current || scrollingMode) {
+				return 0;
+			}
+			if (!lyricStagger) {
+				return 0;
+			}
+			let sign = currentLineForScrolling - previousFocusedLineRef.current > 0 ? 1 : -1;
+			offset = Math.max(-4, Math.min(4, offset)) * sign + 4;
+			return offset * 50;
+		};
 		const scaleByOffset = (offset) => {
 			if (!lyricZoom) return 1;
 			if (customScaleFunc) {
@@ -243,22 +258,12 @@ export function Lyrics(props) {
 		};
 
 
-		const delayByOffset = (offset) => {
-			let sign = currentLine - previousFocusedLineRef.current > 0 ? 1 : -1;
-			//console.log(currentLine, previousFocusedLineRef.current);
-			if (currentLine == previousFocusedLineRef.current || scrollingMode) {
-				return 0;
-			}
-			offset = Math.max(-4, Math.min(4, offset)) * sign + 4;
-			return offset * 50;
-		};
-
 		//console.log(currentLine, previousFocusedLineRef.current, currentLine - previousFocusedLineRef.current > 0 ? 1 : -1);
 
 		const transforms = [];
 		for (let i = 0; i < lyrics.length; i++) transforms.push({ top: 0, scale: 1, delay: 0 });
 		//console.log('containerHeight', containerHeight);
-		let current = Math.min(Math.max(currentLine ?? 0, 0), lyrics.length - 1);
+		let current = Math.min(Math.max(currentLineForScrolling ?? 0, 0), lyrics.length - 1);
 		if (scrollingMode) {
 			current = Math.min(Math.max(scrollingFocusLine ?? 0, 0), lyrics.length - 1);
 		}
@@ -299,14 +304,15 @@ export function Lyrics(props) {
 		}
 		setLineTransforms(transforms);
 		//console.log('transforms', transforms);
-		previousFocusedLineRef.current = currentLine;
+		previousFocusedLineRef.current = currentLineForScrolling;
 	},[
-		currentLine,
+		currentLineForScrolling,
 		containerHeight, containerWidth,
 		fontSize, lyricZoom, lyricBlur,
 		showTranslation, showRomaji, useKaraokeLyrics,
 		scrollingMode, scrollingFocusLine,
 		currentLyricAlignmentPercentage,
+		lyricStagger,
 		recalcCounter,
 		lyrics
 	]);
@@ -322,6 +328,9 @@ export function Lyrics(props) {
 			setPlayState(document.querySelector(".m-player-fm .btnp").classList.contains("btnp-pause"));
 		}
 		//setPlayState((state.split("|")[1] == "resume"));
+		if (document.querySelector(".m-player-fm .btnp").classList.contains("btnp-pause")) {
+			setCurrentLineForScrolling(currentLine);
+		}
 		setSongId(id);
 	};
 	const onPlayProgress = (id, progress) => {
@@ -337,22 +346,38 @@ export function Lyrics(props) {
 		let cur = 0;
 		let startIndex = 0;
 		if (currentTimeWithOffset - lastTime > 0 && currentTimeWithOffset - lastTime < 50) {
-			startIndex = Math.max(0, cur - 1);
+			startIndex = Math.max(0, currentLine - 1);
 		}
 		if (currentTimeWithOffset < lastTime - 10) {
 			setSeekCounter(+new Date());
 		}
+	
 		for (let i = startIndex; i < _lyrics.current.length; i++) {
 			if (_lyrics.current[i].time <= currentTimeWithOffset) {
 				cur = i;
+			} else {
+				break;
 			}
 		}
+	
+		let curForScrolling = cur - 1;
+		const scrollingDelay = lyricStagger ? 200 : 0;
+		console.log(scrollingDelay);
+		for (let i = startIndex; i < _lyrics.current.length; i++) {
+			if (_lyrics.current[i].time <= currentTimeWithOffset + scrollingDelay) {
+				curForScrolling = i;
+			} else {
+				break;
+			}
+		}
+		
 		shouldTransit.current = true;
 		if (!_scrollingMode.current) {
 			setScrollingFocusLine(cur);
 			_scrollingFocusLine.current = cur;
 		}
 		setCurrentLine(cur);
+		setCurrentLineForScrolling(curForScrolling);
 	};
 	useEffect(() => {
 		onPlayProgress(songId, currentTime.current / 1000);
@@ -493,17 +518,22 @@ export function Lyrics(props) {
 		const onCurrentLyricAlignmentPercentageChange = (e) => {
 			setCurrentLyricAlignmentPercentage(parseInt(e.detail) ?? 50);
 		}
+		const onLyricStaggerChange = (e) => {
+			setLyricStagger(e.detail ?? true);
+		}
 		document.addEventListener("rnp-lyric-font-size", onLyricFontSizeChange);
 		document.addEventListener("rnp-lyric-zoom", onLyricZoomChange);
 		document.addEventListener("rnp-lyric-blur", onLyricBlurChange);
 		document.addEventListener("rnp-karaoke-animation", onKaraokeAnimationChange);
 		document.addEventListener("rnp-current-lyric-alignment-percentage", onCurrentLyricAlignmentPercentageChange);
+		document.addEventListener("rnp-lyric-stagger", onLyricStaggerChange);
 		return () => {
 			document.removeEventListener("rnp-lyric-font-size", onLyricFontSizeChange);
 			document.removeEventListener("rnp-lyric-zoom", onLyricZoomChange);
 			document.removeEventListener("rnp-lyric-blur", onLyricBlurChange);
 			document.removeEventListener("rnp-karaoke-animation", onKaraokeAnimationChange);
 			document.removeEventListener("rnp-current-lyric-alignment-percentage", onCurrentLyricAlignmentPercentageChange);
+			document.removeEventListener("rnp-lyric-stagger", onLyricStaggerChange);
 		}
 	}, []);
 
