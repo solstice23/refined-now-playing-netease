@@ -362,7 +362,6 @@ export function Lyrics(props) {
 	
 		let curForScrolling = cur - 1;
 		const scrollingDelay = lyricStagger ? 200 : 0;
-		console.log(scrollingDelay);
 		for (let i = startIndex; i < _lyrics.current.length; i++) {
 			if (_lyrics.current[i].time <= currentTimeWithOffset + scrollingDelay) {
 				curForScrolling = i;
