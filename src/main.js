@@ -763,13 +763,15 @@ plugin.onLoad(async (p) => {
 
 			const miniSongInfo = document.createElement('div');
 			miniSongInfo.classList.add('rnp-mini-song-info');
-			ReactDOM.render(
-				<MiniSongInfo
-					image={ await waitForElementAsync('.n-single .cdimg img') }
-					infContainer={ await waitForElementAsync('.g-single .g-singlec-ct .n-single .mn .head .inf') }
-				/>
-			, miniSongInfo);
-			document.querySelector('.g-single').appendChild(miniSongInfo);
+			setTimeout(async () => {
+				ReactDOM.render(
+					<MiniSongInfo
+						image={ await waitForElementAsync('.n-single .cdimg img') }
+						infContainer={ await waitForElementAsync('.g-single .g-singlec-ct .n-single .mn .head .inf') }
+					/>
+				, miniSongInfo);
+				document.querySelector('.g-single').appendChild(miniSongInfo);
+			}, 0);
 
 			addSettingsMenu();
 			addFullScreenButton(document.querySelector('.g-single'));
