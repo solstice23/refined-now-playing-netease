@@ -961,9 +961,16 @@ body.rnp-light, body.rnp-auto.rnp-system-light {
 			color: rgba(0, 0, 0, 0.8);
 		}
 		&.no-material-you-theme {
-			.m-winctrl, .m-leftbox, #main-player > div:not(.btnc):not(.btnp) {
+			.m-winctrl, .m-leftbox {
 				svg {
 					filter: invert(1);
+				}
+			}
+			&:not(.refined-control-bar) {
+				#main-player > div:not(.btnc):not(.btnp) {
+					svg {
+						filter: invert(1);
+					}
 				}
 			}
 		}
