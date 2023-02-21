@@ -64,7 +64,7 @@ export function Lyrics(props) {
 	const [showTranslation, setShowTranslation] = useState(getSetting('show-translation', true));
 	const [showRomaji, setShowRomaji] = useState(getSetting('show-romaji', true));
 	const [useKaraokeLyrics, setUseKaraokeLyrics] = useState(getSetting('use-karaoke-lyrics', true));
-	const [karaokeAnimation, setKaraokeAnimation] = useState(getSetting('karaoke-animation', false));
+	const [karaokeAnimation, setKaraokeAnimation] = useState(getSetting('karaoke-animation', 'float'));
 	const [currentLyricAlignmentPercentage, setCurrentLyricAlignmentPercentage] = useState(parseInt(getSetting('current-lyric-alignment-percentage', 50)));
 	const [lyricStagger, setLyricStagger] = useState(getSetting('lyric-stagger', true));
 
@@ -343,7 +343,6 @@ export function Lyrics(props) {
 		currentTime.current = ((progress * 1000) || 0);
 		const currentTimeWithOffset = currentTime.current + globalOffset;
 		if (!_lyrics.current) return;
-		let cur = 0;
 		let startIndex = 0;
 		if (currentTimeWithOffset - lastTime > 0 && currentTimeWithOffset - lastTime < 50) {
 			startIndex = Math.max(0, currentLine - 1);
@@ -352,6 +351,7 @@ export function Lyrics(props) {
 			setSeekCounter(+new Date());
 		}
 	
+		let cur = 0;
 		for (let i = startIndex; i < _lyrics.current.length; i++) {
 			if (_lyrics.current[i].time <= currentTimeWithOffset) {
 				cur = i;
@@ -360,7 +360,7 @@ export function Lyrics(props) {
 			}
 		}
 	
-		let curForScrolling = cur - 1;
+		let curForScrolling = Math.max(0, cur - 1);
 		const scrollingDelay = lyricStagger ? 200 : 0;
 		for (let i = startIndex; i < _lyrics.current.length; i++) {
 			if (_lyrics.current[i].time <= currentTimeWithOffset + scrollingDelay) {
