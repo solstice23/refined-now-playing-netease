@@ -1,0 +1,51 @@
+.rnp-custom-font-section {
+	svg {
+		pointer-events: all;
+	}
+	.MuiAutocomplete-root {
+		margin-bottom: 20px;
+	}
+	.Mui-focused .MuiOutlinedInput-notchedOutline {
+		border-color: var(--rnp-accent-color) !important;
+	}
+	label.MuiFormLabel-root.Mui-focused {
+		color: var(--rnp-accent-color) !important;
+	}
+	.rnp-checkbox-note {
+		padding-left: 0;
+	}
+	.rnp-font-preset {
+		font-size: 90%;
+		margin-top: 10px;
+		display: flex;
+		align-items: center;
+		
+		.rnp-font-preset-button {
+			color: #fff;
+			background: #ffffff44;
+			border: none;
+			padding: 5px 8px;
+			border-radius: 6px;
+			margin-left: 10px;
+			font-size: 90%;
+		}
+		.rnp-font-preset-label {
+			opacity: .6;
+		}
+		.rnp-download-font-button {
+			color: #fff;
+			background: #ffffff44;
+			border: none;
+			padding: 5px 8px 1px 8px;
+			border-radius: 6px;
+			margin-left: 10px;
+			font-size: 90%;
+			svg {
+				fill: #fff;
+				width: 17px;
+				height: 17px;
+			}
+		}
+	}
+	
+}

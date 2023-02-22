@@ -54,8 +54,8 @@ const updateTimeIndicatorPosition = () => {
 			break;
 		}
 	}
-	const right = parseInt(window.getComputedStyle(leftestButton).right) + leftestButton.clientWidth + 10;
-	document.querySelector('#time-indicator').style.right = right + 'px';
+	const right = parseInt(window.getComputedStyle(leftestButton).right) + leftestButton.clientWidth + 15;
+	document.querySelector('#rnp-time-indicator').style.right = right + 'px';
 }
 
 const init = () => {

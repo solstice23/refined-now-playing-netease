@@ -32,10 +32,15 @@
     "serve": "webpack serve"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
     "@importantimport/material-color-utilities": "^0.2.1-alpha.0",
+    "@mui/material": "^5.11.10",
     "colorthief": "^2.3.2",
     "compare-versions": "^6.0.0-rc.1",
     "lodash": "^4.17.21",
-    "path-browserify": "^1.0.1"
+    "path-browserify": "^1.0.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }

@@ -5,6 +5,7 @@
 		<div class="rnp-settings-menu-tab" data-tab="cover">封面</div>
 		<div class="rnp-settings-menu-tab" data-tab="background">背景</div>
 		<div class="rnp-settings-menu-tab" data-tab="lyric">歌词</div>
+		<div class="rnp-settings-menu-tab" data-tab="font">字体</div>
 		<div class="rnp-settings-menu-tab" data-tab="misc">杂项</div>
 		<div class="rnp-settings-menu-tab" data-tab="about">关于</div>
 	</div>
@@ -156,6 +157,15 @@
 				<input id="lyric-stagger" type="checkbox" class="rnp-checkbox">
 				<label for="lyric-stagger" class="rnp-checkbox-label">错位滚动动画</label>
 			</div>
+			<div class="rnp-select-group-wrapper">
+				<label for="lyric-animation-timing" class="rnp-select-group-label">动画曲线</label>
+				<div class="rnp-select-group" id="lyric-animation-timing">
+					<button class="rnp-select-group-btn selected" value="smooth">平滑</button>
+					<button class="rnp-select-group-btn" value="sharp">急促</button>
+					<button class="rnp-select-group-btn" value="lazy">温和</button>
+					<button class="rnp-select-group-btn" value="easeout">缓出</button>
+				</div>
+			</div>
 			<div class="rnp-lyric-offset">
 				<div>
 					<label class="rnp-checkbox-label">全局偏移</label>
@@ -175,6 +185,17 @@
 		</div>
 
 		
+		<div class="rnp-group" data-tab="font">
+			<div class="rnp-group-title">字体</div>
+			<div class="rnp-checkbox-wrapper">
+				<input id="custom-font" type="checkbox" class="rnp-checkbox">
+				<label for="custom-font" class="rnp-checkbox-label">自定义字体</label>
+			</div>
+			<div id="rnp-custom-font-section" class="rnp-custom-font-section">
+
+			</div>
+		</div>
+		
 		<div class="rnp-group" data-tab="misc">
 			<div class="rnp-group-title">杂项</div>
 			<div class="rnp-checkbox-wrapper">
@@ -185,11 +206,6 @@
 				<input id="hide-song-alias-name" type="checkbox" class="rnp-checkbox">
 				<label for="hide-song-alias-name" class="rnp-checkbox-label">隐藏歌曲别名/译名</label>
 			</div>
-			<div class="rnp-checkbox-wrapper with-note">
-				<input id="use-notosans" type="checkbox" class="rnp-checkbox">
-				<label for="use-notosans" class="rnp-checkbox-label">思源黑体</label>
-			</div>
-			<span class="rnp-checkbox-note">需要电脑中有此字体</span>
 			<div class="rnp-slider-wrapper album-size with-ticks">
 				<label for="album-size" class="rnp-slider-label">专辑封面清晰度<button class="rnp-slider-reset"></button></label>
 				<input id="album-size" type="range" class="rnp-slider" min="200" max="800" value="200" default="200" step="200">

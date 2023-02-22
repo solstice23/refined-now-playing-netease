@@ -62,7 +62,11 @@
 
 	.rnp-background-fluid {
 		background-size: cover;
-		transform: scale(1.15);
+		// transform: scale(1.15);
+		width: calc(100% + 150px);
+		height: calc(100% + 150px);
+		left: -150px;
+		top: -150px;
 		.rnp-background-fluid-rect {
 			animation: fluid-container-rotate 150s linear infinite;
 			animation-play-state: running;

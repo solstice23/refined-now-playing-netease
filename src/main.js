@@ -12,7 +12,9 @@ import { themeFromSourceColor, QuantizerCelebi, Hct, Score } from "@importantimp
 import { compatibilityWizard } from './compatibility-check.js';
 import { showContextMenu } from './context-menu.js';
 import { MiniSongInfo } from './mini-song-info.js';
+import { FontSettings } from './font-settings.js';
 import './material-you-compatibility.scss';
+import { createRoot } from 'react-dom/client';
 
 let pluginPath;
 
@@ -178,6 +180,10 @@ const recalculateTitleSize = (forceRefresh = false) => {
 		}
 	}
 	let fontSize = l - 1;
+	while (testDiv.clientWidth > targetWidth) {
+		fontSize--;
+		testDiv.style.fontSize = `${fontSize}px`;
+	}
 	fontSize = Math.max(Math.min(fontSize, maxThreshold), minThreshold);
 	testDiv.style.fontSize = `${fontSize}px`;
 	const width = testDiv.clientWidth;
@@ -220,7 +226,7 @@ const calcTitleScroll = () => {
 	if ((titleContainer?.firstChild?.nodeType ?? 0 ) === 3) {
 		const titleInner = document.createElement('div');
 		titleInner.classList.add('name-inner');
-		titleInner.innerHTML = titleContainer.innerHTML;
+		titleInner.innerHTML = titleContainer.innerHTML.replace(/&nbsp;/g, ' ');
 		titleContainer.innerHTML = '';
 		titleContainer.appendChild(titleInner);
 	}
@@ -455,6 +461,7 @@ const addSettingsMenu = async (isFM = false) => {
 		const karaokeAnimation = getOptionDom('#karaoke-animation');
 		const currentLyricAlignmentPercentage = getOptionDom('#current-lyric-alignment-percentage');
 		const lyricStagger = getOptionDom('#lyric-stagger');
+		const lyricAnimationTiming = getOptionDom('#lyric-animation-timing');
 		
 		bindCheckboxToFunction(lyricBlur, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-lyric-blur', { detail: x }));
@@ -474,6 +481,7 @@ const addSettingsMenu = async (isFM = false) => {
 		bindCheckboxToFunction(lyricStagger, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-lyric-stagger', { detail: x }));
 		}, true);
+		bindSelectGroupToClasses(lyricAnimationTiming, 'smooth', (x) => `rnp-lyric-animation-timing-${x}`);
 
 		const lyricOffsetSlider = getOptionDom('#rnp-lyric-offset-slider');
 		const lyricOffsetAdd = getOptionDom('#rnp-lyric-offset-add');
@@ -508,12 +516,17 @@ const addSettingsMenu = async (isFM = false) => {
 			setLyricOffsetValue(0);
 		});
 
+		// 字体
+		const customFont = getOptionDom('#custom-font');
+		bindCheckboxToClass(customFont, 'rnp-custom-font', false);
+		const customFontSectionContainer = getOptionDom('#rnp-custom-font-section');
+		const containerRoot = createRoot(customFontSectionContainer);
+		containerRoot.render(<FontSettings />);
+
 		// 杂项
-		const useNotosans = getOptionDom('#use-notosans');
 		const hideComments = getOptionDom('#hide-comments');
 		const hideSongAliasName = getOptionDom('#hide-song-alias-name');
 		const albumSize = getOptionDom('#album-size');
-		bindCheckboxToClass(useNotosans, 'use-notosans', false);
 		bindCheckboxToClass(hideComments, 'hide-comments', false);
 		bindCheckboxToClass(hideSongAliasName, 'hide-song-alias-name', false);
 		bindSliderToFunction(albumSize, (x) => {

@@ -361,7 +361,8 @@ body:not(.rnp-bg-fluid) .static-fluid,
 body:not(.rnp-bg-fluid) .static-fluid + .rnp-checkbox-note,
 body.rnp-bg-none .partial-bg,
 body:not(.lyric-only) .center-lyric-control,
-body.material-you-theme .refined-control-bar-switch {
+body.material-you-theme .refined-control-bar-switch,
+body:not(.rnp-custom-font) .rnp-custom-font-section {
 	opacity: 0;
 	height: 0;
 	padding-bottom: 0;
