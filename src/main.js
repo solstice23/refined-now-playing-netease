@@ -167,6 +167,10 @@ const recalculateTitleSize = (forceRefresh = false) => {
 	const minThreshold = 24;
 	const targetWidth = document.querySelector('.g-single-track .g-singlec-ct .n-single .mn .head .inf .title').clientWidth;
 
+	if (targetWidth == 0) {
+		return;
+	}
+
 	let l = 1; 
 	let r = 61;
 	while (l < r) {

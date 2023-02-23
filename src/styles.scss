@@ -74,6 +74,9 @@ body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
     background-color: #ec4141;
 }
 
+.g-single-bd {
+	display: none !important;
+}
 
 .n-single {
 	::selection {
@@ -572,7 +575,7 @@ body.mq-playing {
 	}
 	.m-player {
 		.prg .has {
-			background: rgba(var(--rnp-accent-color-shade-1-rgb), 0.8);
+			background: rgba(var(--rnp-accent-color-shade-1-rgb), 0.8) !important;
 		}
 		.prg .ctrl::before,
 		.prg .ctrl::after {
