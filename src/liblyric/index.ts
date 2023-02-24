@@ -1,3 +1,5 @@
+import { findLast } from "lodash";
+
 export interface DynamicLyricWord {
 	time: number;
 	duration: number;
@@ -126,7 +128,7 @@ export function parseLyric(
 		const attachOriginalLyric = (lyric: LyricPureLine[]) => {
 			//console.log(JSON.parse(JSON.stringify(originalLyrics)), JSON.parse(JSON.stringify(lyric)));
 			originalLyrics.forEach((line) => {
-				let target = lyric.find((v) => v.time === line.time);
+				let target = findLast(lyric, (v) => v.time === line.time);
 				//console.log(line, target);
 				/*if (!target) {
 					lyric.forEach((v) => {
@@ -164,10 +166,14 @@ export function parseLyric(
 				});
 				//console.log(line, index, targetIndex);
 				let sequence = [targetIndex];
+				for (let offset = 1; offset <= 5; offset++) {
+					if (targetIndex - offset >= 0) sequence.push(targetIndex - offset);
+					if (targetIndex + offset < processed.length) sequence.push(targetIndex + offset);
+				}/*
 				if (targetIndex - 1 >= 0) sequence.push(targetIndex - 1);
 				if (targetIndex + 1 < processed.length) sequence.push(targetIndex + 1);
 				if (targetIndex - 2 >= 0) sequence.push(targetIndex - 2);
-				if (targetIndex + 2 < processed.length) sequence.push(targetIndex + 2);
+				if (targetIndex + 2 < processed.length) sequence.push(targetIndex + 2);*/
 
 				sequence = sequence.reverse();
 				
@@ -307,7 +313,7 @@ export function parsePureDynamicLyric(lyric: string): LyricLine[] {
 						const splitedDuration = wordDuration / splitedWords.length;
 						splitedWords.forEach((subWord, i) => {
 							if (i === splitedWords.length - 1) {
-								if (word?.endsWith(" ")) {
+								if (/\s/.test((word ?? '')[(word ?? '').length - 1])) {
 									words.push({
 										time: wordTime + i * splitedDuration,
 										duration: splitedDuration,
@@ -323,7 +329,7 @@ export function parsePureDynamicLyric(lyric: string): LyricLine[] {
 									});
 								}
 							} else if (i === 0) {
-								if (word?.startsWith(" ")) {
+								if (/\s/.test((word ?? '')[0])) {
 									words.push({
 										time: wordTime + i * splitedDuration,
 										duration: splitedDuration,
