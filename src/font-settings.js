@@ -40,6 +40,7 @@ export function FontSettings(props) {
 				font-family: ${fontFamily.length ? fontFamily.map(font => `'${font}'`).join(', ') : 'inherit'} !important;
 			}
 		`;
+		setSetting('font-family', JSON.stringify(fontFamily));
 	}, [fontFamily]);
 
 	return (
@@ -50,7 +51,6 @@ export function FontSettings(props) {
 					value={fontFamily}
 					onChange={(event, newValue) => {
 						setFontFamily(newValue);
-						setSetting('font-family', JSON.stringify(newValue));
 					}}
 					options={fontList}
 					getOptionLabel={(option) => option}

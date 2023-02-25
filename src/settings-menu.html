@@ -199,12 +199,20 @@
 		<div class="rnp-group" data-tab="misc">
 			<div class="rnp-group-title">杂项</div>
 			<div class="rnp-checkbox-wrapper">
+				<input id="hide-song-alias-name" type="checkbox" class="rnp-checkbox">
+				<label for="hide-song-alias-name" class="rnp-checkbox-label">隐藏歌曲别名/译名</label>
+			</div>
+			<div class="rnp-checkbox-wrapper">
 				<input id="hide-comments" type="checkbox" class="rnp-checkbox">
 				<label for="hide-comments" class="rnp-checkbox-label">隐藏评论区</label>
 			</div>
-			<div class="rnp-checkbox-wrapper">
-				<input id="hide-song-alias-name" type="checkbox" class="rnp-checkbox">
-				<label for="hide-song-alias-name" class="rnp-checkbox-label">隐藏歌曲别名/译名</label>
+			<div class="rnp-select-group-wrapper">
+				<label for="lyric-contributors-display" class="rnp-select-group-label">歌词贡献者显示</label>
+				<div class="rnp-select-group" id="lyric-contributors-display">
+					<button class="rnp-select-group-btn" value="show">总是</button>
+					<button class="rnp-select-group-btn selected" value="hover">鼠标移上</button>
+					<button class="rnp-select-group-btn" value="hide">隐藏</button>
+				</div>
 			</div>
 			<div class="rnp-slider-wrapper album-size with-ticks">
 				<label for="album-size" class="rnp-slider-label">专辑封面清晰度<button class="rnp-slider-reset"></button></label>
@@ -229,6 +237,10 @@
 				<div class="rnp-about-item">
 					<div class="rnp-about-item-title">作者</div>
 					<div class="rnp-about-item-content">solstice23</div>
+				</div>
+				<div class="rnp-about-item">
+					<div class="rnp-about-item-title">Github</div>
+					<a class="rnp-about-item-content" onclick="betterncm.app.exec('https\:\/\/github.com/solstice23/refined-now-playing-netease');">前往</div>
 				</div>
 			</div>
 		</div>

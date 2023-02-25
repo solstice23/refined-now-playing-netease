@@ -679,10 +679,10 @@ svg.labelVip.labelVip.labelVip {
 	transition: opacity .3s ease;
 }
 body.mq-playing .m-player .prg:not(:hover) .track {
-    background-color: rgba(var(--rnp-accent-color-rgb), 0.1);
+    background-color: rgba(var(--rnp-accent-color-rgb), 0.1) !important;
 }
 body.mq-playing .m-player .prg .track {
-    background-color: rgba(var(--rnp-accent-color-shade-1-rgb), 0.25);
+    background-color: rgba(var(--rnp-accent-color-shade-1-rgb), 0.25) !important;
 }
 body.mq-playing .m-player .prg:not(:hover) .has {
     background: rgba(var(--rnp-accent-color-rgb), 0.53333);
@@ -969,6 +969,7 @@ body.rnp-light, body.rnp-auto.rnp-system-light {
 body.rnp-shadow {
 	.rnp-lyrics-line > div,
 	.rnp-lyrics-overview-line > div,
+	.rnp-contributors > div,
 	.g-single-track .g-singlec-ct .n-single .mn .head .inf .title,
 	.g-single-track .g-singlec-ct .n-single .mn .head .inf .info,
 	.m-fm > .g-play .fmlrc {

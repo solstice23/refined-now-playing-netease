@@ -298,6 +298,54 @@ body.rnp-karaoke-animation-slide .rnp-lyrics-line {
 	}
 }
 
+
+.rnp-contributors {
+	position: absolute;
+	transform-origin: left center;
+	transition: transform 0.5s var(--lyric-timing-function), filter 0.5s ease, opacity 0.25s ease;
+	will-change: transform, filter;
+    max-width: 100%;
+	opacity: .5;
+	&:hover {
+		opacity: 1 !important;
+	}
+	.rnp-contributor {
+		font-size: max(0.6em, min(15px, 1em));
+		display: flex;
+		line-height: 1.6;
+		align-items: baseline;
+		max-width: 100%;
+		> span {
+			flex-shrink: 0;
+			white-space: nowrap;
+			margin-right: 0.5em;
+			opacity: .4;
+		}
+		.rnp-contributor-user {
+			color: inherit;
+			opacity: .4;
+			transition: opacity .2s ease;
+			&:hover {
+				opacity: .6;
+			}
+		}
+	}
+}
+body.rnp-lyric-contributors-hover .rnp-lyrics {
+	.rnp-contributors {
+		opacity: 0;
+	}
+	&:hover .rnp-contributors {
+		opacity: 0.5;
+	}
+}
+body.rnp-lyric-contributors-hide .rnp-lyrics {
+	.rnp-contributors {
+		opacity: 0;
+		pointer-events: none;
+	}
+}
+
 .rnp-lyrics-scrollbar {
     position: absolute;
     right: 0;

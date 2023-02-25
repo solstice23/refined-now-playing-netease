@@ -44,14 +44,14 @@ const updateAccentColor = (name, argb, isFM = false) => {
 
 const useGreyAccentColor = (isFM = false) => {
 	updateAccentColor('rnp-accent-color-dark', rgb2Argb(150, 150, 150), isFM);
-	updateAccentColor('rnp-accent-color-on-primary-dark', rgb2Argb(250, 250, 250), isFM);
+	updateAccentColor('rnp-accent-color-on-primary-dark', rgb2Argb(10, 10, 10), isFM);
 	updateAccentColor('rnp-accent-color-shade-1-dark', rgb2Argb(210, 210, 210), isFM);
 	updateAccentColor('rnp-accent-color-shade-2-dark', rgb2Argb(255, 255, 255), isFM);
 	updateAccentColor('rnp-accent-color-bg-dark', rgb2Argb(50, 50, 50), isFM);
 
 	
 	updateAccentColor('rnp-accent-color-light', rgb2Argb(120, 120, 120), isFM);
-	updateAccentColor('rnp-accent-color-on-primary-light', rgb2Argb(10, 10, 10), isFM);
+	updateAccentColor('rnp-accent-color-on-primary-light', rgb2Argb(250, 250, 250), isFM);
 	updateAccentColor('rnp-accent-color-shade-1-light', rgb2Argb(40, 40, 40), isFM);
 	updateAccentColor('rnp-accent-color-shade-2-light', rgb2Argb(20, 20, 20), isFM);
 	updateAccentColor('rnp-accent-color-bg-light', rgb2Argb(190, 190, 190), isFM);
@@ -528,11 +528,13 @@ const addSettingsMenu = async (isFM = false) => {
 		containerRoot.render(<FontSettings />);
 
 		// 杂项
-		const hideComments = getOptionDom('#hide-comments');
 		const hideSongAliasName = getOptionDom('#hide-song-alias-name');
+		const hideComments = getOptionDom('#hide-comments');
+		const lyricContributorsDisplay = getOptionDom('#lyric-contributors-display');
 		const albumSize = getOptionDom('#album-size');
-		bindCheckboxToClass(hideComments, 'hide-comments', false);
 		bindCheckboxToClass(hideSongAliasName, 'hide-song-alias-name', false);
+		bindCheckboxToClass(hideComments, 'hide-comments', false);
+		bindSelectGroupToClasses(lyricContributorsDisplay, 'hover', (x) => `rnp-lyric-contributors-${x}`);
 		bindSliderToFunction(albumSize, (x) => {
 			window.albumSize = x;
 			const img = getOptionDom('.n-single .cdimg img');// ?? getOptionDom('.m-fm .fmplay .covers .cvr.j-curr');

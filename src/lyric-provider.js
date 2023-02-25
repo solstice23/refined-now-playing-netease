@@ -3,8 +3,6 @@
 
 import { parseLyric } from './liblyric/index.ts'
 
-let currentRawLRC = null;
-
 const preProcessLyrics = (lyrics) => {
 	if (!lyrics) return null;
 	if (!lyrics.lrc) lyrics.lrc = {};
@@ -65,18 +63,38 @@ const processLyrics = (lyrics) => {
 	return lyrics;
 }
 
+let currentRawLRC = null;
+
 const _onProcessLyrics = window.onProcessLyrics ?? ((x) => x);
-window.onProcessLyrics = (lyrics) => {
-	if (!lyrics) return _onProcessLyrics(lyrics);
-	if ((lyrics?.lrc?.lyric ?? '') != currentRawLRC) {
-		console.log('update raw lyrics', lyrics);
-		currentRawLRC = (lyrics?.lrc?.lyric ?? '') ;
-		const preprocessedLyrics = preProcessLyrics(lyrics);
+window.onProcessLyrics = (rawLyrics) => {
+	if (!rawLyrics) return _onProcessLyrics(rawLyrics);
+	if ((rawLyrics?.lrc?.lyric ?? '') != currentRawLRC) {
+		console.log('update raw lyrics', rawLyrics);
+		currentRawLRC = (rawLyrics?.lrc?.lyric ?? '') ;
+		const preprocessedLyrics = preProcessLyrics(rawLyrics);
 		setTimeout(async () => {
-			window.currentLyrics = await processLyrics(preprocessedLyrics);
-			console.log('update processed lyrics', window.currentLyrics);
+			const processedLyrics = await processLyrics(preprocessedLyrics);
+			const lyrics = {
+				lyrics: processedLyrics,
+				contributors: {}
+			}
+			if (rawLyrics?.lyricUser) {
+				lyrics.contributors.original = {
+					name: rawLyrics.lyricUser.nickname,
+					userid: rawLyrics.lyricUser.userid,
+				}
+			}
+			if (rawLyrics?.transUser) {
+				lyrics.contributors.translation = {
+					name: rawLyrics.transUser.nickname,
+					userid: rawLyrics.transUser.userid,
+				}
+			}
+			window.currentLyrics = lyrics;
+			console.log('update processed lyrics', window.currentLyrics.lyrics);
+			console.log('contributors', window.currentLyrics.contributors);
 			document.dispatchEvent(new CustomEvent('lyrics-updated', {detail: window.currentLyrics}));
 		}, 0);
 	}
-	return _onProcessLyrics(lyrics);
+	return _onProcessLyrics(rawLyrics);
 }
