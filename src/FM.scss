@@ -154,6 +154,9 @@
 			}
 		}
 	}
+	::selection {
+		background-color: rgba(var(--rnp-accent-color-shade-2-rgb), 0.3) !important;
+	}
 }
 body:not(.rectangle-cover) .m-fm .fmplay .covers .cvr{
 	border-radius: 1000px;

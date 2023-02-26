@@ -840,9 +840,15 @@ body.rectangle-cover {
 	}
 	.n-single .cdwrap {
 		animation: none;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 	.n-single .cdwrap > * {
-		-webkit-transform: translate3d(-50%, -50%, 0) !important;
+		//-webkit-transform: translate3d(-50%, -50%, 0) !important;
+		-webkit-transform: unset !important;
+		top: unset;
+		left: unset;
 	}
 	.n-single .cdbg {
 		display: none;

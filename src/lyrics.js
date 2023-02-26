@@ -305,8 +305,8 @@ export function Lyrics(props) {
 			transforms[i].delay = delayByOffset(i - current);
 		}
 		// contributors line
-		transforms[lyrics.length].scale = scaleByOffset(lyrics.length - current);
-		transforms[lyrics.length].blur = blurByOffset(lyrics.length - current);
+		transforms[lyrics.length].scale = scaleByOffset(lyrics.length - 1 - current);
+		transforms[lyrics.length].blur = blurByOffset(lyrics.length - 1 - current);
 		const previousScaledHeight = heightOfItems.current[lyrics.length - 1] * transforms[lyrics.length - 1].scale;
 		transforms[lyrics.length].top = transforms[lyrics.length - 1].top + previousScaledHeight + Math.min(space * 1.5, 90);
 		transforms[lyrics.length].delay = delayByOffset(lyrics.length - current);
