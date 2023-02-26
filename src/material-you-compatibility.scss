@@ -42,11 +42,11 @@ body.refined-control-bar.mq-playing:not(.material-you-theme) {
 
 
 	#main-player, .m-pinfo .btns > .btn,
-	#main-player > .btnp, #time-indicator, #rnp-time-indicator {
+	#main-player > .btnp, .md-time-indicator, #rnp-time-indicator {
 		transition: transform .3s ease, opacity .3s ease !important;
 		will-change: transform, opacity;
 	}
-	#time-indicator, #rnp-time-indicator {
+	.md-time-indicator, #rnp-time-indicator {
 		transition: transform .3s ease, opacity .3s ease, right .3s ease !important;
 	}
 	&:not(.bottombar-hover):not(.mq-playing-scroll):not(.always-show-bottombar).rnp-idle {
@@ -56,12 +56,12 @@ body.refined-control-bar.mq-playing:not(.material-you-theme) {
 		.m-pinfo .btns > .btn-love {
 			transform: translateY(0) !important;
 		}
-		#main-player > .btnp, #time-indicator, #rnp-time-indicator {
+		#main-player > .btnp, .md-time-indicator, #rnp-time-indicator {
 			transform: translateY(calc(-50% + 5px - var(--bottombar-height)));
 		}
 	}
 	&:not(.bottombar-hover):not(.mq-playing-scroll):not(.always-show-bottombar) {
-		#time-indicator, #rnp-time-indicator {
+		.md-time-indicator, #rnp-time-indicator {
 			right: 25px !important;
 		}
 	}

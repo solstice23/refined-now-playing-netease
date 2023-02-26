@@ -47,5 +47,7 @@
 			}
 		}
 	}
-	
+}
+.MuiAutocomplete-root * , .MuiAutocomplete-popper *{
+    font-family: inherit !important;
 }

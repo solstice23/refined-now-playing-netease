@@ -555,7 +555,7 @@ body.mq-playing {
 	.g-hd .m-leftbox {
 		opacity: 0;
 		transition: opacity .3s ease;
-		left: 85px !important;
+		left: 88px !important;
 	}
 	 .g-hd:hover .m-leftbox {
 		opacity: 1;
@@ -612,7 +612,7 @@ body.mq-playing {
 
 body.mq-playing {
 	.m-pinfo .btn:not(.btn-love),
-	#main-player > *:not(.f-cp, .prg, time),
+	#main-player > *:not(.f-cp, .prg, time, .time-indicator-container),
 	#main-player > .audioEffect,
 	#main-player > .spk,
 	#main-player > .listenTogether,

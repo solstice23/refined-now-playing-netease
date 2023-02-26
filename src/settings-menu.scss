@@ -311,6 +311,9 @@
 				font-weight: bold;
 			}
 		}
+		&::-webkit-scrollbar-track {
+			background: transparent !important;
+		}
 	}
 }
 

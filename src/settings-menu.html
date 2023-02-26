@@ -75,6 +75,17 @@
 				<input id="rectangle-cover" type="checkbox" class="rnp-checkbox">
 				<label for="rectangle-cover" class="rnp-checkbox-label">方形专辑封面</label>
 			</div>
+			<div class="rnp-slider-wrapper album-size with-ticks">
+				<label for="album-size" class="rnp-slider-label">专辑封面清晰度<button class="rnp-slider-reset"></button></label>
+				<input id="album-size" type="range" class="rnp-slider" min="200" max="800" value="200" default="200" step="200">
+				<div class="rnp-slider-ticks">
+					<div class="rnp-slider-tick">200</div>
+					<div class="rnp-slider-tick">400</div>
+					<div class="rnp-slider-tick">600</div>
+					<div class="rnp-slider-tick">800</div>
+				</div>
+			</div>
+			<span class="rnp-slider-note">可能带来更慢的加载速度</span>
 		</div>
 
 		<div class="rnp-group" data-tab="background">
@@ -214,17 +225,6 @@
 					<button class="rnp-select-group-btn" value="hide">隐藏</button>
 				</div>
 			</div>
-			<div class="rnp-slider-wrapper album-size with-ticks">
-				<label for="album-size" class="rnp-slider-label">专辑封面清晰度<button class="rnp-slider-reset"></button></label>
-				<input id="album-size" type="range" class="rnp-slider" min="200" max="800" value="200" default="200" step="200">
-				<div class="rnp-slider-ticks">
-					<div class="rnp-slider-tick">200</div>
-					<div class="rnp-slider-tick">400</div>
-					<div class="rnp-slider-tick">600</div>
-					<div class="rnp-slider-tick">800</div>
-				</div>
-			</div>
-			<span class="rnp-slider-note">可能带来更慢的加载速度</span>
 		</div>
 
 		<div class="rnp-group" data-tab="about">
@@ -240,7 +240,7 @@
 				</div>
 				<div class="rnp-about-item">
 					<div class="rnp-about-item-title">Github</div>
-					<a class="rnp-about-item-content" onclick="betterncm.app.exec('https\:\/\/github.com/solstice23/refined-now-playing-netease');">前往</div>
+					<a class="rnp-about-item-content" onclick="betterncm.app.exec('https\:\/\/github.com/solstice23/refined-now-playing-netease');">前往</a>
 				</div>
 			</div>
 		</div>

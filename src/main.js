@@ -949,6 +949,13 @@ plugin.onLoad(async (p) => {
 			}
 		});
 	}).observe(document.body, { childList: true });
+	/*new MutationObserver(() => {
+		if (!document.body.classList.contains('mq-playing') && !document.querySelector('.g-single')?.classList.contains('z-show')) {
+			if (document.body.classList.contains('mq-playing-init')) {
+				document.body.classList.remove('mq-playing-init');
+			}
+		}
+	}).observe(document.body, { attributes: true, attributeFilter: ['class'] });*/
 });
 
 plugin.onConfig((tools) => {
