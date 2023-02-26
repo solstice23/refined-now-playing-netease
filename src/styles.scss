@@ -460,6 +460,7 @@ body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
     padding: 0;
     left: unset;
     right: calc(26% - -6px - 148px);
+    transform: none;
 	svg {
 		margin: 0;
 	}
