@@ -83,8 +83,8 @@ body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
 		background-color: rgba(var(--rnp-accent-color-shade-2-rgb), 0.3) !important;
 	}
 	.cdin, .cdimg {
-		width: 95%;
-		height: 95%;
+		width: 96%;
+		height: 96%;
 	}
 	.cdimg {
 		background-image: linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.3));
@@ -838,6 +838,8 @@ body.rectangle-cover {
 	.n-single .cdimg {
 		border-radius: 16px;
 		box-shadow: 0 10px 10px rgb(0 0 0 / 5%), 0 0px 20px rgb(0 0 0 / 6%);
+		width: 100% !important;
+		height: 100% !important;
 	}
 	.n-single .cdwrap {
 		animation: none;

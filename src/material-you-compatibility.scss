@@ -50,19 +50,47 @@ body.refined-control-bar.mq-playing:not(.material-you-theme) {
 		transition: transform .3s ease, opacity .3s ease, right .3s ease !important;
 	}
 	&:not(.bottombar-hover):not(.mq-playing-scroll):not(.always-show-bottombar).rnp-idle {
-		#main-player, .m-pinfo .btns > .btn{
-			transform: translateY(calc(var(--bottombar-height) - 5px));
+		&:not(.rnp-bottom-progressbar) {
+			#main-player, .m-pinfo .btns > .btn{
+				transform: translateY(calc(var(--bottombar-height) - 5px));
+			}
+			.m-pinfo .btns > .btn-love {
+				transform: translateY(0) !important;
+			}
+			#main-player > .btnp, .md-time-indicator, #rnp-time-indicator {
+				transform: translateY(calc(-50% + 5px - var(--bottombar-height)));
+			}
 		}
-		.m-pinfo .btns > .btn-love {
-			transform: translateY(0) !important;
-		}
-		#main-player > .btnp, .md-time-indicator, #rnp-time-indicator {
-			transform: translateY(calc(-50% + 5px - var(--bottombar-height)));
+		&.rnp-bottom-progressbar {
+			#main-player .btnc {
+				opacity: 0;
+			}
 		}
 	}
 	&:not(.bottombar-hover):not(.mq-playing-scroll):not(.always-show-bottombar) {
 		.md-time-indicator, #rnp-time-indicator {
 			right: 25px !important;
+		}
+	}
+	
+	&.rnp-bottom-progressbar {
+		#main-player {
+			.prg {
+				bottom: -2px !important;
+				.has .ctrl {
+					opacity: 0 !important;
+				}
+			}
+		}
+		&:not(.rnp-idle), &.bottombar-hover {
+			#main-player {
+				.prg {
+					bottom: 0px !important;
+				}
+				.prg, .prg > *{
+					height: 8px !important;
+				}
+			}
 		}
 	}
 }

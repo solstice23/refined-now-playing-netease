@@ -1,6 +1,7 @@
 import './styles.scss';
 import './exclusive-modes.scss';
 import './FM.scss'
+import './experimental.scss';
 import settingsMenuHTML from './settings-menu.html';
 import './settings-menu.scss';
 import { argb2Rgb, rgb2Argb } from './color-utils.js';
@@ -410,6 +411,7 @@ const addSettingsMenu = async (isFM = false) => {
 		const textShadow = getOptionDom('#text-shadow');
 		const refinedControlBar = getOptionDom('#refined-control-bar');
 		const alwaysShowBottomBar = getOptionDom('#always-show-bottombar');
+		const bottomProgressBar = getOptionDom('#bottom-progressbar');
 		bindSelectGroupToClasses(exclusiveModes, 'none', (x) => x === 'all' ? 'no-exclusive-mode' : x, () => {
 			window.dispatchEvent(new Event('recalc-lyrics'));
 			recalculateTitleSize();
@@ -425,15 +427,27 @@ const addSettingsMenu = async (isFM = false) => {
 		bindCheckboxToClass(textShadow, 'rnp-shadow', false);
 		bindCheckboxToClass(refinedControlBar, 'refined-control-bar', true);
 		bindCheckboxToClass(alwaysShowBottomBar, 'always-show-bottombar', false);
+		bindCheckboxToClass(bottomProgressBar, 'rnp-bottom-progressbar', false);
 
 
 		// 封面
 		const horizontalAlign = getOptionDom('#horizontal-align');
 		const verticalAlign = getOptionDom('#vertical-align');
 		const rectangleCover = getOptionDom('#rectangle-cover');
+		const albumSize = getOptionDom('#album-size');
 		bindSelectGroupToClasses(horizontalAlign, 'left', (x) => { return `horizontal-align-${x}` }, () => { recalculateTitleSize();});
 		bindSelectGroupToClasses(verticalAlign, 'bottom', (x) => { return `vertical-align-${x}` }, () => { recalculateTitleSize();});
 		bindCheckboxToClass(rectangleCover, 'rectangle-cover', true);
+		bindSliderToFunction(albumSize, (x) => {
+			window.albumSize = x;
+			const img = getOptionDom('.n-single .cdimg img');// ?? getOptionDom('.m-fm .fmplay .covers .cvr.j-curr');
+			if (!img?.src) return;
+			const currentSrc = img.src;
+			const newSrc = currentSrc.replace(/thumbnail=\d+y\d+/g, `thumbnail=${window.albumSize}y${window.albumSize}`);
+			if (currentSrc !== newSrc) {
+				img.src = newSrc;
+			}
+		}, 200, 'change', (x) => { return x === 200 ? 210 : x });
 
 		// 背景
 		const backgroundType = getOptionDom('#background-type');const bgBlur = getOptionDom('#bg-blur');
@@ -527,24 +541,30 @@ const addSettingsMenu = async (isFM = false) => {
 		const containerRoot = createRoot(customFontSectionContainer);
 		containerRoot.render(<FontSettings />);
 
+		// 实验性选项
+		const fluidMaxFramerate = getOptionDom('#fluid-max-framerate');
+		const fluidBlur = getOptionDom('#fluid-blur');
+		const hideEntireBottombar = getOptionDom('#hide-entire-bottombar-when-idle');
+		const presentationMode = getOptionDom('#presentation-mode');
+		bindSliderToFunction(fluidMaxFramerate, (x) => {
+			x = parseInt(x);
+			const arr = ['5', '10', '30', '60', 'inf'];
+			for (let i = 0; i <= 4; i++) {
+				document.body.classList.remove(`rnp-fluid-max-framerate-${arr[i]}`);
+			}
+			document.body.classList.add(`rnp-fluid-max-framerate-${arr[x]}`);
+		}, getSetting('fluid-max-framerate', 5), 'change');
+		bindSliderToCSSVariable(fluidBlur, '--fluid-blur', 6, 'change', (x) => `${parseInt(Math.pow(2, x))}px`);
+		bindCheckboxToClass(hideEntireBottombar, 'hide-entire-bottombar-when-idle', false);
+		bindCheckboxToClass(presentationMode, 'presentation-mode', false);
+
 		// 杂项
 		const hideSongAliasName = getOptionDom('#hide-song-alias-name');
 		const hideComments = getOptionDom('#hide-comments');
 		const lyricContributorsDisplay = getOptionDom('#lyric-contributors-display');
-		const albumSize = getOptionDom('#album-size');
 		bindCheckboxToClass(hideSongAliasName, 'hide-song-alias-name', false);
 		bindCheckboxToClass(hideComments, 'hide-comments', false);
 		bindSelectGroupToClasses(lyricContributorsDisplay, 'hover', (x) => `rnp-lyric-contributors-${x}`);
-		bindSliderToFunction(albumSize, (x) => {
-			window.albumSize = x;
-			const img = getOptionDom('.n-single .cdimg img');// ?? getOptionDom('.m-fm .fmplay .covers .cvr.j-curr');
-			if (!img?.src) return;
-			const currentSrc = img.src;
-			const newSrc = currentSrc.replace(/thumbnail=\d+y\d+/g, `thumbnail=${window.albumSize}y${window.albumSize}`);
-			if (currentSrc !== newSrc) {
-				img.src = newSrc;
-			}
-		}, 200, 'change', (x) => { return x === 200 ? 210 : x });
 
 		// 关于
 		const versionNumber = getOptionDom('#rnp-version-number');
@@ -926,7 +946,7 @@ plugin.onLoad(async (p) => {
 			if (idleTimer) clearTimeout(idleTimer);
 			idle = true;
 			document.body.classList.add('rnp-idle');
-		}, Math.max((debounceTime ?? 0) + 300 - new Date().getTime(), 0));
+		}, Math.max((debounceTime ?? 0) + 325 - new Date().getTime(), 0));
 	}
 	resetIdleTimer();
 	document.addEventListener('mousemove', resetIdle);

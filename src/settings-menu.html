@@ -7,6 +7,7 @@
 		<div class="rnp-settings-menu-tab" data-tab="lyric">歌词</div>
 		<div class="rnp-settings-menu-tab" data-tab="font">字体</div>
 		<div class="rnp-settings-menu-tab" data-tab="misc">杂项</div>
+		<div class="rnp-settings-menu-tab" data-tab="experimental">实验</div>
 		<div class="rnp-settings-menu-tab" data-tab="about">关于</div>
 	</div>
 	<div class="rnp-settings-menu-inner">
@@ -52,6 +53,10 @@
 			<div class="rnp-checkbox-wrapper">
 				<input id="always-show-bottombar" type="checkbox" class="rnp-checkbox">
 				<label for="always-show-bottombar" class="rnp-checkbox-label">不自动隐藏底栏</label>
+			</div>
+			<div class="rnp-checkbox-wrapper bottom-progressbar-switch" style="--estimated-height: 20px;">
+				<input id="bottom-progressbar" type="checkbox" class="rnp-checkbox">
+				<label for="bottom-progressbar" class="rnp-checkbox-label">进度条贴底</label>
 			</div>
 		</div>
 
@@ -225,6 +230,43 @@
 					<button class="rnp-select-group-btn" value="hide">隐藏</button>
 				</div>
 			</div>
+		</div>
+
+		<div class="rnp-group" data-tab="experimental">
+			<div class="rnp-group-title">实验性选项</div>
+			<span class="rnp-checkbox-note" style="padding-left: 0;">这些选项是实验性的，可能会在下一个版本移除，也可能加入正式功能。请不要过于依赖这些选项。</span>
+			<div class="rnp-slider-wrapper fluid-max-framerate with-ticks">
+				<label for="fluid-max-framerate" class="rnp-slider-label">流体帧率上限<button class="rnp-slider-reset"></button></label>
+				<input id="fluid-max-framerate" type="range" class="rnp-slider" min="0" max="4" value="4" default="4" step="1">
+				<div class="rnp-slider-ticks">
+					<div class="rnp-slider-tick">5</div>
+					<div class="rnp-slider-tick">10</div>
+					<div class="rnp-slider-tick">30</div>
+					<div class="rnp-slider-tick">60</div>
+					<div class="rnp-slider-tick">∞</div>
+				</div>
+			</div>
+			<span class="rnp-slider-note">仅在动态流体开启时生效</span>
+			<div class="rnp-slider-wrapper fluid-blur with-ticks">
+				<label for="fluid-blur" class="rnp-slider-label">流体模糊度<button class="rnp-slider-reset"></button></label>
+				<input id="fluid-blur" type="range" class="rnp-slider" min="5" max="7" value="6" default="6" step="1">
+				<div class="rnp-slider-ticks">
+					<div class="rnp-slider-tick">32</div>
+					<div class="rnp-slider-tick">64</div>
+					<div class="rnp-slider-tick">128</div>
+				</div>
+			</div>
+			<span class="rnp-slider-note">仅在动态流体开启时生效</span>
+			<div class="rnp-checkbox-wrapper">
+				<input id="hide-entire-bottombar-when-idle" type="checkbox" class="rnp-checkbox">
+				<label for="hide-entire-bottombar-when-idle" class="rnp-checkbox-label">隐藏整个底栏</label>
+			</div>
+			<span class="rnp-slider-note">鼠标不动时隐藏整个底栏，仅在 "不自动隐藏底栏" 关闭时生效</span>
+			<div class="rnp-checkbox-wrapper">
+				<input id="presentation-mode" type="checkbox" class="rnp-checkbox">
+				<label for="presentation-mode" class="rnp-checkbox-label">演示模式</label>
+			</div>
+			<span class="rnp-slider-note">隐藏一切多余元素</span>
 		</div>
 
 		<div class="rnp-group" data-tab="about">
