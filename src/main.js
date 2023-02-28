@@ -556,7 +556,9 @@ const addSettingsMenu = async (isFM = false) => {
 		}, getSetting('fluid-max-framerate', 5), 'change');
 		bindSliderToCSSVariable(fluidBlur, '--fluid-blur', 6, 'change', (x) => `${parseInt(Math.pow(2, x))}px`);
 		bindCheckboxToClass(hideEntireBottombar, 'hide-entire-bottombar-when-idle', false);
-		bindCheckboxToClass(presentationMode, 'presentation-mode', false);
+		presentationMode.addEventListener("change", e => {
+			addOrRemoveGlobalClassByOption('presentation-mode', e.target.checked);
+		});
 
 		// 杂项
 		const hideSongAliasName = getOptionDom('#hide-song-alias-name');
