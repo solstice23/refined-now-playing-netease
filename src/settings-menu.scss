@@ -366,7 +366,9 @@ body.rnp-bg-none .partial-bg,
 body:not(.lyric-only) .center-lyric-control,
 body.material-you-theme .refined-control-bar-switch,
 body:not(.refined-control-bar):not(.material-you-theme) .bottom-progressbar-switch,
-body:not(.rnp-custom-font) .rnp-custom-font-section {
+body:not(.rnp-custom-font) .rnp-custom-font-section,
+.m-fm .presentation-mode-switch,
+.m-fm .presentation-mode-switch + .rnp-checkbox-note {
 	opacity: 0;
 	height: 0;
 	padding-bottom: 0;

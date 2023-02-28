@@ -423,6 +423,9 @@ body.rnp-lyric-contributors-hide .rnp-lyrics {
 	&::-webkit-scrollbar {
 		width: 8px;
 	}
+	&::-webkit-scrollbar-track {
+		background: transparent;
+	}
 	&::-webkit-scrollbar-thumb {
 		background-color: rgba(var(--rnp-accent-color-contrast-rgb), 0.15);
 		border-radius: 100px;

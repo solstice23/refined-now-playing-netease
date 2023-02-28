@@ -42,7 +42,7 @@ body.rnp-fluid-max-framerate-60 {
 
 
 
-body.hide-entire-bottombar-when-idle {
+body:not(.always-show-bottombar).hide-entire-bottombar-when-idle {
 	.m-pinfo {
 		transition: opacity 0.3s ease;
 	}
@@ -55,7 +55,7 @@ body.hide-entire-bottombar-when-idle {
 
 
 
-body.presentation-mode{
+body.presentation-mode {
 	--bottombar-height: 20px !important;
 	.m-pinfo, #main-player, header.g-hd, .m-winctrl {
 		display: none;
