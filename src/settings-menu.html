@@ -143,9 +143,17 @@
 		
 		<div class="rnp-group" data-tab="lyric">
 			<div class="rnp-group-title">歌词</div>
-			<div class="rnp-slider-wrapper">
+			<div class="rnp-slider-wrapper" style="margin-bottom: 10px;">
 				<label for="lyric-font-size" class="rnp-slider-label">字体大小<button class="rnp-slider-reset"></button></label>
 				<input id="lyric-font-size" type="range" class="rnp-slider" min="16" max="64" step="1" value="32" default="32">
+			</div>
+			<div class="rnp-slider-wrapper" style="transform: scale(0.9); transform-origin: right; margin-bottom: 10px;">
+				<label for="lyric-romaji-size-em" class="rnp-slider-label">罗马音<button class="rnp-slider-reset"></button></label>
+				<input id="lyric-romaji-size-em" type="range" class="rnp-slider" min="0.3" max="1.5" step="0.05" value="0.6" default="0.6">
+			</div>
+			<div class="rnp-slider-wrapper" style="transform: scale(0.9); transform-origin: right;">
+				<label for="lyric-translation-size-em" class="rnp-slider-label">翻译<button class="rnp-slider-reset"></button></label>
+				<input id="lyric-translation-size-em" type="range" class="rnp-slider" min="0.3" max="1.5" step="0.05" value="1" default="1">
 			</div>
 			<div class="rnp-checkbox-wrapper">
 				<input id="lyric-zoom" type="checkbox" class="rnp-checkbox">

@@ -473,23 +473,34 @@ const addSettingsMenu = async (isFM = false) => {
 		});
 
 		// 歌词
-		const lyricBlur = getOptionDom('#lyric-blur');
-		const lyricZoom = getOptionDom('#lyric-zoom');
 		const lyricFontSize = getOptionDom('#lyric-font-size');
+		const lyricRomajiSizeEm = getOptionDom('#lyric-romaji-size-em');
+		const lyricTranslationSizeEm = getOptionDom('#lyric-translation-size-em');
+		const lyricZoom = getOptionDom('#lyric-zoom');
+		const lyricBlur = getOptionDom('#lyric-blur');
 		const karaokeAnimation = getOptionDom('#karaoke-animation');
 		const currentLyricAlignmentPercentage = getOptionDom('#current-lyric-alignment-percentage');
 		const lyricStagger = getOptionDom('#lyric-stagger');
 		const lyricAnimationTiming = getOptionDom('#lyric-animation-timing');
 		
-		bindCheckboxToFunction(lyricBlur, (x) => {
-			document.dispatchEvent(new CustomEvent('rnp-lyric-blur', { detail: x }));
-		}, false);
+		bindSliderToFunction(lyricFontSize, (x) => {
+			document.dispatchEvent(new CustomEvent('rnp-lyric-font-size', { detail: x }));
+		}, 32, 'change');
+		bindSliderToFunction(lyricRomajiSizeEm, (x) => {
+			document.body.style.setProperty('--lyric-romaji-size-em', `${x}em`);
+			window.dispatchEvent(new Event('recalc-lyrics'));
+		}, 0.6, 'change');
+		bindSliderToFunction(lyricTranslationSizeEm, (x) => {
+			document.body.style.setProperty('--lyric-translation-size-em', `${x}em`);
+			window.dispatchEvent(new Event('recalc-lyrics'));
+		}, 1.0, 'change');
+
 		bindCheckboxToFunction(lyricZoom, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-lyric-zoom', { detail: x }));
 		}, false);
-		bindSliderToFunction(lyricFontSize, (x) => {
-			document.dispatchEvent(new CustomEvent('rnp-lyric-font-size', { detail: x }));
-		}, 32, 'change'); 
+		bindCheckboxToFunction(lyricBlur, (x) => {
+			document.dispatchEvent(new CustomEvent('rnp-lyric-blur', { detail: x }));
+		}, false);
 		bindSelectGroupToClasses(karaokeAnimation, 'float', (x) => `rnp-karaoke-animation-${x}`, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-karaoke-animation', { detail: x }));
 		});

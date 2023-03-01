@@ -993,12 +993,14 @@ function Contributors(props) {
 					translateY(${props.transforms.top}px)
 					scale(${props.transforms.scale})
 				`,
-				transitionDelay: `${props.transforms.delay}ms, ${props.transforms.delay}ms, 0ms`,
+				transitionDelay: `${props.transforms.delay}ms, ${props.transforms.delay}ms`,
 				transitionDuration: `${props.transforms?.duration ?? 500}ms`,
 				filter: props.transforms?.blur ? `blur(${props.transforms?.blur}px)` : 'none'
-			}}>
-			<Contributor text="歌词" user={contributors?.original} />
-			<Contributor text="翻译" user={contributors?.translation} />
+			}}>	
+			<div className="rnp-contributors-inner">
+				<Contributor text="歌词" user={contributors?.original} />
+				<Contributor text="翻译" user={contributors?.translation} />
+			</div>
 		</div>
 	);
 }
