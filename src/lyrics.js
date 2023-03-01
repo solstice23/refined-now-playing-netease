@@ -313,12 +313,19 @@ export function Lyrics(props) {
 		// set the height of interlude line back to normal
 		heightOfItems.current[current] = currentLineHeight;
 		// reset delay to 0 if necessary
+		// for no transition when resizing, etc.
 		if (!shouldTransit.current && !scrollingMode) {
 			for (let i = 0; i <= lyrics.length; i++) {
 				transforms[i].delay = 0;
 				transforms[i].duration = 0;
 			}
 		}
+		// reduce duration when scrolling
+		/*if (scrollingMode) {
+			for (let i = 0; i <= lyrics.length; i++) {
+				transforms[i].duration = 200;
+			}
+		}*/
 	
 		setLineTransforms(transforms);
 		//console.log('transforms', transforms);

@@ -42,7 +42,7 @@ body.rnp-fluid-max-framerate-60 {
 
 
 
-body:not(.always-show-bottombar).hide-entire-bottombar-when-idle {
+body:not(.always-show-bottombar).mq-playing.hide-entire-bottombar-when-idle {
 	.m-pinfo {
 		transition: opacity 0.3s ease;
 	}
