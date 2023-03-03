@@ -39,6 +39,7 @@ export function Lyrics(props) {
 	const [lyricContributors, setLyricContributors] = useState(null);
 
 	const [playState, setPlayState] = useState(null);
+	const _playState = useRef(null);
 	const [songId, setSongId] = useState("0");
 	const currentTime = useRef(0); // 当前播放时间
 	const [seekCounter, setSeekCounter] = useState(0); // 拖动进度条时修改触发重渲染
@@ -348,10 +349,11 @@ export function Lyrics(props) {
 			return;
 		}
 		if (!isFM) {
-			setPlayState(document.querySelector("#main-player .btnp").classList.contains("btnp-pause"));
+			_playState.current = document.querySelector("#main-player .btnp").classList.contains("btnp-pause");
 		} else {
-			setPlayState(document.querySelector(".m-player-fm .btnp").classList.contains("btnp-pause"));
+			_playState.current = document.querySelector(".m-player-fm .btnp").classList.contains("btnp-pause");
 		}
+		setPlayState(_playState.current);
 		//setPlayState((state.split("|")[1] == "resume"));
 		if (document.querySelector(".m-player-fm .btnp").classList.contains("btnp-pause")) {
 			setCurrentLineForScrolling(currentLine);
@@ -462,6 +464,7 @@ export function Lyrics(props) {
 	
 	const exitScrollingModeSoon = useCallback((timeout = 2000) => {
 		cancelExitScrollingModeTimeout();
+		if (!_playState.current) return;
 		exitScrollingModeTimeout.current = setTimeout(() => {
 			setScrollingMode(false);
 			setScrollingFocusLine(_currentLine.current);

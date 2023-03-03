@@ -467,9 +467,9 @@ body.mq-playing:not(.enable-accent-color) .m-pinfo .btn-love.loved:before {
 }
 
 body:not(.mq-playing), body.mq-playing-scroll {
-	.sd {
+	.n-single .sd {
 		.together-head, .together-text {
-			opacity: 0;
+			opacity: 0 !important;
 		}
 	}
 }
@@ -492,9 +492,13 @@ body:not(.mq-playing), body.mq-playing-scroll {
 		.face-1, .face-2 {
 			width: 30px;
 			height: 30px;
+			animation: none !important;
+		}
+		.face-1 {
+			margin-right: 0px;
 		}
 		.face-2 {
-			margin-left: 15px;
+			margin-left: 10px;
 		}
 	}
 	.together-text {

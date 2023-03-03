@@ -388,6 +388,8 @@ body:not(.material-you-theme).refined-control-bar.mq-playing {
 		margin: 0 !important;
 		.bar {
 			height: calc(var(--bottombar-height) - 12px);
+			left: 0 !important;
+			bottom: 0 !important;
 		}
 		.info {
 			height: calc(var(--bottombar-height) * 2 - 24px) !important;
