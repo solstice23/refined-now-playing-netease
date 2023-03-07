@@ -23,6 +23,14 @@ const customScaleFunc = localStorage.getItem('rnp-custom-scale-func', null) ? ne
 export function Lyrics(props) {
 	const isFM = props.isFM ?? false;
 
+	const getPlayState = () => {
+		if (!isFM) {
+			return document.querySelector("#main-player .btnp").classList.contains("btnp-pause");
+		} else {
+			return document.querySelector(".m-player-fm .btnp").classList.contains("btnp-pause");
+		}
+	}
+
 	const containerRef = useRef(null);
 
 	let [lyrics, setLyrics] = useState(null);
@@ -38,8 +46,8 @@ export function Lyrics(props) {
 
 	const [lyricContributors, setLyricContributors] = useState(null);
 
-	const [playState, setPlayState] = useState(null);
-	const _playState = useRef(null);
+	const [playState, setPlayState] = useState(getPlayState());
+	const _playState = useRef(getPlayState());
 	const [songId, setSongId] = useState("0");
 	const currentTime = useRef(0); // 当前播放时间
 	const [seekCounter, setSeekCounter] = useState(0); // 拖动进度条时修改触发重渲染
@@ -218,7 +226,7 @@ export function Lyrics(props) {
 		return () => {
 			window.removeEventListener('recalc-lyrics', onRecalc);
 		}
-	});
+	}, []);
 
 	const previousFocusedLineRef = useRef(0);
 	useEffect(() => { // Recalculate vertical positions and transforms of each line
@@ -348,11 +356,7 @@ export function Lyrics(props) {
 		if (!isCurrentModeSession()) {
 			return;
 		}
-		if (!isFM) {
-			_playState.current = document.querySelector("#main-player .btnp").classList.contains("btnp-pause");
-		} else {
-			_playState.current = document.querySelector(".m-player-fm .btnp").classList.contains("btnp-pause");
-		}
+		_playState.current = getPlayState();
 		setPlayState(_playState.current);
 		//setPlayState((state.split("|")[1] == "resume"));
 		if (document.querySelector(".m-player-fm .btnp").classList.contains("btnp-pause")) {
@@ -436,7 +440,7 @@ export function Lyrics(props) {
 			legacyNativeCmder.removeRegisterCall("PlayProgress", "audioplayer", onPlayProgress);
 			channel.call = _channalCall;
 		}
-	});
+	}, []);
 
 	const jumpToTime = useCallback((time) => {
 		time -= globalOffset;
@@ -1001,8 +1005,9 @@ function Contributors(props) {
 				filter: props.transforms?.blur ? `blur(${props.transforms?.blur}px)` : 'none'
 			}}>	
 			<div className="rnp-contributors-inner">
-				<Contributor text="歌词" user={contributors?.original} />
-				<Contributor text="翻译" user={contributors?.translation} />
+				<Contributor text="歌词贡献者" user={contributors?.original} />
+				<Contributor text="翻译贡献者" user={contributors?.translation} />
+				<Contributor text="歌词来源" user={contributors?.lyricSource} />
 			</div>
 		</div>
 	);
@@ -1014,10 +1019,16 @@ function Contributor(props) {
 	}
 	return (
 		<div className="rnp-contributor rnp-contributor-original">
-			<span>{props.text}贡献者: </span>
-			<a className="rnp-contributor-user" href={`#/m/personal/?uid=${props.user.userid}`}>
-				{props.user.name}
-			</a>
+			<span>{props.text}: </span>
+			{
+				props?.user?.userid ?	
+				<a className="rnp-contributor-user" href={`#/m/personal/?uid=${props.user.userid}`}>
+					{props.user.name}
+				</a> :
+				<span className="rnp-contributor-user">
+					{props.user.name}
+				</span>
+			}
 		</div>
 	);
 }

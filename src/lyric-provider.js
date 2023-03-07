@@ -66,8 +66,21 @@ const processLyrics = (lyrics) => {
 let currentRawLRC = null;
 
 const _onProcessLyrics = window.onProcessLyrics ?? ((x) => x);
-window.onProcessLyrics = (rawLyrics) => {
-	if (!rawLyrics) return _onProcessLyrics(rawLyrics);
+window.onProcessLyrics = (_rawLyrics) => {
+	if (!_rawLyrics) return _onProcessLyrics(_rawLyrics);
+
+	let rawLyrics = _rawLyrics;
+	if (typeof(_rawLyrics) === 'string') { // local lyrics
+		rawLyrics = {
+			lrc: {
+				lyric: _rawLyrics,
+			},
+			source: {
+				name: '本地',
+			}
+		}
+	}
+
 	if ((rawLyrics?.lrc?.lyric ?? '') != currentRawLRC) {
 		console.log('update raw lyrics', rawLyrics);
 		currentRawLRC = (rawLyrics?.lrc?.lyric ?? '') ;
@@ -90,11 +103,14 @@ window.onProcessLyrics = (rawLyrics) => {
 					userid: rawLyrics.transUser.userid,
 				}
 			}
+			if (rawLyrics?.source) {
+				lyrics.contributors.lyricSource = rawLyrics.source;
+			}
 			window.currentLyrics = lyrics;
 			console.log('update processed lyrics', window.currentLyrics.lyrics);
 			console.log('contributors', window.currentLyrics.contributors);
 			document.dispatchEvent(new CustomEvent('lyrics-updated', {detail: window.currentLyrics}));
 		}, 0);
 	}
-	return _onProcessLyrics(rawLyrics);
+	return _onProcessLyrics(_rawLyrics);
 }
