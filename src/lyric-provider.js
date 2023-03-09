@@ -2,6 +2,7 @@
 // Also provide a global variable `currentLyrics` for other scripts to use
 
 import { parseLyric } from './liblyric/index.ts'
+import { cyrb53 } from './utils.js'
 
 const preProcessLyrics = (lyrics) => {
 	if (!lyrics) return null;
@@ -106,9 +107,11 @@ window.onProcessLyrics = (_rawLyrics) => {
 			if (rawLyrics?.source) {
 				lyrics.contributors.lyricSource = rawLyrics.source;
 			}
+			lyrics.hash = `${betterncm.ncm.getPlaying().id}-${cyrb53(processedLyrics.map((x) => x.originalLyric).join('\\'))}`;
 			window.currentLyrics = lyrics;
 			console.log('update processed lyrics', window.currentLyrics.lyrics);
 			console.log('contributors', window.currentLyrics.contributors);
+			console.log(window.currentLyrics);
 			document.dispatchEvent(new CustomEvent('lyrics-updated', {detail: window.currentLyrics}));
 		}, 0);
 	}
