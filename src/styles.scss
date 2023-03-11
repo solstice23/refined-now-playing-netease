@@ -4,7 +4,7 @@ body {
 
 
 body.rnp-dark, body:not(.rnp-light), body.rnp-auto.rnp-system-dark {
-	> *, .g-mn > * {
+	> * {
 		--rnp-accent-color: var(--rnp-accent-color-dark);
 		--rnp-accent-color-rgb: var(--rnp-accent-color-dark-rgb);
 		--rnp-accent-color-on-primary: var(--rnp-accent-color-on-primary-dark);
@@ -18,9 +18,21 @@ body.rnp-dark, body:not(.rnp-light), body.rnp-auto.rnp-system-dark {
 		--rnp-accent-color-overlay: #000;
 		--rnp-accent-color-contrast: #fff;
 		--rnp-drop-shadow: drop-shadow(0px 4px 5px rgba(0, 0, 0, 0.3));
+
+		
+		--rnp-accent-color-fm: var(--rnp-accent-color-dark-fm);
+		--rnp-accent-color-rgb-fm: var(--rnp-accent-color-dark-rgb-fm);
+		--rnp-accent-color-on-primary-fm: var(--rnp-accent-color-on-primary-dark-fm);
+		--rnp-accent-color-on-primary-rgb-fm: var(--rnp-accent-color-on-primary-dark-rgb-fm);
+		--rnp-accent-color-shade-1-fm: var(--rnp-accent-color-shade-1-dark-fm);
+		--rnp-accent-color-shade-1-rgb-fm: var(--rnp-accent-color-shade-1-dark-rgb-fm);
+		--rnp-accent-color-shade-2-fm: var(--rnp-accent-color-shade-2-dark-fm);
+		--rnp-accent-color-shade-2-rgb-fm: var(--rnp-accent-color-shade-2-dark-rgb-fm);
+		--rnp-accent-color-bg-fm: var(--rnp-accent-color-bg-dark-fm);
+		--rnp-accent-color-bg-rgb-fm: var(--rnp-accent-color-bg-dark-rgb-fm);
 	}
 	&:not(.enable-accent-color), &:not([style*='--rnp-accent-color']) {
-		> *, .g-mn > * {
+		> * {
 			--rnp-accent-color: #aaa !important;
 			--rnp-accent-color-rgb: 170, 170, 170 !important;
 			--rnp-accent-color-on-primary: #eee !important;
@@ -29,11 +41,21 @@ body.rnp-dark, body:not(.rnp-light), body.rnp-auto.rnp-system-dark {
 			--rnp-accent-color-shade-1-rgb: 238, 238, 238 !important;
 			--rnp-accent-color-shade-2: #fff !important;
 			--rnp-accent-color-shade-2-rgb: 255, 255, 255 !important;
+
+			
+			--rnp-accent-color-fm: #aaa !important;
+			--rnp-accent-color-rgb-fm: 170, 170, 170 !important;
+			--rnp-accent-color-on-primary-fm: #eee !important;
+			--rnp-accent-color-on-primary-rgb-fm: 238, 238, 238 !important;
+			--rnp-accent-color-shade-1-fm: #eee !important;
+			--rnp-accent-color-shade-1-rgb-fm: 238, 238, 238 !important;
+			--rnp-accent-color-shade-2-fm: #fff !important;
+			--rnp-accent-color-shade-2-rgb-fm: 255, 255, 255 !important;
 		}
 	}
 }
 body.rnp-light, body.rnp-auto.rnp-system-light {
-	> *, .g-mn > * {
+	> * {
 		--rnp-accent-color: var(--rnp-accent-color-light);
 		--rnp-accent-color-rgb: var(--rnp-accent-color-light-rgb);
 		--rnp-accent-color-on-primary: var(--rnp-accent-color-on-primary-light);
@@ -50,9 +72,19 @@ body.rnp-light, body.rnp-auto.rnp-system-light {
 		.rnp-settings-menu {
 			background: #00000066;
 		}
+
+		
+		--rnp-accent-color-fm: var(--rnp-accent-color-light-fm);
+		--rnp-accent-color-rgb-fm: var(--rnp-accent-color-light-rgb-fm);
+		--rnp-accent-color-on-primary-fm: var(--rnp-accent-color-on-primary-light-fm);
+		--rnp-accent-color-on-primary-rgb-fm: var(--rnp-accent-color-on-primary-light-rgb-fm);
+		--rnp-accent-color-shade-1-fm: var(--rnp-accent-color-shade-1-light-fm);
+		--rnp-accent-color-shade-1-rgb-fm: var(--rnp-accent-color-shade-1-light-rgb-fm);
+		--rnp-accent-color-shade-2-fm: var(--rnp-accent-color-shade-2-light-fm);
+		--rnp-accent-color-shade-2-rgb-fm: var(--rnp-accent-color-shade-2-light-rgb-fm);
 	}
 	&:not(.enable-accent-color), &:not([style*='--rnp-accent-color']) {
-		> *, .g-mn > * {
+		> * {
 			--rnp-accent-color: #323232 !important;
 			--rnp-accent-color-rgb: 50, 50, 50 !important;
 			--rnp-accent-color-on-primary: #000 !important;
@@ -61,8 +93,29 @@ body.rnp-light, body.rnp-auto.rnp-system-light {
 			--rnp-accent-color-shade-1-rgb: 35, 35, 35 !important;
 			--rnp-accent-color-shade-2: #0f0f0f !important;
 			--rnp-accent-color-shade-2-rgb: 15, 15, 15 !important;
+
+			
+			--rnp-accent-color-fm: #323232 !important;
+			--rnp-accent-color-rgb-fm: 50, 50, 50 !important;
+			--rnp-accent-color-on-primary-fm: #000 !important;
+			--rnp-accent-color-on-primary-rgb-fm: 0, 0, 0 !important;
+			--rnp-accent-color-shade-1-fm: #232323 !important;
+			--rnp-accent-color-shade-1-rgb-fm: 35, 35, 35 !important;
+			--rnp-accent-color-shade-2-fm: #0f0f0f !important;
+			--rnp-accent-color-shade-2-rgb-fm: 15, 15, 15 !important;
 		}
 	}
+}
+
+.g-mn {
+	--rnp-accent-color: var(--rnp-accent-color-fm) !important;
+	--rnp-accent-color-rgb: var(--rnp-accent-color-rgb-fm) !important;
+	--rnp-accent-color-on-primary: var(--rnp-accent-color-on-primary-fm) !important;
+	--rnp-accent-color-on-primary-rgb: var(--rnp-accent-color-on-primary-rgb-fm) !important;
+	--rnp-accent-color-shade-1: var(--rnp-accent-color-shade-1-fm) !important;
+	--rnp-accent-color-shade-1-rgb: var(--rnp-accent-color-shade-1-rgb-fm) !important;
+	--rnp-accent-color-shade-2: var(--rnp-accent-color-shade-2-fm) !important;
+	--rnp-accent-color-shade-2-rgb: var(--rnp-accent-color-shade-2-rgb-fm) !important;
 }
 
 body:not(.enable-accent-color), body:not([style*='--rnp-accent-color']) {
@@ -626,7 +679,7 @@ body.mq-playing {
 		transition: opacity .3s ease, background .3s ease;
 	}
 	&:not(.bottombar-hover):not(.mq-playing-scroll):not(.always-show-bottombar) {
-		#main-player > .brt {
+		#main-player > .brt, #main-player > .speed {
 			opacity: 0 !important;
 		}
 	}
@@ -650,20 +703,25 @@ body.bottombar-hover .btn-love,
 body.mq-playing-scroll .btn-love {
 	border-color: rgba(var(--rnp-accent-color-shade-2-rgb), 0.1) !important;
 }
-body.mq-playing .m-pinfo .btn-love.loved:before{
-	content: '';
-	display: block;
-	position: absolute;
-	left: 0;
-	top: 0;
-	width: 100%;
-	height: 100%;
-	background-color: var(--rnp-accent-color);
-	-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' id='icon24_liked'%3E%3Cpath d='M15.2 4.5c3 0 5.3 2.6 5.3 5.8 0 2.6-1.3 4.9-3.9 7.1-.9.8-1.9 1.5-2.9 2.2l-.9.6c-.2.1-.3.2-.4.2-.3.1-.6.1-.8 0-.1 0-.2-.1-.4-.2l-.9-.6c-1-.7-2-1.4-2.9-2.2-2.6-2.2-3.9-4.5-3.9-7.1 0-3.2 2.4-5.8 5.3-5.8 1.2 0 2.3.4 3.2 1.1.9-.7 2-1.1 3.2-1.1z' fill='%23000'%3E%3C/path%3E%3C/svg%3E");
-	-webkit-mask-repeat: no-repeat;
-	-webkit-mask-position: center;
-	-webkit-mask-size: 24px;
-	opacity: 1;
+body.mq-playing .m-pinfo .btn-love.loved {
+	&::before{
+		content: '';
+		display: block;
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		background-color: var(--rnp-accent-color);
+		-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' id='icon24_liked'%3E%3Cpath d='M15.2 4.5c3 0 5.3 2.6 5.3 5.8 0 2.6-1.3 4.9-3.9 7.1-.9.8-1.9 1.5-2.9 2.2l-.9.6c-.2.1-.3.2-.4.2-.3.1-.6.1-.8 0-.1 0-.2-.1-.4-.2l-.9-.6c-1-.7-2-1.4-2.9-2.2-2.6-2.2-3.9-4.5-3.9-7.1 0-3.2 2.4-5.8 5.3-5.8 1.2 0 2.3.4 3.2 1.1.9-.7 2-1.1 3.2-1.1z' fill='%23000'%3E%3C/path%3E%3C/svg%3E");
+		-webkit-mask-repeat: no-repeat;
+		-webkit-mask-position: center;
+		-webkit-mask-size: 24px;
+		opacity: 1;
+	}
+	&[data-res-action='like']::before{
+		-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' id='icon24_goodred'%3E%3Cpath d='M0 0h24v24H0z' fill='none'%3E%3C/path%3E%3Cpath d='M8 9.3V21H7c-1.6 0-3-1.4-3-3v-5.5c0-1.6 1.2-2.9 2.7-3l.9-.1c.1 0 .2-.1.4-.1zM12.8 3c1.7 0 2.8 1.5 2.8 3.3 0 .6-.1 1.2-.2 1.8v.1h2.7c.7 0 1.3.2 1.9.7.8.7 1.2 2 .9 3.9-.2 1.1-.4 2.2-.7 3.2-.2.8-.5 1.6-.7 2.3-.2.4-.3.7-.3.8-.1.3-.4.6-.8 1-.7.6-1.5 1-2.5 1H9V8.7c.4-.3.6-.7.8-1.2.1-.1.1-.3.2-.5 0-.1.1-.3.2-.6.7-2.5 1.2-3.4 2.6-3.4z' fill='%23ec4141'%3E%3C/path%3E%3C/svg%3E");
+	}
 }
 body.mq-playing .m-pinfo .btn-love.loved svg{
 	display: none;
@@ -712,13 +770,13 @@ body.mq-playing .m-player .prg *{
 	right: calc(50% - 186px);
 }
 body.mq-playing .m-player {
-	.btnc, .btnp, .type, .word {
+	.btnc, .btnp, .type, .word, .subscribe {
 		svg {
 			opacity: .5;
 			transition: opacity .3s ease, fill .2s ease;
 		}
 	}
-	.type, .word {
+	.type, .word, .subscribe {
 		svg {
 			opacity: 0;
 		}
@@ -726,7 +784,7 @@ body.mq-playing .m-player {
 }
 body.bottombar-hover, body.mq-playing-scroll, body.always-show-bottombar {
 	.m-player {
-		.btnc, .btnp, .type, .word {
+		.btnc, .btnp, .type, .word, .subscribe {
 			svg {
 				opacity: 1;
 			}
@@ -799,7 +857,8 @@ body.mq-playing .m-player {
 	.type:hover,
 	.btnc-prv:hover,
 	.btnc-nxt:hover,
-	.word:hover {
+	.word:hover,
+	.subscribe:hover {
 		svg {
 			fill: var(--rnp-accent-color);
 		}

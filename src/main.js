@@ -35,8 +35,8 @@ const injectHTML = (type, html, parent, fun = (dom) => {}) => {
 const updateAccentColor = (name, argb, isFM = false) => {
 	const [r, g, b] = [...argb2Rgb(argb)];
 	if (isFM) {
-		document.querySelector('.g-mn:not(.better-ncm-manager)').style.setProperty(`--${name}`, `rgb(${r}, ${g}, ${b})`);
-		document.querySelector('.g-mn:not(.better-ncm-manager)').style.setProperty(`--${name}-rgb`, `${r}, ${g}, ${b}`);
+		document.body.style.setProperty(`--${name}-fm`, `rgb(${r}, ${g}, ${b})`);
+		document.body.style.setProperty(`--${name}-rgb-fm`, `${r}, ${g}, ${b}`);
 		return;
 	}
 	document.body.style.setProperty(`--${name}`, `rgb(${r}, ${g}, ${b})`);

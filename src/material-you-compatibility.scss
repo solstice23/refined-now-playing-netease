@@ -1,10 +1,15 @@
+// this stylesheet will be applied when
+// - material you theme is installed
+// - material you theme isn't installed but refined bottom bar is enabled
+
+
 body.material-you-theme.mq-playing:not(.ignore-now-playing),
 body.refined-control-bar.mq-playing:not(.material-you-theme) {
 	#main-player {
 		background-color: transparent !important;
 	}
 	&:not(.bottombar-hover):not(.mq-playing-scroll):not(.always-show-bottombar) {
-		#main-player > .brt {
+		#main-player > .brt, #main-player > .speed {
 			opacity: 0 !important;
 		}
 	}
@@ -91,6 +96,10 @@ body.refined-control-bar.mq-playing:not(.material-you-theme) {
 					height: 8px !important;
 				}
 			}
+		}
+		.m-pinfo {
+			height: calc(var(--bottombar-height, 72px) - 20px) !important;
+			margin-bottom: 8px;
 		}
 	}
 }

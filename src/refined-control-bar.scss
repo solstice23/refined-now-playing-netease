@@ -60,7 +60,7 @@ body:not(.material-you-theme).refined-control-bar.mq-playing {
 		margin: 0 !important;
 	}
 	&:not(.bottombar-hover):not(.mq-playing-scroll):not(.always-show-bottombar) {
-		#main-player > .brt {
+		#main-player > .brt, #main-player > .speed {
 			opacity: 0 !important;
 		}
 	}
