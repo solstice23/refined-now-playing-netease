@@ -99,7 +99,7 @@ body.refined-control-bar.mq-playing:not(.material-you-theme) {
 		}
 		.m-pinfo {
 			height: calc(var(--bottombar-height, 72px) - 20px) !important;
-			margin-bottom: 8px;
+			margin-bottom: 8px !important;
 		}
 	}
 }
