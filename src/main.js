@@ -13,6 +13,7 @@ import { themeFromSourceColor, QuantizerCelebi, Hct, Score } from "@importantimp
 import { compatibilityWizard } from './compatibility-check.js';
 import { showContextMenu } from './context-menu.js';
 import { MiniSongInfo } from './mini-song-info.js';
+import { ProgressbarPreview } from './progressbar-preview.js';
 import { FontSettings } from './font-settings.js';
 import './material-you-compatibility.scss';
 import { createRoot } from 'react-dom/client';
@@ -412,6 +413,7 @@ const addSettingsMenu = async (isFM = false) => {
 		const refinedControlBar = getOptionDom('#refined-control-bar');
 		const alwaysShowBottomBar = getOptionDom('#always-show-bottombar');
 		const bottomProgressBar = getOptionDom('#bottom-progressbar');
+		const enableProgressbarPreview = getOptionDom('#enable-progressbar-preview');
 		bindSelectGroupToClasses(exclusiveModes, 'none', (x) => x === 'all' ? 'no-exclusive-mode' : x, () => {
 			window.dispatchEvent(new Event('recalc-lyrics'));
 			recalculateTitleSize();
@@ -428,6 +430,7 @@ const addSettingsMenu = async (isFM = false) => {
 		bindCheckboxToClass(refinedControlBar, 'refined-control-bar', true);
 		bindCheckboxToClass(alwaysShowBottomBar, 'always-show-bottombar', false);
 		bindCheckboxToClass(bottomProgressBar, 'rnp-bottom-progressbar', false);
+		bindCheckboxToClass(enableProgressbarPreview, 'enable-progressbar-preview', true);
 
 
 		// 封面
@@ -830,10 +833,18 @@ plugin.onLoad(async (p) => {
 		}
 	}).observe(document.body, { childList: true });
 
-	new MutationObserver((mutations) => {
+	new MutationObserver(() => {
 		recalculateTitleSize();
 		calcTitleScroll();
 	}).observe(document.body, { childList: true , subtree: true, attributes: true, characterData: true, attributeFilter: ['src']});
+
+	// Add progressbar hover preview
+	waitForElement('#main-player .prg', (dom) => {
+		const progressbarPreview = document.createElement('div');
+		progressbarPreview.classList.add('rnp-progressbar-preview');
+		ReactDOM.render(<ProgressbarPreview />, progressbarPreview);
+		document.body.appendChild(progressbarPreview);
+	});
 
 	// Fix incomptibility with light theme
 	const lightThemeFixStyle = document.createElement('link');

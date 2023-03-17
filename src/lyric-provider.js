@@ -92,6 +92,11 @@ window.onProcessLyrics = (_rawLyrics) => {
 				lyrics: processedLyrics,
 				contributors: {}
 			}
+
+			if (processedLyrics[0]?.unsynced) {
+				lyrics.unsynced = true;
+			}
+
 			if (rawLyrics?.lyricUser) {
 				lyrics.contributors.original = {
 					name: rawLyrics.lyricUser.nickname,
@@ -109,8 +114,8 @@ window.onProcessLyrics = (_rawLyrics) => {
 			}
 			lyrics.hash = `${betterncm.ncm.getPlaying().id}-${cyrb53(processedLyrics.map((x) => x.originalLyric).join('\\'))}`;
 			window.currentLyrics = lyrics;
-			console.log('update processed lyrics', window.currentLyrics.lyrics);
-			console.log('contributors', window.currentLyrics.contributors);
+			console.log('update processed lyrics', window.currentLyrics);
+			//console.log('contributors', window.currentLyrics.contributors);
 			console.log(window.currentLyrics);
 			document.dispatchEvent(new CustomEvent('lyrics-updated', {detail: window.currentLyrics}));
 		}, 0);

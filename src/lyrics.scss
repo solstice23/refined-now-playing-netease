@@ -483,5 +483,16 @@ body.rnp-lyric-contributors-hide .rnp-lyrics {
 		> *:last-child:not(.rnp-lyrics-overview-line-original) {
 			margin-bottom: 20px;
 		}
+
+		&.unsynced-indicator {
+			opacity: .3;
+			font-size: 80%;
+			margin-bottom: 20px;
+			user-select: none;
+			pointer-events: none;
+			& ~ .rnp-lyrics-overview-line {
+				opacity: .6;
+			}
+		}
 	}
 }

@@ -15,7 +15,6 @@ const useRef = React.useRef;
 const isFMSession = () => {
 	return !document.querySelector(".m-player-fm").classList.contains("f-dn");
 }
-// TODO: 监听 DOM 更改以缓存此函数
 
 const customBlurFunc = localStorage.getItem('rnp-custom-blur-func', null) ? new Function('offset', localStorage.getItem('rnp-custom-blur-func')) : null;
 const customScaleFunc = localStorage.getItem('rnp-custom-scale-func', null) ? new Function('offset', localStorage.getItem('rnp-custom-scale-func')) : null;
@@ -43,6 +42,7 @@ export function Lyrics(props) {
 	const [hasTranslation, setHasTranslation] = useState(false);
 	const [hasRomaji, setHasRomaji] = useState(false);
 	const [hasKaraoke, setHasKaraoke] = useState(false);
+	const [isUnsynced, setIsUnsynced] = useState(false); // 歌词不支持滚动
 
 	const [lyricContributors, setLyricContributors] = useState(null);
 
@@ -153,6 +153,7 @@ export function Lyrics(props) {
 		setHasTranslation(e.detail.lyrics.some((x) => x.translatedLyric));
 		setHasRomaji(e.detail.lyrics.some((x) => x.romanLyric));
 		setHasKaraoke(e.detail.lyrics.some((x) => x.dynamicLyric));
+		setIsUnsynced(e.detail?.unsynced ?? false);
 
 		setLyricContributors(e.detail.contributors);
 
@@ -171,6 +172,7 @@ export function Lyrics(props) {
 			setHasTranslation(currentLyrics.some((x) => x.translatedLyric));
 			setHasRomaji(currentLyrics.some((x) => x.romanLyric));
 			setHasKaraoke(currentLyrics.some((x) => x.dynamicLyric));
+			setIsUnsynced(currentLyrics?.unsynced ?? false);
 
 			setLyricContributors(window.currentLyrics.contributors);
 		}
@@ -473,7 +475,7 @@ export function Lyrics(props) {
 
 	// Scrolling mode
 	
-	const exitScrollingModeSoon = useCallback((timeout = 2000) => {
+	const exitScrollingModeSoon = useCallback((timeout = 2500) => {
 		cancelExitScrollingModeTimeout();
 		if (!_playState.current) return;
 		exitScrollingModeTimeout.current = setTimeout(() => {
@@ -645,7 +647,7 @@ export function Lyrics(props) {
 	return (
 		<>
 			<div
-				className={`rnp-lyrics ${isPureMusic ? 'pure-music' : ''} ${overviewMode ? 'overview-mode-hide' : ''}`}
+				className={`rnp-lyrics ${isPureMusic ? 'pure-music' : ''} ${(overviewMode || isUnsynced) ? 'overview-mode-hide' : ''}`}
 				ref={containerRef}
 				style={{
 					fontSize: `${fontSize}px`,
@@ -683,7 +685,7 @@ export function Lyrics(props) {
 				scrollingFocusLine={scrollingFocusLine}
 				scrollingFocusOnLine={scrollingFocusOnLine}
 				exitScrollingModeSoon={exitScrollingModeSoon}
-				overviewMode={overviewMode}
+				overviewMode={overviewMode || isUnsynced}
 			/>
 			<div className="rnp-lyrics-switch">
 				<button
@@ -695,21 +697,23 @@ export function Lyrics(props) {
 					style={{visibility: 'hidden'}}
 				>
 				</button>
-				<button
-					className={`
-						rnp-lyrics-switch-btn
-						rnp-lyrics-switch-btn-top
-						rnp-lyrics-switch-btn-overview-mode
-						${overviewMode ? 'active' : ''}
-					`}
-					title="复制模式"
-					onClick={() => {
-						setOverviewMode(!overviewMode);
-					}}>
-					<svg style={{transform: 'translate(-2px, -2px)'}} xmlns="http://www.w3.org/2000/svg" height="20" width="20"><path d="M4.146 14.854v-1.396h6.792v1.396Zm0-2.937v-1.396h11.729v1.396Zm0-2.959V7.562h11.729v1.396Zm0-2.937V4.625h11.729v1.396Z"/></svg>
-				</button>
 				{
-					overviewMode &&
+					!isUnsynced && <button
+						className={`
+							rnp-lyrics-switch-btn
+							rnp-lyrics-switch-btn-top
+							rnp-lyrics-switch-btn-overview-mode
+							${overviewMode ? 'active' : ''}
+						`}
+						title="复制模式"
+						onClick={() => {
+							setOverviewMode(!overviewMode);
+						}}>
+						<svg style={{transform: 'translate(-2px, -2px)'}} xmlns="http://www.w3.org/2000/svg" height="20" width="20"><path d="M4.146 14.854v-1.396h6.792v1.396Zm0-2.937v-1.396h11.729v1.396Zm0-2.959V7.562h11.729v1.396Zm0-2.937V4.625h11.729v1.396Z"/></svg>
+					</button>
+				}
+				{
+					(overviewMode || isUnsynced) &&
 					<button
 						className={`
 							rnp-lyrics-switch-btn
@@ -773,13 +777,14 @@ export function Lyrics(props) {
 					}}>逐字</button>
 			</div>
 			{
-				overviewMode &&
+				(overviewMode || isUnsynced) &&
 				<LyricOverview
 					lyrics={lyrics}
 					currentLine={currentLine}
 					showRomaji={showRomaji}
 					showTranslation={showTranslation}
 					jumpToTime={jumpToTime}
+					isUnsynced={isUnsynced}
 					overviewContainerRef={overviewContainerRef}
 					setOverviewModeScrolling={setOverviewModeScrolling}
 					exitOverviewModeScrollingSoon={exitOverviewModeScrollingSoon}
@@ -1183,8 +1188,13 @@ function LyricOverview(props) {
 	return (
 		<div className="rnp-lyrics rnp-lyrics-overview-container" ref={props.overviewContainerRef}>
 			<div className="rnp-lyrics-overview">
+				{
+					props.isUnsynced && <div className="rnp-lyrics-overview-line unsynced-indicator">
+						歌词暂不支持滚动
+					</div>
+				}
 				{props.lyrics.map((line, index) => {
-					return <div 
+					return !(props.isUnsynced && index == 0) && <div 
 						key={index}
 						className={`
 							rnp-lyrics-overview-line
@@ -1194,6 +1204,7 @@ function LyricOverview(props) {
 						`}
 						onContextMenu={(e) => {
 							e.preventDefault();
+							if (props.isUnsynced) return;
 							props.jumpToTime(line.time + 50);
 							props.exitOverviewModeScrollingSoon(0);
 						}}>

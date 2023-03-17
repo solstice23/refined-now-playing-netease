@@ -1,4 +1,4 @@
-import { findLast } from "lodash";
+import { findLast } from "lodash/findLast";
 
 export interface DynamicLyricWord {
 	time: number;
@@ -23,6 +23,7 @@ export interface LyricPureLine {
 	originalLyric?: string;
 	translatedLyric?: string;
 	romanLyric?: string;
+	unsynced?: boolean;
 }
 
 
@@ -89,6 +90,7 @@ export function parseLyric(
 			time: v.time,
 			originalLyric: v.lyric,
 			duration: 0,
+			...(v.unsynced ? { unsynced: true } : {}),
 		}));
 
 		parsePureLyric(translated).forEach((line) => {
@@ -256,6 +258,7 @@ const yrcLineRegexp = /^\[(?<time>[0-9]+),(?<duration>[0-9]+)\](?<line>.*)/;
 const yrcWordTimeRegexp =
 	/^\((?<time>[0-9]+),(?<duration>[0-9]+),(?<flag>[0-9]+)\)(?<word>[^\(]*)/;
 const timeRegexp = /^\[((?<min>[0-9]+):)?(?<sec>[0-9]+([\.:]([0-9]+))?)\]/;
+const metaTimeRegexp = /^\[((?<min>[0-9]+):)?(?<sec>[0-9]+([\.:]([0-9]+))?)\-(?<discriminator>[0-9]+)\]/; //[00:00.00-1] 作词 : xxx
 export function parsePureLyric(lyric: string): LyricPureLine[] {
 	const result: LyricPureLine[] = [];
 
@@ -285,7 +288,39 @@ export function parsePureLyric(lyric: string): LyricPureLine[] {
 		}
 	}
 
+	if (result.length === 0 && lyric.trim().length > 0) {
+		return parseUnsyncedLyrics(lyric);
+	}
+
 	return result.sort((a, b) => a.time - b.time);;
+}
+
+export function parseUnsyncedLyrics(lyric: string): LyricPureLine[] {
+	const result: LyricPureLine[] = [];
+	for (const line of lyric.split("\n")) {
+		let lyric = line.trim();
+		if (!lyric.length) {
+			continue;
+		}
+		if (lyric.match(metaTimeRegexp)) {
+			continue;
+		}
+		result.push({
+			time: 999999999,
+			lyric,
+			unsynced: true,
+		});
+	}
+	console.log(JSON.parse(JSON.stringify(result)));
+	// insert to the head
+	if (result.length) {
+		result.unshift({
+			time: 0,
+			lyric: '歌词不支持滚动',
+			unsynced: true,
+		});
+	}
+	return result;
 }
 
 export function parsePureDynamicLyric(lyric: string): LyricLine[] {

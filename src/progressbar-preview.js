@@ -1,0 +1,217 @@
+import './progressbar-preview.scss';
+import { getSetting } from './utils.js';
+
+
+if (getSetting('enable-progressbar-preview', true)) {
+	document.body.classList.add('enable-progressbar-preview');
+}
+
+
+const useState = React.useState;
+const useEffect = React.useEffect;
+const useRef = React.useRef;
+
+
+function useRefState(initialValue) {
+	const [value, setValue] = useState(initialValue);
+	const valueRef = useRef(value);
+
+	const updateValue = (val) => {
+		valueRef.current = val;
+		setValue(val);
+	};
+
+	return [valueRef, value, updateValue];
+}
+
+let totalLengthInit = 0;
+legacyNativeCmder.appendRegisterCall('Load', 'audioplayer',  (_, info) => {
+	totalLengthInit = info.duration * 1000;
+});
+
+function formatTime(time) {
+	const h = Math.floor(time / 3600);
+	const m = Math.floor((time - h * 3600) / 60);
+	const s = Math.floor(time - h * 3600 - m * 60);
+	return `${h ? `${h}:` : ''}${m < 10 ? `0${m}` : m}:${s < 10 ? `0${s}` : s}`;
+}
+
+export function ProgressbarPreview(props) {
+	const [visible, setVisible] = useState(false);
+
+	const xRef = useRef(0), yRef = useRef(0);
+
+	const progressBarRef = useRef(null);
+	useEffect(() => {
+		progressBarRef.current = document.querySelector('#main-player .prg');
+	}, []);
+
+	const [_lyrics, lyrics, setLyrics] = useRefState(null);
+
+	const hoverPercentRef = useRef(0);
+	const [currentLine, setCurrentLine] = useState(0);
+
+	const [_totalLength, totalLength, setTotalLength] = useRefState(totalLengthInit);
+
+	const containerRef = useRef(null);
+
+	const subprogressbarInnerRef = useRef(null);
+
+	const onLyricsUpdate = (e) => {
+		if (!e.detail) {
+			return;
+		}
+		setLyrics(e.detail.lyrics);
+	}
+	useEffect(() => {
+		if (window.currentLyrics) {
+			const currentLyrics = window.currentLyrics.lyrics;
+			setLyrics(currentLyrics);
+		}
+		document.addEventListener('lyrics-updated', onLyricsUpdate);
+		return () => {
+			document.removeEventListener('lyrics-updated', onLyricsUpdate);
+		}
+	}, []);
+
+
+	const onLoad = (_, info) => {
+		setTotalLength(info.duration * 1000);
+	}
+	useEffect(() => {
+		legacyNativeCmder.appendRegisterCall('Load', 'audioplayer', onLoad);
+		return () => {
+			legacyNativeCmder.removeRegisterCall('Load', 'audioplayer', onLoad);
+		}
+	}, []);
+
+	const updateHoverPercent = () => {
+		if (!progressBarRef.current) {
+			return;
+		}
+		const rect = progressBarRef.current.getBoundingClientRect();
+		const percent = (xRef.current - rect.left) / rect.width;
+		hoverPercentRef.current = percent;
+		const currentTime = _totalLength.current * percent;
+		if (_lyrics.current) {
+			let cur = 0;
+			for (let i = 0; i < _lyrics.current.length; i++) {
+				if (_lyrics.current[i].time <= currentTime) {
+					cur = i;
+				} else {
+					break;
+				}
+			}
+			if (
+				cur == _lyrics.current.length - 1 &&
+				_lyrics.current[cur].duration &&
+				currentTime > _lyrics.current[cur].time + _lyrics.current[cur].duration + 500
+			) {
+				cur = _lyrics.current.length;
+			}
+			setCurrentLine(cur);
+			if (subprogressbarInnerRef.current) {
+				let duration =  _lyrics.current[cur]?.duration;
+				if (duration == 0) {
+					duration = _totalLength.current - _lyrics.current[cur].time;
+				}
+				subprogressbarInnerRef.current.style.width = (currentTime - _lyrics.current[cur].time) / duration * 100 + '%';
+			}
+		}
+	};
+	const updatePosition = () => {
+		if (!containerRef.current) {
+			return;
+		}
+		const width = containerRef.current.clientWidth;
+		const height = containerRef.current.clientHeight;
+		const rect = progressBarRef.current.getBoundingClientRect();
+		let left = xRef.current - width / 2;
+		if (left < 0) {
+			left = 0;
+		}
+		if (left + width > window.innerWidth) {
+			left = window.innerWidth - width;
+		}
+		containerRef.current.style.left = left + 'px';
+		containerRef.current.style.top = (rect.top - height - 5) + 'px';
+	};
+	useEffect(() => {
+		updatePosition();
+	}, [visible, currentLine]);
+	
+
+	const onMouseEnter = (e) => {
+		setVisible(true);
+		xRef.current = e.clientX;
+		yRef.current = e.clientY;
+		updateHoverPercent();
+		updatePosition();
+	};
+	const onMouseLeave = (e) => {
+		setVisible(false);
+	};
+	const onMouseMove = (e) => {
+		xRef.current = e.clientX;
+		yRef.current = e.clientY;
+		updateHoverPercent();
+		updatePosition();
+	};
+	useEffect(() => {
+		if (!progressBarRef.current) {
+			return;
+		}
+		progressBarRef.current.addEventListener('mouseenter', onMouseEnter);
+		progressBarRef.current.addEventListener('mouseleave', onMouseLeave);
+		progressBarRef.current.addEventListener('mousemove', onMouseMove);
+		return () => {
+			progressBarRef.current.removeEventListener('mouseenter', onMouseEnter);
+			progressBarRef.current.removeEventListener('mouseleave', onMouseLeave);
+			progressBarRef.current.removeEventListener('mousemove', onMouseMove);
+		}
+	}, [progressBarRef.current]);
+
+	
+	const isPureMusic = lyrics && (
+		lyrics.length === 1 ||
+		lyrics.length <= 10 && lyrics.some((x) => (x.originalLyric ?? '').includes('纯音乐'))
+	);
+
+	return (
+		<div
+			ref={containerRef}
+			className={`progressbar-preview ${(visible && !isPureMusic) ? '' : 'invisible'}`}
+		>
+			{
+				lyrics && lyrics[currentLine]?.originalLyric && (
+					<div className="progressbar-preview-line-original">{lyrics[currentLine]?.originalLyric}</div>
+				)
+			}
+			{
+				lyrics && lyrics[currentLine]?.originalLyric == '' && (
+					<div className="progressbar-preview-line-original">♪</div>
+				)
+			}
+			{
+				lyrics && lyrics[currentLine]?.translatedLyric && (
+					<div className="progressbar-preview-line-translated">{lyrics[currentLine]?.translatedLyric}</div>
+				)
+			}
+			{
+				lyrics && lyrics[currentLine] && (
+					<div className="progressbar-preview-subprogressbar">
+						<div className="progressbar-preview-subprogressbar-inner" ref={subprogressbarInnerRef}></div>
+					</div>
+				)
+			}
+			{
+				lyrics && lyrics[currentLine] && (
+					<div className="progressbar-preview-line-time">
+						<div>{formatTime(lyrics[currentLine]?.time / 1000)}</div>
+						<div>{lyrics[currentLine]?.duration > 0 ? formatTime((lyrics[currentLine]?.time + lyrics[currentLine]?.duration) / 1000) : formatTime(totalLength / 1000)}</div>
+					</div>
+				)
+			}
+		</div>
+	);
+}
