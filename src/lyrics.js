@@ -377,6 +377,9 @@ export function Lyrics(props) {
 		if (!isCurrentModeSession()) {
 			return;
 		}
+		if (loadedPlugins['LibFrontendPlay'] && loadedPlugins['LibFrontendPlay']?.currentAudioPlayer) {
+			progress = loadedPlugins['LibFrontendPlay'].currentAudioPlayer.currentTime;
+		}
 		//console.log("new progress", id, progress);
 		//setSongId(id);
 		const lastTime = currentTime.current + globalOffset;

@@ -227,7 +227,7 @@ function FluidBackground(props) {
 	}, []);
 
 	// Audio-responsive background (For LibVolumeLevelProvider)
-	if (loadedPlugins.LibFrontendPlay) {
+	if (loadedPlugins.LibFrontendPlay && !loadedPlugins.SimpleAudioVisualizer) {
 		const processor = useRef({});
 		useEffect(() => {
 			processor.current.audioContext = new AudioContext();

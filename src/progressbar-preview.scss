@@ -4,7 +4,7 @@
 	pointer-events: none;
 	font-size: 16px;
 	background-color: #00000044;
-	backdrop-filter: saturate(130%) blur(6px);
+	backdrop-filter: saturate(130%) blur(8px);
 	color: #fff;
 	padding: 10px 15px;
 	border-radius: 8px;
@@ -17,6 +17,11 @@
 
 	> * {
 		white-space: nowrap;
+	}
+
+	.progressbar-preview-number {
+		font-size: 70%;
+		opacity: .4;
 	}
 
 	.progressbar-preview-line-original {

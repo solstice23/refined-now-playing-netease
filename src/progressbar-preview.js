@@ -47,9 +47,11 @@ export function ProgressbarPreview(props) {
 	}, []);
 
 	const [_lyrics, lyrics, setLyrics] = useRefState(null);
+	const [nonInterludeCount, setNonInterludeCount] = useState(0);
 
 	const hoverPercentRef = useRef(0);
 	const [currentLine, setCurrentLine] = useState(0);
+	const [currentNonInterludeIndex, setCurrentNonInterludeIndex] = useState(0);
 
 	const [_totalLength, totalLength, setTotalLength] = useRefState(totalLengthInit);
 
@@ -62,11 +64,13 @@ export function ProgressbarPreview(props) {
 			return;
 		}
 		setLyrics(e.detail.lyrics);
+		setNonInterludeCount(e.detail.lyrics.filter(l => l.originalLyric).length);
 	}
 	useEffect(() => {
 		if (window.currentLyrics) {
 			const currentLyrics = window.currentLyrics.lyrics;
 			setLyrics(currentLyrics);
+			setNonInterludeCount(currentLyrics.filter(l => l.originalLyric).length);
 		}
 		document.addEventListener('lyrics-updated', onLyricsUpdate);
 		return () => {
@@ -95,9 +99,13 @@ export function ProgressbarPreview(props) {
 		const currentTime = _totalLength.current * percent;
 		if (_lyrics.current) {
 			let cur = 0;
+			let nonInterludeIndex = 0;
 			for (let i = 0; i < _lyrics.current.length; i++) {
 				if (_lyrics.current[i].time <= currentTime) {
 					cur = i;
+					if (_lyrics.current[i].originalLyric) {
+						nonInterludeIndex++;
+					}
 				} else {
 					break;
 				}
@@ -110,6 +118,7 @@ export function ProgressbarPreview(props) {
 				cur = _lyrics.current.length;
 			}
 			setCurrentLine(cur);
+			setCurrentNonInterludeIndex(Math.max(nonInterludeIndex, 1));
 			if (subprogressbarInnerRef.current) {
 				let duration =  _lyrics.current[cur]?.duration;
 				if (duration == 0) {
@@ -182,6 +191,11 @@ export function ProgressbarPreview(props) {
 			ref={containerRef}
 			className={`progressbar-preview ${(visible && !isPureMusic) ? '' : 'invisible'}`}
 		>
+			{
+				lyrics && lyrics[currentLine]?.originalLyric && (
+					<div className="progressbar-preview-number">{currentNonInterludeIndex} / {nonInterludeCount}</div>
+				)
+			}
 			{
 				lyrics && lyrics[currentLine]?.originalLyric && (
 					<div className="progressbar-preview-line-original">{lyrics[currentLine]?.originalLyric}</div>
