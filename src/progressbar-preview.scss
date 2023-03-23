@@ -24,6 +24,23 @@
 		opacity: .4;
 	}
 
+	.progressbar-preview-line-karaoke {
+		.progressbar-preview-line-karaoke-word {
+			&.current {
+				$fade-width: 20;
+				-webkit-mask-image: linear-gradient(to right,
+					rgba(0, 0, 0, 1) #{100 / (200 + $fade-width) * 100%},
+					rgba(0, 0, 0, 0.4) #{(100 + $fade-width) / (200 + $fade-width) * 100%}
+				);
+				-webkit-mask-size: #{(200 + $fade-width) * 1%} 100%;
+				-webkit-mask-repeat: no-repeat;
+				will-change: -webkit-mask-position-x, transform;
+				~ * {
+					opacity: 0.4;
+				}
+			}
+		}
+	}
 	.progressbar-preview-line-original {
 		//font-weight: bold;
 		opacity: .9;

@@ -52,6 +52,7 @@ export function ProgressbarPreview(props) {
 	const hoverPercentRef = useRef(0);
 	const [currentLine, setCurrentLine] = useState(0);
 	const [currentNonInterludeIndex, setCurrentNonInterludeIndex] = useState(0);
+	const [currentTime, setCurrentTime] = useState(0);
 
 	const [_totalLength, totalLength, setTotalLength] = useRefState(totalLengthInit);
 
@@ -97,6 +98,7 @@ export function ProgressbarPreview(props) {
 		const percent = (xRef.current - rect.left) / rect.width;
 		hoverPercentRef.current = percent;
 		const currentTime = _totalLength.current * percent;
+		setCurrentTime(currentTime);
 		if (_lyrics.current) {
 			let cur = 0;
 			let nonInterludeIndex = 0;
@@ -197,7 +199,27 @@ export function ProgressbarPreview(props) {
 				)
 			}
 			{
-				lyrics && lyrics[currentLine]?.originalLyric && (
+				lyrics && lyrics[currentLine]?.dynamicLyric && (
+					<div className="progressbar-preview-line-karaoke">
+						{
+							lyrics[currentLine].dynamicLyric.map((word, i) => {
+								const percent = (currentTime - word.time) / word.duration;
+								return (<span
+									key={i}
+									className={`progressbar-preview-line-karaoke-word ${percent >= 0 && percent <= 1 ? 'current' : ''}`}
+									style={{
+										'-webkit-mask-position': `${100 * (1 - Math.max(0, Math.min(1, (currentTime - word.time) / word.duration)))}%`,
+									}}
+								>
+									{word.word}
+								</span>);
+							})
+						}
+					</div>
+				)
+			}
+			{
+				lyrics && !lyrics[currentLine]?.dynamicLyric && lyrics[currentLine]?.originalLyric && (
 					<div className="progressbar-preview-line-original">{lyrics[currentLine]?.originalLyric}</div>
 				)
 			}
