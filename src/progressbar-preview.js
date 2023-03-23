@@ -206,7 +206,7 @@ export function ProgressbarPreview(props) {
 								const percent = (currentTime - word.time) / word.duration;
 								return (<span
 									key={i}
-									className={`progressbar-preview-line-karaoke-word ${percent >= 0 && percent <= 1 ? 'current' : ''}`}
+									className={`progressbar-preview-line-karaoke-word ${percent >= 0 && percent <= 1 ? 'current' : ''} ${percent <0 ? 'upcoming' : ''}`}
 									style={{
 										'-webkit-mask-position': `${100 * (1 - Math.max(0, Math.min(1, (currentTime - word.time) / word.duration)))}%`,
 									}}

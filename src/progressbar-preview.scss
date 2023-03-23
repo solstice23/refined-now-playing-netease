@@ -35,9 +35,9 @@
 				-webkit-mask-size: #{(200 + $fade-width) * 1%} 100%;
 				-webkit-mask-repeat: no-repeat;
 				will-change: -webkit-mask-position-x, transform;
-				~ * {
-					opacity: 0.4;
-				}
+			}
+			&.upcoming {
+				opacity: 0.4;
 			}
 		}
 	}
