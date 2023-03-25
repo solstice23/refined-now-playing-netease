@@ -1194,3 +1194,10 @@ body:not(.mq-playing) .g-single {
 		animation-fill-mode: forwards;
 	}
 }
+
+
+/* special fixes*/
+body.rnp-full-screen ~ .m-card-sharecard {
+    top: unset !important;
+    bottom: var(--bottombar-height, 72px) !important;
+}
