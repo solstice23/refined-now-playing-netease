@@ -683,6 +683,12 @@ body.mq-playing {
 			opacity: 0 !important;
 		}
 	}
+	#main-player .le-toggle{
+		display: none !important;
+	}
+	#main-player > .brt {
+		right: 180px;
+	}
 }
 body.bottombar-hover, body.mq-playing-scroll, body.always-show-bottombar {
 	.m-pinfo .btn:not(.btn-love),
