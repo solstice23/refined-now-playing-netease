@@ -1,0 +1,107 @@
+#refined-now-playing-whats-new {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: #0005;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+	animation: rnp-whats-new-mask 0.4s ease;
+	
+	.rnp-whats-new {
+		position: fixed;
+		z-index: 1001;
+		background: #0007;
+		backdrop-filter: saturate(1.3) blur(10px);
+		padding: 25px 30px;
+		border-radius: 10px;
+		animation: rnp-whats-new-model 0.4s ease;
+		min-width: 500px;
+		max-width: 40vw;
+		overflow: auto;
+		max-height: 60vh;
+		min-height: 300px;
+		display: flex;
+		flex-direction: column;
+		
+
+		.rnp-whats-new-title {
+			font-size: 24px;
+			h2 {
+				font-weight: bold;
+			}
+			h3 {
+				font-size: 70%;
+				opacity: .6;
+				margin-top: 5px;
+			}
+		}
+		
+		
+		.rnp-whats-new-content {
+			margin-top: 20px;
+			flex: 1;
+			.rnp-whats-new-version {
+				margin-bottom: 15px;
+				h3 {
+					font-size: 18px;
+					font-weight: bold;
+					opacity: .8;
+					margin-bottom: 10px;
+				}
+				ul {
+					font-size: 16px;
+					padding-left: 18px;
+					line-height: 1.8;
+					li {
+						list-style: disc;
+						&.major {
+							color: #fc2;
+						}
+					}
+				}
+			}
+		}
+
+		.rnp-whats-new-buttons {
+			width: 100%;
+			display: flex;
+			justify-content: center;
+			margin-top: 20px;
+			.rnp-whats-new-button {
+				background: #fff3;
+				border: none;
+				font-size: 18px;
+				padding: 8px 15px;
+				border-radius: 8px;
+				transition: background .2s ease;
+				&:hover {
+					background: #fff4;
+				}
+			}
+		}		
+	}
+}
+
+
+@keyframes rnp-whats-new-model {
+	0% {
+		opacity: 0;
+		transform: translateY(50px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+@keyframes rnp-whats-new-mask {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}

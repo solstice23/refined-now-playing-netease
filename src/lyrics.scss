@@ -13,6 +13,10 @@
 	display: none;
 }
 
+body.lyric-rotate .rnp-lyrics:not(.rnp-lyrics-overview-container) {
+	overflow: visible;
+	-webkit-mask-image: none;
+}
 
 .rnp-lyrics-switch {
     position: absolute;
@@ -77,8 +81,8 @@ body.rnp-lyric-animation-timing-lazy .rnp-lyrics:not(.scrolling){
 .rnp-lyrics-line {
 	position: absolute;
 	transform-origin: left center;
-	transition: transform 0.5s var(--lyric-timing-function), filter 0.5s ease;
-	will-change: transform, filter;
+	transition: transform 0.5s var(--lyric-timing-function), transform-origin 0.5s var(--lyric-timing-function), filter 0.5s ease, opacity 0.5s ease;
+	will-change: transform, transform-origin, filter, opacity;
 }
 .rnp-lyrics-line {
 	line-height: 1.2;

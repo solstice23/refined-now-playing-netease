@@ -11,27 +11,13 @@ import { Background } from './background.js';
 import { Lyrics } from './lyrics.js';
 import { themeFromSourceColor, QuantizerCelebi, Hct, Score } from "@importantimport/material-color-utilities";
 import { compatibilityWizard } from './compatibility-check.js';
+import { whatsNew } from './whats-new.js';
 import { showContextMenu } from './context-menu.js';
 import { MiniSongInfo } from './mini-song-info.js';
 import { ProgressbarPreview } from './progressbar-preview.js';
 import { FontSettings } from './font-settings.js';
 import './material-you-compatibility.scss';
 import { createRoot } from 'react-dom/client';
-
-let pluginPath;
-
-const injectCSS = (css) => {
-	const style = document.createElement('style');
-	style.innerHTML = css;
-	document.head.appendChild(style);
-}
-const injectHTML = (type, html, parent, fun = (dom) => {}) => {
-	const dom = document.createElement(type);
-	dom.innerHTML = html;
-	fun.call(this, dom);
-
-	parent.appendChild(dom);
-}
 
 const updateAccentColor = (name, argb, isFM = false) => {
 	const [r, g, b] = [...argb2Rgb(argb)];
@@ -479,8 +465,11 @@ const addSettingsMenu = async (isFM = false) => {
 		const lyricFontSize = getOptionDom('#lyric-font-size');
 		const lyricRomajiSizeEm = getOptionDom('#lyric-romaji-size-em');
 		const lyricTranslationSizeEm = getOptionDom('#lyric-translation-size-em');
+		const lyricFade = getOptionDom('#lyric-fade');
 		const lyricZoom = getOptionDom('#lyric-zoom');
 		const lyricBlur = getOptionDom('#lyric-blur');
+		const lyricRotate = getOptionDom('#lyric-rotate');
+		const RotateCurvature = getOptionDom('#rotate-curvature');
 		const karaokeAnimation = getOptionDom('#karaoke-animation');
 		const currentLyricAlignmentPercentage = getOptionDom('#current-lyric-alignment-percentage');
 		const lyricStagger = getOptionDom('#lyric-stagger');
@@ -501,9 +490,18 @@ const addSettingsMenu = async (isFM = false) => {
 		bindCheckboxToFunction(lyricZoom, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-lyric-zoom', { detail: x }));
 		}, false);
+		bindCheckboxToFunction(lyricFade, (x) => {
+			document.dispatchEvent(new CustomEvent('rnp-lyric-fade', { detail: x }));
+		}, false);
 		bindCheckboxToFunction(lyricBlur, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-lyric-blur', { detail: x }));
 		}, false);
+		bindCheckboxToClass(lyricRotate, 'lyric-rotate', false, (x) => {
+			document.dispatchEvent(new CustomEvent('rnp-lyric-rotate', { detail: x }));
+		});
+		bindSliderToFunction(RotateCurvature, (x) => {
+			document.dispatchEvent(new CustomEvent('rnp-rotate-curvature', { detail: x }));
+		}, 25, 'change');
 		bindSelectGroupToClasses(karaokeAnimation, 'float', (x) => `rnp-karaoke-animation-${x}`, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-karaoke-animation', { detail: x }));
 		});
@@ -708,8 +706,6 @@ Object.defineProperty(HTMLImageElement.prototype, 'src', {
 
 
 plugin.onLoad(async (p) => {
-	pluginPath = p.pluginPath;
-	
 	compatibilityWizard();
 
 	document.body.classList.add('refined-now-playing');
@@ -830,6 +826,8 @@ plugin.onLoad(async (p) => {
 
 			addSettingsMenu();
 			addFullScreenButton(document.querySelector('.g-single'));
+
+			whatsNew();
 		}
 	}).observe(document.body, { childList: true });
 

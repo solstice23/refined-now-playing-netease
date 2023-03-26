@@ -368,7 +368,9 @@ body.material-you-theme .refined-control-bar-switch,
 body:not(.refined-control-bar):not(.material-you-theme) .bottom-progressbar-switch,
 body:not(.rnp-custom-font) .rnp-custom-font-section,
 .m-fm .presentation-mode-switch,
-.m-fm .presentation-mode-switch + .rnp-checkbox-note {
+.m-fm .presentation-mode-switch + .rnp-checkbox-note,
+body.lyric-rotate .lyric-fade,
+body:not(.lyric-rotate) .rotate-curvature {
 	opacity: 0;
 	height: 0;
 	padding-bottom: 0;

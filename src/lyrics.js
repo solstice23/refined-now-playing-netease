@@ -16,6 +16,7 @@ const isFMSession = () => {
 	return !document.querySelector(".m-player-fm").classList.contains("f-dn");
 }
 
+const customOpacityFunc = localStorage.getItem('rnp-custom-opacity-func', null) ? new Function('offset', localStorage.getItem('rnp-custom-opacity-func')) : null;
 const customBlurFunc = localStorage.getItem('rnp-custom-blur-func', null) ? new Function('offset', localStorage.getItem('rnp-custom-blur-func')) : null;
 const customScaleFunc = localStorage.getItem('rnp-custom-scale-func', null) ? new Function('offset', localStorage.getItem('rnp-custom-scale-func')) : null;
 
@@ -70,8 +71,11 @@ export function Lyrics(props) {
 	const [containerWidth, setContainerWidth] = useState(0);
 
 	const [fontSize, setFontSize] = useState(getSetting('lyric-font-size', 32));
+	const [lyricFade, setLyricFade] = useState(getSetting('lyric-fade', false));
 	const [lyricZoom, setLyricZoom] = useState(getSetting('lyric-zoom', false));
 	const [lyricBlur, setLyricBlur] = useState(getSetting('lyric-blur', false));
+	const [lyricRotate, setLyricRotate] = useState(getSetting('lyric-rotate', false));
+	const [RotateCurvature, setRotateCurvature] = useState(getSetting('lyric-rotate-curvature', 30));
 	const [showTranslation, setShowTranslation] = useState(getSetting('show-translation', true));
 	const [showRomaji, setShowRomaji] = useState(getSetting('show-romaji', true));
 	const [useKaraokeLyrics, setUseKaraokeLyrics] = useState(getSetting('use-karaoke-lyrics', true));
@@ -280,6 +284,33 @@ export function Lyrics(props) {
 			if (offset == 0) return 0;
 			return Math.min(0.5 + 1 * offset, 4.5);
 		};
+		const opacityByOffset = (offset) => {
+			if (!lyricFade || scrollingMode) return 1;
+			if (customOpacityFunc) {
+				try {
+					return customOpacityFunc(offset);
+				} catch (e) {
+					console.error('Error in custom opacity function', e);
+				}
+			}
+			offset = Math.abs(offset);
+			if (offset <= 1) return 1;
+			return Math.max(1 - 0.4 * (offset - 1), 0);
+		};
+		const setRotateTransform = (line, yOffset, height) => {
+			if (!lyricRotate) return;
+			const origin = [-120 + (RotateCurvature - 25), -(yOffset + height / 2)];
+			const len = Math.sqrt(origin[0] * origin[0] + origin[1] * origin[1]);
+			line.rotate = Math.min(yOffset / window.innerHeight * -RotateCurvature, 90);
+
+			const deg = line.rotate + Math.atan2(origin[1], origin[0]) * 180 / Math.PI;
+			line.extraTop = Math.sin(deg * Math.PI / 180) * len - origin[1];
+			line.left = Math.cos(deg * Math.PI / 180) * len - origin[0];
+
+			line.opacity = 1 - Math.max(
+				(1 * Math.abs(yOffset * 2 / window.innerHeight) ** 1.15 * 1.2)
+			, 0);
+		};
 
 
 		//console.log(currentLine, previousFocusedLineRef.current, currentLine - previousFocusedLineRef.current > 0 ? 1 : -1);
@@ -310,24 +341,30 @@ export function Lyrics(props) {
 		for (let i = current - 1; i >= 0; i--) {
 			transforms[i].scale = scaleByOffset(current - i);
 			transforms[i].blur = blurByOffset(i - current);
+			transforms[i].opacity = opacityByOffset(i - current);
 			let scaledHeight = heightOfItems.current[i] * transforms[i].scale;
 			transforms[i].top = transforms[i + 1].top - scaledHeight - space;
 			transforms[i].delay = delayByOffset(i - current);
+			setRotateTransform(transforms[i], transforms[current].top - transforms[i].top, heightOfItems.current[i] * transforms[i].scale);
 		}
 		// all lines after current
 		for (let i = current + 1; i < lyrics.length; i++) {
 			transforms[i].scale = scaleByOffset(i - current);
 			transforms[i].blur = blurByOffset(i - current);
+			transforms[i].opacity = opacityByOffset(i - current);
 			const previousScaledHeight = heightOfItems.current[i - 1] * transforms[i - 1].scale;
 			transforms[i].top = transforms[i - 1].top + previousScaledHeight + space;
 			transforms[i].delay = delayByOffset(i - current);
+			setRotateTransform(transforms[i], transforms[current].top - transforms[i].top, heightOfItems.current[i] * transforms[i].scale);
 		}
 		// contributors line
 		transforms[lyrics.length].scale = scaleByOffset(lyrics.length - 1 - current);
 		transforms[lyrics.length].blur = blurByOffset(lyrics.length - 1 - current);
+		transforms[lyrics.length].opacity = opacityByOffset(lyrics.length - 1 - current);
 		const previousScaledHeight = heightOfItems.current[lyrics.length - 1] * transforms[lyrics.length - 1].scale;
 		transforms[lyrics.length].top = transforms[lyrics.length - 1].top + previousScaledHeight + Math.min(space * 1.5, 90);
 		transforms[lyrics.length].delay = delayByOffset(lyrics.length - current);
+		setRotateTransform(transforms[lyrics.length], transforms[current].top - transforms[lyrics.length].top, heightOfItems.current[lyrics.length] * transforms[lyrics.length].scale);
 		// set the height of interlude line back to normal
 		heightOfItems.current[current] = currentLineHeight;
 		// reset delay to 0 if necessary
@@ -351,7 +388,7 @@ export function Lyrics(props) {
 	},[
 		currentLineForScrolling,
 		containerHeight, containerWidth,
-		fontSize, lyricZoom, lyricBlur,
+		fontSize, lyricFade, lyricZoom, lyricBlur, lyricRotate, RotateCurvature,
 		showTranslation, showRomaji, useKaraokeLyrics,
 		scrollingMode, scrollingFocusLine,
 		currentLyricAlignmentPercentage,
@@ -553,11 +590,20 @@ export function Lyrics(props) {
 		const onLyricFontSizeChange = (e) => {
 			setFontSize(e.detail ?? 32);
 		}
+		const onLyricFadeChange = (e) => {
+			setLyricFade(e.detail ?? false);
+		}
 		const onLyricZoomChange = (e) => {
 			setLyricZoom(e.detail ?? false);
 		}
 		const onLyricBlurChange = (e) => {
 			setLyricBlur(e.detail ?? false);
+		}
+		const onLyricRotateChange = (e) => {
+			setLyricRotate(e.detail ?? false);
+		}
+		const onRotateCurvatureChange = (e) => {
+			setRotateCurvature(e.detail ?? 30);
 		}
 		const onKaraokeAnimationChange = (e) => {
 			setKaraokeAnimation(e.detail ?? 'float');
@@ -572,15 +618,21 @@ export function Lyrics(props) {
 			setLyricStagger(e.detail ?? true);
 		}
 		document.addEventListener("rnp-lyric-font-size", onLyricFontSizeChange);
+		document.addEventListener("rnp-lyric-fade", onLyricFadeChange);
 		document.addEventListener("rnp-lyric-zoom", onLyricZoomChange);
 		document.addEventListener("rnp-lyric-blur", onLyricBlurChange);
+		document.addEventListener("rnp-lyric-rotate", onLyricRotateChange);
+		document.addEventListener("rnp-rotate-curvature", onRotateCurvatureChange);
 		document.addEventListener("rnp-karaoke-animation", onKaraokeAnimationChange);
 		document.addEventListener("rnp-current-lyric-alignment-percentage", onCurrentLyricAlignmentPercentageChange);
 		document.addEventListener("rnp-lyric-stagger", onLyricStaggerChange);
 		return () => {
 			document.removeEventListener("rnp-lyric-font-size", onLyricFontSizeChange);
+			document.removeEventListener("rnp-lyric-fade", onLyricFadeChange);
 			document.removeEventListener("rnp-lyric-zoom", onLyricZoomChange);
 			document.removeEventListener("rnp-lyric-blur", onLyricBlurChange);
+			document.removeEventListener("rnp-lyric-rotate", onLyricRotateChange);
+			document.removeEventListener("rnp-rotate-curvature", onRotateCurvatureChange);
 			document.removeEventListener("rnp-karaoke-animation", onKaraokeAnimationChange);
 			document.removeEventListener("rnp-current-lyric-alignment-percentage", onCurrentLyricAlignmentPercentageChange);
 			document.removeEventListener("rnp-lyric-stagger", onLyricStaggerChange);
@@ -923,12 +975,15 @@ function Line(props) {
 			style={{
 				display: props.outOfRangeScrolling ? 'none' : 'block',
 				transform: `
-					translateY(${props.transforms.top}px)
+					${props.transforms.left ? `translateX(${props.transforms.left}px)` : ''}
+					translateY(${props.transforms.top + (props.transforms?.extraTop ?? 0)}px)
 					scale(${props.transforms.scale})
+					${props.transforms.rotate ? `rotate(${props.transforms.rotate}deg)` : ''}
 				`,
 				transitionDelay: `${props.transforms.delay}ms`,
 				transitionDuration: `${props.transforms?.duration ?? 500}ms`,
-				filter: props.transforms?.blur ? `blur(${props.transforms?.blur}px)` : 'none'
+				filter: props.transforms?.blur ? `blur(${props.transforms?.blur}px)` : 'none',
+				opacity: props.transforms?.opacity ?? 1
 			}}>
 			{ props.line.dynamicLyric && props.useKaraokeLyrics && !props.outOfRangeKaraoke && <div className="rnp-lyrics-line-karaoke" ref={karaokeLineRef}>
 				{props.line.dynamicLyric.map((word, index) => {
@@ -1026,8 +1081,10 @@ function Contributors(props) {
 			className="rnp-contributors"
 			style={{
 				transform: `
-					translateY(${props.transforms.top}px)
+					${props.transforms.left ? `translateX(${props.transforms.left}px)` : ''}
+					translateY(${props.transforms.top + (props.transforms?.extraTop ?? 0)}px)
 					scale(${props.transforms.scale})
+					${props.transforms.rotate ? `rotate(${props.transforms.rotate}deg)` : ''}
 				`,
 				transitionDelay: `${props.transforms.delay}ms, ${props.transforms.delay}ms`,
 				transitionDuration: `${props.transforms?.duration ?? 500}ms`,
