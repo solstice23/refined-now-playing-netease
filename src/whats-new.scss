@@ -54,12 +54,25 @@
 				}
 				ul {
 					font-size: 16px;
-					padding-left: 18px;
 					line-height: 1.8;
 					li {
-						list-style: disc;
+						display: flex;
+						svg {
+							width: 1em;
+							height: 1em;
+							display: inline-block;
+							margin-right: 8px;
+							margin-top: 4px;
+							fill: #fff;
+							opacity: .6;
+							transform: translateY(2px);
+							flex-shrink: 0;
+						}
 						&.major {
 							color: #fc2;
+							svg {
+								fill: #fc2;
+							}
 						}
 					}
 				}
@@ -82,7 +95,15 @@
 					background: #fff4;
 				}
 			}
-		}		
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background: #fff1 !important;
+			border-radius: 100px;
+		}
+		&::-webkit-scrollbar-track {
+			background: transparent;
+		}
 	}
 }
 

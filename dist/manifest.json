@@ -5,10 +5,10 @@
     "author_links": ["https://github.com/solstice23"],
     "description": "重新设计的正在播放页面和歌词",
     "preview": "preview.webp",
-    "version": "2.16.1",
+    "version": "2.16.2",
     "type": "extension",
     "requirements": [],
-    "loadAfter": ["MaterialYouTheme", "LibFrontendPlay"],
+    "loadAfter": ["MaterialYouTheme", "LibFrontendPlay", "SimpleAudioVisualizer"],
     "incompatible": ["Apple-Musiclike-lyrics"],
     "betterncm_version": ">=1.0.0",
     "injects": {
