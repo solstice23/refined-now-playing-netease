@@ -689,6 +689,13 @@ body.mq-playing {
 	#main-player > .brt {
 		right: 180px;
 	}
+	#main-player .list .m-queuenotify {
+		background: #0002 !important;
+		backdrop-filter: blur(10px);
+		&:before {
+			display: none;
+		}
+	}
 }
 body.bottombar-hover, body.mq-playing-scroll, body.always-show-bottombar {
 	.m-pinfo .btn:not(.btn-love),

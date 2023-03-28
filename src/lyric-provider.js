@@ -109,6 +109,7 @@ window.onProcessLyrics = (_rawLyrics) => {
 					userid: rawLyrics.transUser.userid,
 				}
 			}
+			lyrics.contributors.roles = rawLyrics?.roles ?? [];
 			if (rawLyrics?.source) {
 				lyrics.contributors.lyricSource = rawLyrics.source;
 			}

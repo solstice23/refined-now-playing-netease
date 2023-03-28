@@ -1088,9 +1088,15 @@ function Contributors(props) {
 				`,
 				transitionDelay: `${props.transforms.delay}ms, ${props.transforms.delay}ms`,
 				transitionDuration: `${props.transforms?.duration ?? 500}ms`,
-				filter: props.transforms?.blur ? `blur(${props.transforms?.blur}px)` : 'none'
+				filter: props.transforms?.blur ? `blur(${props.transforms?.blur}px)` : 'none',
+				opacity: props.transforms?.opacity ?? 1
 			}}>	
 			<div className="rnp-contributors-inner">
+				{
+					(contributors?.roles ?? []).map((role, index) => {
+						return <Artist key={index} role={role} />
+					})
+				}
 				<Contributor text="歌词贡献者" user={contributors?.original} />
 				<Contributor text="翻译贡献者" user={contributors?.translation} />
 				<Contributor text="歌词来源" user={contributors?.lyricSource} />
@@ -1099,12 +1105,40 @@ function Contributors(props) {
 	);
 }
 
+function Artist(props) {
+	if (!props.role) {
+		return null;
+	}
+	return (
+		<div className="rnp-contributor rnp-contributor-artist">
+			<span>{props.role.roleName}: </span>
+			{
+				props.role.artistMetaList.map((artist, index) => {
+					return (
+						<>
+							{
+								artist.artistId ?
+								<a className="rnp-contributor-artist" href={`#/m/artist/?id=${artist.artistId}`}>
+									{artist.artistName}
+								</a> :
+								<span className="rnp-contributor-artist">
+									{artist.artistName}
+								</span>
+							}
+							{index < props.role.artistMetaList.length - 1 && <span>, </span>}
+						</>
+					);
+				})
+			}
+		</div>
+	);
+}
 function Contributor(props) {
 	if (!props.user) {
 		return null;
 	}
 	return (
-		<div className="rnp-contributor rnp-contributor-original">
+		<div className="rnp-contributor rnp-contributor-lyrics">
 			<span>{props.text}: </span>
 			{
 				props?.user?.userid ?	

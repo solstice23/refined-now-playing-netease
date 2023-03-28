@@ -81,8 +81,8 @@ body.rnp-lyric-animation-timing-lazy .rnp-lyrics:not(.scrolling){
 .rnp-lyrics-line {
 	position: absolute;
 	transform-origin: left center;
-	transition: transform 0.5s var(--lyric-timing-function), transform-origin 0.5s var(--lyric-timing-function), filter 0.5s ease, opacity 0.5s ease;
-	will-change: transform, transform-origin, filter, opacity;
+	transition: transform 0.5s var(--lyric-timing-function), filter 0.5s ease, opacity 0.5s ease;
+	will-change: transform, filter, opacity;
 }
 .rnp-lyrics-line {
 	line-height: 1.2;
@@ -311,7 +311,7 @@ body.rnp-karaoke-animation-slide .rnp-lyrics-line {
 .rnp-contributors {
 	position: absolute;
 	transform-origin: left center;
-	transition: transform 0.5s var(--lyric-timing-function), filter 0.5s ease;
+	transition: transform 0.5s var(--lyric-timing-function), opacity 0.5s ease, filter 0.5s ease;
 	will-change: transform, filter;
     max-width: 100%;
 	&:hover {
@@ -337,7 +337,7 @@ body.rnp-karaoke-animation-slide .rnp-lyrics-line {
 			margin-right: 0.5em;
 			opacity: .4;
 		}
-		.rnp-contributor-user {
+		.rnp-contributor-user, .rnp-contributor-artist {
 			color: inherit;
 			opacity: .4;
 			transition: opacity .2s ease;
