@@ -307,9 +307,10 @@ export function Lyrics(props) {
 			line.extraTop = Math.sin(deg * Math.PI / 180) * len - origin[1];
 			line.left = Math.cos(deg * Math.PI / 180) * len - origin[0];
 
-			line.opacity = 1 - Math.max(
-				(1 * Math.abs(yOffset * 2 / window.innerHeight) ** 1.15 * 1.2)
-			, 0);
+			const opacity = 1 - (1 * Math.abs(yOffset * 2 / window.innerHeight) ** 1.15 * 1.2);
+			line.opacity = Math.max(opacity, 0);
+			if (opacity <= -1.5) line.outOfRangeHidden = true;
+			else if (line.outOfRangeHidden) delete line.outOfRangeHidden;
 		};
 
 
@@ -973,7 +974,7 @@ function Line(props) {
 				showContextMenu(e.clientX, e.clientY, items);
 			}}
 			style={{
-				display: props.outOfRangeScrolling ? 'none' : 'block',
+				display: (props.outOfRangeScrolling) ? 'none' : 'block',
 				transform: `
 					${props.transforms.left ? `translateX(${props.transforms.left}px)` : ''}
 					translateY(${props.transforms.top + (props.transforms?.extraTop ?? 0)}px)
@@ -983,7 +984,8 @@ function Line(props) {
 				transitionDelay: `${props.transforms.delay}ms`,
 				transitionDuration: `${props.transforms?.duration ?? 500}ms`,
 				filter: props.transforms?.blur ? `blur(${props.transforms?.blur}px)` : 'none',
-				opacity: props.transforms?.opacity ?? 1
+				opacity: props.transforms?.opacity ?? 1,
+				...props.transforms?.outOfRangeHidden && {visibility: 'hidden'}
 			}}>
 			{ props.line.dynamicLyric && props.useKaraokeLyrics && !props.outOfRangeKaraoke && <div className="rnp-lyrics-line-karaoke" ref={karaokeLineRef}>
 				{props.line.dynamicLyric.map((word, index) => {
@@ -1089,7 +1091,8 @@ function Contributors(props) {
 				transitionDelay: `${props.transforms.delay}ms, ${props.transforms.delay}ms`,
 				transitionDuration: `${props.transforms?.duration ?? 500}ms`,
 				filter: props.transforms?.blur ? `blur(${props.transforms?.blur}px)` : 'none',
-				opacity: props.transforms?.opacity ?? 1
+				opacity: props.transforms?.opacity ?? 1,
+				...props.transforms?.outOfRangeHidden && {visibility: 'hidden'}
 			}}>	
 			<div className="rnp-contributors-inner">
 				{

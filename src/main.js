@@ -583,6 +583,10 @@ const addSettingsMenu = async (isFM = false) => {
 		// 关于
 		const versionNumber = getOptionDom('#rnp-version-number');
 		versionNumber.innerHTML = loadedPlugins.RefinedNowPlaying.manifest.version;
+		const openWhatsNew = getOptionDom('#open-whats-new');
+		openWhatsNew.addEventListener('click', () => {
+			whatsNew(true);
+		});
 	}
 	const initTabs = (menu) => {
 		const tabs = menu.querySelectorAll('.rnp-settings-menu-tabs .rnp-settings-menu-tab');

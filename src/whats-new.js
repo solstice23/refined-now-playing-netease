@@ -34,6 +34,8 @@ function WhatsNew(props) {
 													switch (change[0]) {
 														case 'add':
 															return <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/></svg>
+														case 'optimize':
+															return <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M288 32C129 32 0 161 0 320C0 372.75 14.25 422.25 39 464.75C44.625 474.375 55.375 480 66.5 480H509.5C520.625 480 531.375 474.375 537 464.75C561.75 422.25 576 372.75 576 320C576 161 447 32 288 32ZM432 160C449.625 160 464 174.375 464 192S449.625 224 432 224S400 209.625 400 192S414.375 160 432 160ZM288 96C305.625 96 320 110.375 320 128S305.625 160 288 160S256 145.625 256 128S270.375 96 288 96ZM96 384C78.375 384 64 369.625 64 352S78.375 320 96 320S128 334.375 128 352S113.625 384 96 384ZM144 224C126.375 224 112 209.625 112 192S126.375 160 144 160S176 174.375 176 192S161.625 224 144 224ZM484 375.625L349.999 398C348.5 404.375 346.375 410.5 343.125 416H232.875C227.375 406.5 224 395.75 224 384C224 348.625 252.625 320 288 320C311 320 331.125 332.25 342.375 350.625L476 328.375C489.125 326.125 501.5 335 503.625 348C505.875 361.125 497 373.5 484 375.625Z"/></svg>
 														case 'fix':
 															return <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
 														case 'remove':
@@ -79,14 +81,17 @@ function WhatsNew(props) {
 }
 
 
-export function whatsNew() {
-	const lastVersion = localStorage.getItem("refined-now-playing-last-version") ?? "0.0.0";
+export function whatsNew(force = false) {
+	let lastVersion = localStorage.getItem("refined-now-playing-last-version") ?? "0.0.0";
 	const currentVersion = loadedPlugins.RefinedNowPlaying.manifest.version;
-	if (compareVersions(lastVersion, currentVersion) >= 0) return;
+	if (compareVersions(lastVersion, currentVersion) >= 0 && !force) return;
 	localStorage.setItem("refined-now-playing-last-version", currentVersion);
-	if (changeLog.filter(version => compareVersions(version.version, lastVersion) > 0).length === 0) return;
+	if (changeLog.filter(version => compareVersions(version.version, lastVersion) > 0).length === 0 && !force) return;
 	const whatsNew = document.createElement("div");
 	whatsNew.id = "refined-now-playing-whats-new";
 	document.body.appendChild(whatsNew);
+	if (force) {
+		lastVersion = "0.0.0";
+	}
 	ReactDOM.render(<WhatsNew lastVersion={lastVersion}/>, whatsNew);
 }

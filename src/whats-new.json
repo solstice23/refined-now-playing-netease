@@ -1,5 +1,12 @@
 [
 	{
+		"version": "2.16.3",
+		"changes": [
+			["optimize", "优化 旋转歌词性能"],
+			["fix", "修复 旋转歌词可以在越界时点击的问题"]
+		]
+	},
+	{
 		"version": "2.16.2",
 		"changes": [
 			["fix", "尝试修复 SimpleAudioVisualizer 不生效的问题"]
