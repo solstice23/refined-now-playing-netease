@@ -20,6 +20,15 @@ const customOpacityFunc = localStorage.getItem('rnp-custom-opacity-func', null) 
 const customBlurFunc = localStorage.getItem('rnp-custom-blur-func', null) ? new Function('offset', localStorage.getItem('rnp-custom-blur-func')) : null;
 const customScaleFunc = localStorage.getItem('rnp-custom-scale-func', null) ? new Function('offset', localStorage.getItem('rnp-custom-scale-func')) : null;
 
+const useRefState = (initialValue) => {
+	const [value, setValue] = useState(initialValue);
+	const ref = useRef(value);
+	useEffect(() => {
+		ref.current = value;
+	}, [value]);
+	return [value, setValue, ref];
+}
+
 export function Lyrics(props) {
 	const isFM = props.isFM ?? false;
 
@@ -63,7 +72,7 @@ export function Lyrics(props) {
 	}
 	const [currentLineForScrolling, setCurrentLineForScrolling] = useState(0);	// 为提前 0.2s 滚动，使滚动 delay 与逐词歌词对应 而设置的 提前的，仅用于滚动的 currentLine
 
-	const [globalOffset, setGlobalOffset] = useState(parseInt(getSetting('lyric-offset', 0)));
+	const [globalOffset, setGlobalOffset, _globalOffset] = useRefState(parseInt(getSetting('lyric-offset', 0)));
 
 	const heightOfItems = useRef([]);
 
@@ -243,7 +252,7 @@ export function Lyrics(props) {
 
 	const previousFocusedLineRef = useRef(0);
 	useEffect(() => { // Recalculate vertical positions and transforms of each line
-		if (!lyrics?.length) return;
+		if (lyrics == null || lyrics == undefined) return;
 
 		const space = fontSize * 1.2;
 		const delayByOffset = (offset) => {
@@ -320,6 +329,7 @@ export function Lyrics(props) {
 		for (let i = 0; i <= lyrics.length; i++) transforms.push({ top: 0, scale: 1, delay: 0 });
 		//console.log('containerHeight', containerHeight);
 		let current = Math.min(Math.max(currentLineForScrolling ?? 0, 0), lyrics.length - 1);
+		if (current == -1) current = 0;
 		if (scrollingMode) {
 			current = Math.min(Math.max(scrollingFocusLine ?? 0, 0), lyrics.length - 1);
 		}
@@ -334,7 +344,7 @@ export function Lyrics(props) {
 		transforms[current].delay = delayByOffset(0);
 		transforms[current].blur = blurByOffset(0);
 		const currentLineHeight = heightOfItems.current[current];
-		if (lyrics[current].isInterlude && !scrollingMode) {
+		if (lyrics[current]?.isInterlude && !scrollingMode) {
 			// temporary heighten the interlude line
 			heightOfItems.current[current] = currentLineHeight + 50;
 		}
@@ -362,8 +372,12 @@ export function Lyrics(props) {
 		transforms[lyrics.length].scale = scaleByOffset(lyrics.length - 1 - current);
 		transforms[lyrics.length].blur = blurByOffset(lyrics.length - 1 - current);
 		transforms[lyrics.length].opacity = opacityByOffset(lyrics.length - 1 - current);
-		const previousScaledHeight = heightOfItems.current[lyrics.length - 1] * transforms[lyrics.length - 1].scale;
-		transforms[lyrics.length].top = transforms[lyrics.length - 1].top + previousScaledHeight + Math.min(space * 1.5, 90);
+		if (lyrics.length > 0) {
+			const previousScaledHeight = heightOfItems.current[lyrics.length - 1] * transforms[lyrics.length - 1].scale;
+			transforms[lyrics.length].top = transforms[lyrics.length - 1].top + previousScaledHeight + Math.min(space * 1.5, 90);
+		} else {
+			transforms[lyrics.length].top = containerHeight / 2 - heightOfItems.current[lyrics.length] / 2;
+		}
 		transforms[lyrics.length].delay = delayByOffset(lyrics.length - current);
 		setRotateTransform(transforms[lyrics.length], transforms[current].top - transforms[lyrics.length].top, heightOfItems.current[lyrics.length] * transforms[lyrics.length].scale);
 		// set the height of interlude line back to normal
@@ -420,9 +434,9 @@ export function Lyrics(props) {
 		}
 		//console.log("new progress", id, progress);
 		//setSongId(id);
-		const lastTime = currentTime.current + globalOffset;
+		const lastTime = currentTime.current + _globalOffset.current;
 		currentTime.current = ((progress * 1000) || 0);
-		const currentTimeWithOffset = currentTime.current + globalOffset;
+		const currentTimeWithOffset = currentTime.current + _globalOffset.current;
 		if (!_lyrics.current) return;
 		let startIndex = 0;
 		if (currentTimeWithOffset - lastTime > 0 && currentTimeWithOffset - lastTime < 50) {
@@ -493,7 +507,7 @@ export function Lyrics(props) {
 	}, []);
 
 	const jumpToTime = useCallback((time) => {
-		time -= globalOffset;
+		time -= _globalOffset.current;
 		shouldTransit.current = true;
 		setScrollingMode(false);
 		//console.log(songId);
@@ -887,21 +901,21 @@ function Line(props) {
 	const karaokeAnimationSlide = (word) => {
 		if (props.currentLine != props.id){
 			return {
-				transitionDuration: `0ms`,
+				transitionDuration: `0ms, 0ms, 0.5s`,
 				transitionDelay: `0ms`,
 			};
 		}
 		if (props.playState == false && word.time + word.duration - props.currentTime > 0) {
 			return {
-				transitionDuration: `0s`,
+				transitionDuration: `0s, 0s, 0.5s`,
 				transitionDelay: `0ms`,
 				transform: `translateY(-${Math.max((props.currentTime - word.time) / word.duration * 1, 0)}px)`,
 				WebkitMaskPositionX: `${100 - Math.max((props.currentTime - word.time) / word.duration * 100, 0)}%`
 			};
 		}
 		return {
-			transitionDuration: `${word.duration}ms, ${word.duration * 0.8}ms`,
-			transitionDelay: `${word.time - props.currentTime}ms, ${word.time - props.currentTime + word.duration * 0.5}ms`
+			transitionDuration: `${word.duration}ms, ${word.duration * 0.8}ms, 0.5s`,
+			transitionDelay: `${word.time - props.currentTime}ms, ${word.time - props.currentTime + word.duration * 0.5}ms, 0ms`
 		};
 	};
 	const getKaraokeAnimation = (word) => {
@@ -927,7 +941,7 @@ function Line(props) {
 
 	return (
 		<div
-			className={`rnp-lyrics-line ${props.line.isInterlude ? 'rnp-interlude' : ''}`}
+			className={`rnp-lyrics-line ${offset < 0 ? 'passed' : ''} ${props.line.isInterlude ? 'rnp-interlude' : ''}`}
 			offset={offset}
 			onClick={() => props.jumpToTime(props.line.time + 50)}
 			onContextMenu={(e) => {
@@ -989,12 +1003,15 @@ function Line(props) {
 			}}>
 			{ props.line.dynamicLyric && props.useKaraokeLyrics && !props.outOfRangeKaraoke && <div className="rnp-lyrics-line-karaoke" ref={karaokeLineRef}>
 				{props.line.dynamicLyric.map((word, index) => {
-					return <span
+					return <div
 						key={`${props.karaokeAnimation} ${index}`}
 						className={`rnp-karaoke-word ${CJKRegex.test(word.word) ? 'is-cjk' : ''} ${word.word.endsWith(' ') ? 'end-with-space' : ''}`}
 						style={getKaraokeAnimation(word)}>
-							{word.word}
-					</span>
+							<span>{word.word}</span>
+							{
+								props.karaokeAnimation == 'slide' && <span className="rnp-karaoke-word-filler" style={getKaraokeAnimation(word)}>{word.word}</span>
+							}
+					</div>
 				})}
 			</div> }
 			{ !(props.line.dynamicLyric && props.useKaraokeLyrics && !props.outOfRangeKaraoke) && props.line.originalLyric && <div className="rnp-lyrics-line-original">

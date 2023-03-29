@@ -110,6 +110,24 @@ window.onProcessLyrics = (_rawLyrics) => {
 				}
 			}
 			lyrics.contributors.roles = rawLyrics?.roles ?? [];
+			lyrics.contributors.roles = lyrics.contributors.roles.filter(role => {
+				if (role.artistMetaList.length == 1 && role.artistMetaList[0].artistName == '无' && role.artistMetaList[0].artistId == 0) {
+					return false;
+				}
+				return true;
+			});
+			for (let i = 0; i < lyrics.contributors.roles.length; i++) {
+				const metaList = JSON.stringify(lyrics.contributors.roles[i].artistMetaList);
+				for (let j = i + 1; j < lyrics.contributors.roles.length; j++) {
+					if (JSON.stringify(lyrics.contributors.roles[j].artistMetaList) === metaList) {
+						lyrics.contributors.roles[i].roleName += `、${lyrics.contributors.roles[j].roleName}`;
+						lyrics.contributors.roles.splice(j, 1);
+						j--;
+					}
+				}
+			}
+			
+
 			if (rawLyrics?.source) {
 				lyrics.contributors.lyricSource = rawLyrics.source;
 			}

@@ -240,6 +240,7 @@ body.rnp-karaoke-animation-float .rnp-lyrics-line {
 }
 body.rnp-karaoke-animation-slide .rnp-lyrics-line {
 	.rnp-lyrics-line-karaoke {
+		opacity: 1 !important;
 		line-height: 1.5;
 		display: flex;
 		flex-wrap: wrap;
@@ -249,23 +250,46 @@ body.rnp-karaoke-animation-slide .rnp-lyrics-line {
 		}
 	}
 	.rnp-karaoke-word {
-		$fade-width: 20;
-		-webkit-mask-image: linear-gradient(to right,
-			rgba(0, 0, 0, 1) #{100 / (200 + $fade-width) * 100%},
-			rgba(0, 0, 0, 0.4) #{(100 + $fade-width) / (200 + $fade-width) * 100%}
-		);
-		-webkit-mask-size: #{(200 + $fade-width) * 1%} 100%;
-		-webkit-mask-repeat: no-repeat;
-		will-change: -webkit-mask-position-x, transform;
+		opacity: 1 !important;
+		will-change: transform;
+		span:not(.rnp-karaoke-word-filler) {
+			opacity: 0.4;
+		}
+		.rnp-karaoke-word-filler {
+			opacity: 0;
+			position: absolute;
+			left: 0;
+			top: 0;
+			transform: none !important;
+			will-change: -webkit-mask-position-x;
+			$fade-width: 20;
+			-webkit-mask-image: linear-gradient(to right,
+				rgba(0, 0, 0, 1) #{100 / (200 + $fade-width) * 100%},
+				rgba(0, 0, 0, 0) #{(100 + $fade-width) / (200 + $fade-width) * 100%}
+			);
+			-webkit-mask-size: #{(200 + $fade-width) * 1%} 100%;
+			-webkit-mask-repeat: no-repeat;
+		}
+	}
+	&.passed{
+		&/*:not([offset='-1'])*/ {
+			.rnp-karaoke-word-filler {
+				-webkit-mask-image: none;
+			}
+		}
 	}
 	&[offset='0'] > div{ 
 		&.rnp-lyrics-line-karaoke {
-			opacity: 1;
 			.rnp-karaoke-word {
-				-webkit-mask-position-x: 0%;
 				transform: translateY(-1px);
 				transition-property: -webkit-mask-position-x, transform;
 				transition-timing-function: linear, ease;
+				.rnp-karaoke-word-filler {
+					opacity: 1;
+					-webkit-mask-position-x: 0%;
+					transition-property: -webkit-mask-position-x, transform, opacity;
+					transition-timing-function: linear, ease, ease;
+				}
 			}
 		}
 	}
@@ -274,15 +298,21 @@ body.rnp-karaoke-animation-slide .rnp-lyrics-line {
 			opacity: 1;
 			.rnp-karaoke-word {
 				transition-property: -webkit-mask-position-x, transform;
-				-webkit-mask-position-x: 100%;
 				transform: translateY(0);
+				.rnp-karaoke-word-filler {
+					transition-property: -webkit-mask-position-x, transform, opacity;
+					-webkit-mask-position-x: 100%;
+				}
 			}
 		}
 	}
 	.rnp-lyrics-line-karaoke.force-refresh > .rnp-karaoke-word {
 		transition: all 0s !important;
 		-webkit-mask-position-x: 100% !important;
-		transform: translateY(0) !important;
+		.rnp-karaoke-word-filler {
+			transition: all 0s !important;
+			transform: translateY(0) !important;
+		}
 	}
 }
 

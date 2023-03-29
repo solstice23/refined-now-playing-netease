@@ -14,7 +14,7 @@ function WhatsNew(props) {
 	return (
 		<div class="rnp-whats-new" ref={modelRef}>
 			<div class="rnp-whats-new-title">
-				<h2>What's New?</h2>
+				<h2>What's New</h2>
 				<h3>Refined Now Playing</h3>
 			</div>
 			<div class="rnp-whats-new-content">

@@ -21,8 +21,8 @@
 		animation: rnp-whats-new-model 0.4s ease;
 		min-width: 500px;
 		max-width: 40vw;
-		overflow: auto;
-		max-height: 60vh;
+		overflow: hidden;
+		max-height: 75vh;
 		min-height: 300px;
 		display: flex;
 		flex-direction: column;
@@ -44,6 +44,7 @@
 		.rnp-whats-new-content {
 			margin-top: 20px;
 			flex: 1;
+			overflow-y: auto;
 			.rnp-whats-new-version {
 				margin-bottom: 15px;
 				h3 {
@@ -77,6 +78,13 @@
 					}
 				}
 			}
+			&::-webkit-scrollbar-thumb {
+				background: #fff1 !important;
+				border-radius: 100px;
+			}
+			&::-webkit-scrollbar-track {
+				background: transparent;
+			}
 		}
 
 		.rnp-whats-new-buttons {
@@ -95,14 +103,6 @@
 					background: #fff4;
 				}
 			}
-		}
-
-		&::-webkit-scrollbar-thumb {
-			background: #fff1 !important;
-			border-radius: 100px;
-		}
-		&::-webkit-scrollbar-track {
-			background: transparent;
 		}
 	}
 }
