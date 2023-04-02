@@ -214,7 +214,7 @@ body.rnp-karaoke-animation-float .rnp-lyrics-line {
 	&[offset='0'] > div{ 
 		&.rnp-lyrics-line-karaoke {
 			opacity: 1;
-			.rnp-karaoke-word {
+			.rnp-karaoke-word:not(.lyricbar-karaoke-word) {
 				opacity: 1;
 				transform: translateY(-2px);
 				transition-property: opacity, transform;
@@ -225,14 +225,14 @@ body.rnp-karaoke-animation-float .rnp-lyrics-line {
 	&:not([offset='0']) > div{
 		&.rnp-lyrics-line-karaoke {
 			opacity: 1;
-			.rnp-karaoke-word {
+			.rnp-karaoke-word:not(.lyricbar-karaoke-word) {
 				transition-property: opacity, transform;
 				opacity: $idle-opacity;
 				transform: translateY(0);
 			}
 		}
 	}
-	.rnp-lyrics-line-karaoke.force-refresh > .rnp-karaoke-word {
+	.rnp-lyrics-line-karaoke.force-refresh > .rnp-karaoke-word:not(.lyricbar-karaoke-word) {
 		transition: all 0s !important;
 		opacity: 0.4 !important;
 		transform: translateY(0) !important;

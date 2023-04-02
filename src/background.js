@@ -227,8 +227,8 @@ function FluidBackground(props) {
 	}, []);
 
 	// Audio-responsive background (For LibVolumeLevelProvider)
-	if (loadedPlugins.LibFrontendPlay && !loadedPlugins.SimpleAudioVisualizer) {
-		const processor = useRef({});
+	if (loadedPlugins.LibFrontendPlay) {
+		/*const processor = useRef({});
 		useEffect(() => {
 			processor.current.audioContext = new AudioContext();
 			processor.current.audioSource = null;
@@ -239,7 +239,7 @@ function FluidBackground(props) {
 			processor.current.filter.type = 'lowpass';
 			processor.current.bufferLength = processor.current.analyser.frequencyBinCount;
 			processor.current.dataArray = new Float32Array(processor.current.bufferLength);
-		}, []);
+		}, []); 
 
 		const onAudioSourceChange = (e) => {
 			processor.current.audio = e.detail;
@@ -262,14 +262,26 @@ function FluidBackground(props) {
 					onAudioSourceChange
 				);
 			}
-		}, []);
+		}, []);*/
+
+		
+		const processor = useRef({});
+		useEffect(() => {
+			//processor.current.bufferLength = loadedPlugins.LibFrontendPlay.currentAudioAnalyser.frequencyBinCount;
+			processor.current.bufferLength = 1024;
+			processor.current.dataArray = new Float32Array(processor.current.bufferLength);
+		}, []); 
+
+
 
 		const request = useRef(0);
 		useEffect(() => {
 			const animate = () => {
 				request.current = requestAnimationFrame(animate);
 				if (!playState.current) return;
-				processor.current.analyser.getFloatFrequencyData(processor.current.dataArray);
+				//processor.current.analyser.getFloatFrequencyData(processor.current.dataArray);
+				//const max = Math.max(...processor.current.dataArray);
+				loadedPlugins.LibFrontendPlay.currentAudioAnalyser.getFloatFrequencyData(processor.current.dataArray);
 				const max = Math.max(...processor.current.dataArray);
 				//const percentage = (max - processor.current.analyser.minDecibels) / (processor.current.analyser.maxDecibels - processor.current.analyser.minDecibels);
 				const percentage = Math.pow(1.3, max / 20) * 2 - 1;
