@@ -5,6 +5,8 @@ export interface DynamicLyricWord {
 	duration: number;
 	flag: number;
 	word: string;
+	isCJK?: boolean;
+	endsWithSpace?: boolean;
 }
 
 export interface LyricLine {
@@ -13,6 +15,7 @@ export interface LyricLine {
 	originalLyric: string;
 	translatedLyric?: string;
 	romanLyric?: string;
+	rawLyric?: string;
 	dynamicLyricTime?: number;
 	dynamicLyric?: DynamicLyricWord[];
 }
@@ -23,6 +26,7 @@ export interface LyricPureLine {
 	originalLyric?: string;
 	translatedLyric?: string;
 	romanLyric?: string;
+	rawLyric?: string;
 	unsynced?: boolean;
 }
 
@@ -211,13 +215,15 @@ export function parseLyric(
 
 		const translatedParsed = attachOriginalLyric(parsePureLyric(translated));
 		const romanParsed = attachOriginalLyric(parsePureLyric(roman));
+		const rawParsed = attachOriginalLyric(parsePureLyric(original));
 
 		//console.log("translatedParsed", JSON.parse(JSON.stringify(translatedParsed)));
 
 		attachLyricToDynamic(translatedParsed, 'translatedLyric');
 		attachLyricToDynamic(romanParsed, 'romanLyric');
+		attachLyricToDynamic(rawParsed, 'rawLyric');
 
-		
+
 		//console.log("processed", JSON.parse(JSON.stringify(processed)));
 
 		// 插入空行
@@ -246,6 +252,44 @@ export function parseLyric(
 						originalLyric: "",
 						duration: nextLineStartTime - thisLineEndTime,
 					});
+				}
+			}
+		}
+
+		//同步原文空格到逐字
+		for (let i = 0; i < processed.length; i++) {
+			const thisLine = processed[i];
+			let raw = thisLine.rawLyric?.trim() ?? "";
+			const dynamic = thisLine.dynamicLyric || [];
+
+			for (let j = 0; j < dynamic.length; j++) {
+				const thisWord = dynamic[j].word.trimEnd();
+				if (raw.startsWith(thisWord)) {
+					raw = raw.substring(thisWord.length);
+				} else {
+					break;
+				}
+				const match = raw.match(/^\s+/);
+				if (match) {
+					raw = raw.substring(match[0].length);
+					if (!dynamic[j].word.match(/\s$/)) {
+						dynamic[j].word += " ";
+					}
+				}
+			}
+		}
+
+		// 标记 CJK 字符和是否空格结尾
+		const CJKRegex = /([\p{Unified_Ideograph}|\u3040-\u309F|\u30A0-\u30FF])/gu;
+		for (let i = 0; i < processed.length; i++) {
+			const thisLine = processed[i];
+			const dynamic = thisLine.dynamicLyric || [];
+			for (let j = 0; j < dynamic.length; j++) {
+				if (dynamic[j]?.word?.match(CJKRegex)) {
+					dynamic[j].isCJK = true;
+				}
+				if (dynamic[j]?.word?.match(/\s$/)) {
+					dynamic[j].endsWithSpace = true;
 				}
 			}
 		}

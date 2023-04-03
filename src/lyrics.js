@@ -937,8 +937,6 @@ function Line(props) {
 		}, 6);
 	}, [props.useKaraokeLyrics, props.seekCounter, props.karaokeAnimation]);
 
-	const CJKRegex = /([\p{Unified_Ideograph}|\u3040-\u309F|\u30A0-\u30FF])/gu;
-
 	return (
 		<div
 			className={`rnp-lyrics-line ${offset < 0 ? 'passed' : ''} ${props.line.isInterlude ? 'rnp-interlude' : ''}`}
@@ -1005,7 +1003,7 @@ function Line(props) {
 				{props.line.dynamicLyric.map((word, index) => {
 					return <div
 						key={`${props.karaokeAnimation} ${index}`}
-						className={`rnp-karaoke-word ${CJKRegex.test(word.word) ? 'is-cjk' : ''} ${word.word.endsWith(' ') ? 'end-with-space' : ''}`}
+						className={`rnp-karaoke-word ${word?.isCJK ? 'is-cjk' : ''} ${word?.endsWithSpace ? 'end-with-space' : ''}`}
 						style={getKaraokeAnimation(word)}>
 							<span>{word.word}</span>
 							{
