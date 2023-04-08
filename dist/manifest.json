@@ -5,7 +5,7 @@
     "author_links": ["https://github.com/solstice23"],
     "description": "重新设计的正在播放页面和歌词",
     "preview": "preview.webp",
-    "version": "2.16.6",
+    "version": "2.17.0",
     "type": "extension",
     "requirements": [],
     "loadAfter": ["MaterialYouTheme", "LibFrontendPlay", "SimpleAudioVisualizer"],

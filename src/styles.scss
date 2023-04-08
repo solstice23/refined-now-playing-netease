@@ -960,7 +960,7 @@ body.partial-bg {
 		left: 30px;
 		top: 60px;
 		width: calc(100% - 60px);
-		height: calc(100% - 133px);
+		height: calc(100% - 60px - var(--bottombar-height, 72px));
 		border-radius: 16px;
 		opacity: var(--bg-opacity, 1);
 	}
@@ -1057,7 +1057,8 @@ body.rnp-shadow {
 	.rnp-contributors > div,
 	.g-single-track .g-singlec-ct .n-single .mn .head .inf .title,
 	.g-single-track .g-singlec-ct .n-single .mn .head .inf .info,
-	.m-fm > .g-play .fmlrc {
+	.m-fm > .g-play .fmlrc, 
+	.rnp-mini-song-info .info > * {
 		filter: var(--rnp-drop-shadow);
 	}
 }

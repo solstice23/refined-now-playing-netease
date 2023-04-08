@@ -25,6 +25,10 @@
 				<input id="center-lyric" type="checkbox" class="rnp-checkbox">
 				<label for="center-lyric" class="rnp-checkbox-label">歌词居中</label>
 			</div>
+			<div class="rnp-checkbox-wrapper auto-hide-mini-song-info-control" style="--estimated-height: 20px;">
+				<input id="auto-hide-mini-song-info" type="checkbox" class="rnp-checkbox">
+				<label for="auto-hide-mini-song-info" class="rnp-checkbox-label">自动隐藏迷你歌曲信息</label>
+			</div>
 			<div class="rnp-select-group-wrapper">
 				<label for="color-scheme" class="rnp-select-group-label">颜色模式</label>
 				<div class="rnp-select-group" id="color-scheme">
@@ -139,10 +143,6 @@
 				<label for="bg-opacity" class="rnp-slider-label">透明度<button class="rnp-slider-reset"></button></label>
 				<input id="bg-opacity" type="range" class="rnp-slider" min="0" max="100" value="0" default="0">
 			</div>
-			<!--<div class="rnp-checkbox-wrapper partial-bg" style="--estimated-height: 20px;">
-				<input id="partial-bg" type="checkbox" class="rnp-checkbox">
-				<label for="partial-bg" class="rnp-checkbox-label">局部背景</label>
-			</div>-->
 		</div>
 
 		
@@ -223,6 +223,14 @@
 					<button id="rnp-lyric-offset-add">+</button>
 				</div>
 			</div>
+			<div class="rnp-select-group-wrapper">
+				<label for="lyric-contributors-display" class="rnp-select-group-label">歌词贡献者显示</label>
+				<div class="rnp-select-group" id="lyric-contributors-display">
+					<button class="rnp-select-group-btn" value="show">总是</button>
+					<button class="rnp-select-group-btn selected" value="hover">鼠标移上</button>
+					<button class="rnp-select-group-btn" value="hide">隐藏</button>
+				</div>
+			</div>
 		</div>
 
 		
@@ -247,14 +255,11 @@
 				<input id="hide-comments" type="checkbox" class="rnp-checkbox">
 				<label for="hide-comments" class="rnp-checkbox-label">隐藏评论区</label>
 			</div>
-			<div class="rnp-select-group-wrapper">
-				<label for="lyric-contributors-display" class="rnp-select-group-label">歌词贡献者显示</label>
-				<div class="rnp-select-group" id="lyric-contributors-display">
-					<button class="rnp-select-group-btn" value="show">总是</button>
-					<button class="rnp-select-group-btn selected" value="hover">鼠标移上</button>
-					<button class="rnp-select-group-btn" value="hide">隐藏</button>
-				</div>
+			<div class="rnp-checkbox-wrapper partial-bg" style="--estimated-height: 20px;">
+				<input id="partial-bg" type="checkbox" class="rnp-checkbox">
+				<label for="partial-bg" class="rnp-checkbox-label">局部背景</label>
 			</div>
+			<span class="rnp-checkbox-note">该选项为旧版本遗留选项，不保证兼容性。后续将不会维护。</span>
 		</div>
 
 		<div class="rnp-group" data-tab="experimental">

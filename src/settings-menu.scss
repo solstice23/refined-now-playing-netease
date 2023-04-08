@@ -207,6 +207,7 @@
 
 
 .rnp-lyric-offset {
+	margin-bottom: 25px;
 	> div:first-child {
 		display: flex;
 		align-items: center;
@@ -364,6 +365,7 @@ body:not(.rnp-bg-fluid) .static-fluid,
 body:not(.rnp-bg-fluid) .static-fluid + .rnp-checkbox-note,
 body.rnp-bg-none .partial-bg,
 body:not(.lyric-only) .center-lyric-control,
+body:not(.lyric-only) .auto-hide-mini-song-info-control,
 body.material-you-theme .refined-control-bar-switch,
 body:not(.refined-control-bar):not(.material-you-theme) .bottom-progressbar-switch,
 body:not(.rnp-custom-font) .rnp-custom-font-section,

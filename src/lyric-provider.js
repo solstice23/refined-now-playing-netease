@@ -67,8 +67,8 @@ const processLyrics = (lyrics) => {
 let currentRawLRC = null;
 
 const _onProcessLyrics = window.onProcessLyrics ?? ((x) => x);
-window.onProcessLyrics = (_rawLyrics) => {
-	if (!_rawLyrics) return _onProcessLyrics(_rawLyrics);
+window.onProcessLyrics = (_rawLyrics, songID) => {
+	if (!_rawLyrics || _rawLyrics?.data === -400) return _onProcessLyrics(_rawLyrics, songID);
 
 	let rawLyrics = _rawLyrics;
 	if (typeof(_rawLyrics) === 'string') { // local lyrics
@@ -83,7 +83,7 @@ window.onProcessLyrics = (_rawLyrics) => {
 	}
 
 	if ((rawLyrics?.lrc?.lyric ?? '') != currentRawLRC) {
-		console.log('update raw lyrics', rawLyrics);
+		console.log('Update Raw Lyrics', rawLyrics);
 		currentRawLRC = (rawLyrics?.lrc?.lyric ?? '') ;
 		const preprocessedLyrics = preProcessLyrics(rawLyrics);
 		setTimeout(async () => {
@@ -133,11 +133,13 @@ window.onProcessLyrics = (_rawLyrics) => {
 			}
 			lyrics.hash = `${betterncm.ncm.getPlaying().id}-${cyrb53(processedLyrics.map((x) => x.originalLyric).join('\\'))}`;
 			window.currentLyrics = lyrics;
-			console.log('update processed lyrics', window.currentLyrics);
-			//console.log('contributors', window.currentLyrics.contributors);
-			console.log(window.currentLyrics);
+			console.group('Update Processed Lyrics');
+			console.log('lyrics', window.currentLyrics.lyrics);
+			console.log('contributors', window.currentLyrics.contributors);
+			console.log('hash', window.currentLyrics.hash);
+			console.groupEnd();
 			document.dispatchEvent(new CustomEvent('lyrics-updated', {detail: window.currentLyrics}));
 		}, 0);
 	}
-	return _onProcessLyrics(_rawLyrics);
+	return _onProcessLyrics(_rawLyrics, songID);
 }

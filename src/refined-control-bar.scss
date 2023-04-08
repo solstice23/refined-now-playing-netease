@@ -146,6 +146,7 @@ body:not(.material-you-theme).refined-control-bar.mq-playing {
 		transform: translateY(-50%);
 		color: var(--md-accent-color-secondary);
 		opacity: .5 !important;
+		pointer-events: unset !important;
 		#time-passed {
 			display: inline-block;
 			width: 35px;

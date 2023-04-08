@@ -61,15 +61,17 @@ body:not(.lyric-only) .rnp-mini-song-info {
 	opacity: 0;
 }
 body.lyric-only {
-	&:not(:hover) .rnp-mini-song-info {
+	&.auto-hide-mini-song-info.rnp-idle .rnp-mini-song-info {
 		opacity: 0;
-		transition-delay: .3s;
+		//transition-delay: .3s;
 	}
 	&.mq-playing-scroll .rnp-mini-song-info {
 		opacity: 0 !important;
-		transition-delay: 0s;
+		//transition-delay: 0s;
 	}
-	&:hover .rnp-mini-song-info {
-		opacity: 1;
+	&:not(.rnp-idle), &:not(.auto-hide-mini-song-info) {
+		.rnp-mini-song-info {
+			opacity: 1;
+		}
 	}
 }

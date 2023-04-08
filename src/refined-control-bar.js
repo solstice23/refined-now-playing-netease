@@ -71,7 +71,7 @@ const init = () => {
 			<span id="rnp-time-rest">0:00</span>
 		`, dom, (dom) => {
 			dom.id = 'rnp-time-indicator';
-			dom.style = 'opacity: 0';
+			dom.style = 'opacity: 0; pointer-events: none;';
 		});
 		document.querySelector('#rnp-time-rest').addEventListener('click', () => {
 			if ((window.rnpTimeIndicator ?? 'remain') == 'remain') {

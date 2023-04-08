@@ -393,6 +393,7 @@ const addSettingsMenu = async (isFM = false) => {
 		// 外观
 		const exclusiveModes = getOptionDom('#exclusive-modes');
 		const centerLyric = getOptionDom('#center-lyric');
+		const autoHideMiniSongInfo = getOptionDom('#auto-hide-mini-song-info');
 		const colorScheme = getOptionDom('#color-scheme');
 		const accentColorVariant = getOptionDom('#accent-color-variant');
 		const textShadow = getOptionDom('#text-shadow');
@@ -405,6 +406,7 @@ const addSettingsMenu = async (isFM = false) => {
 			recalculateTitleSize();
 		});
 		bindCheckboxToClass(centerLyric, 'center-lyric', false);
+		bindCheckboxToClass(autoHideMiniSongInfo, 'auto-hide-mini-song-info', true);
 		bindSelectGroupToClasses(colorScheme, 'auto', (x) => `rnp-${x}`);
 		bindSelectGroupToClasses(accentColorVariant, 'primary', (x) => `accent-color-${x}`, (x) => {
 			if (x == 'off') document.body.classList.remove('enable-accent-color');
@@ -444,7 +446,6 @@ const addSettingsMenu = async (isFM = false) => {
 		const bgDimForGradientBg = getOptionDom('#bg-dim-for-gradient-bg');
 		const bgDimForFluidBg = getOptionDom('#bg-dim-for-fluid-bg');
 		const bgOpacity = getOptionDom('#bg-opacity');
-		// const partialBg = getOptionDom('#partial-bg');
 		const gradientBgDynamic = getOptionDom('#gradient-bg-dynamic');
 		const staticFluid = getOptionDom('#static-fluid');
 		bindSelectGroupToClasses(backgroundType, 'fluid', (x) => `rnp-bg-${x}`, (x) => {
@@ -455,7 +456,6 @@ const addSettingsMenu = async (isFM = false) => {
 		bindSliderToCSSVariable(bgDimForGradientBg, '--bg-dim-for-gradient-bg', 45, 'change', (x) => { return x / 100 });
 		bindSliderToCSSVariable(bgDimForFluidBg, '--bg-dim-for-fluid-bg', 30, 'change', (x) => { return x / 100 });
 		bindSliderToCSSVariable(bgOpacity, '--bg-opacity', 0, 'change', (x) => { return 1 - x / 100 });
-		// bindCheckboxToClass(partialBg, 'partial-bg', false);
 		bindCheckboxToClass(gradientBgDynamic, 'gradient-bg-dynamic', true);
 		bindCheckboxToClass(staticFluid, 'static-fluid', false, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-static-fluid', { detail: x }));
@@ -474,6 +474,7 @@ const addSettingsMenu = async (isFM = false) => {
 		const currentLyricAlignmentPercentage = getOptionDom('#current-lyric-alignment-percentage');
 		const lyricStagger = getOptionDom('#lyric-stagger');
 		const lyricAnimationTiming = getOptionDom('#lyric-animation-timing');
+		const lyricContributorsDisplay = getOptionDom('#lyric-contributors-display');
 		
 		bindSliderToFunction(lyricFontSize, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-lyric-font-size', { detail: x }));
@@ -512,6 +513,7 @@ const addSettingsMenu = async (isFM = false) => {
 			document.dispatchEvent(new CustomEvent('rnp-lyric-stagger', { detail: x }));
 		}, true);
 		bindSelectGroupToClasses(lyricAnimationTiming, 'smooth', (x) => `rnp-lyric-animation-timing-${x}`);
+		bindSelectGroupToClasses(lyricContributorsDisplay, 'hover', (x) => `rnp-lyric-contributors-${x}`);
 
 		const lyricOffsetSlider = getOptionDom('#rnp-lyric-offset-slider');
 		const lyricOffsetAdd = getOptionDom('#rnp-lyric-offset-add');
@@ -575,10 +577,10 @@ const addSettingsMenu = async (isFM = false) => {
 		// 杂项
 		const hideSongAliasName = getOptionDom('#hide-song-alias-name');
 		const hideComments = getOptionDom('#hide-comments');
-		const lyricContributorsDisplay = getOptionDom('#lyric-contributors-display');
+		const partialBg = getOptionDom('#partial-bg');
 		bindCheckboxToClass(hideSongAliasName, 'hide-song-alias-name', false);
 		bindCheckboxToClass(hideComments, 'hide-comments', false);
-		bindSelectGroupToClasses(lyricContributorsDisplay, 'hover', (x) => `rnp-lyric-contributors-${x}`);
+		bindCheckboxToClass(partialBg, 'partial-bg', false);
 
 		// 关于
 		const versionNumber = getOptionDom('#rnp-version-number');
@@ -618,6 +620,9 @@ const addSettingsMenu = async (isFM = false) => {
 				if (x.offsetTop <= top) name = x.dataset.tab;
 			});
 			setActive(name);
+		});
+		menu.querySelector('input.rnp-settings').addEventListener('click', () => {
+			container.dispatchEvent(new Event('scroll'));
 		});
 	};
 
