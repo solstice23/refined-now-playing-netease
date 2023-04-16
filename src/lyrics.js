@@ -937,6 +937,84 @@ function Line(props) {
 		}, 6);
 	}, [props.useKaraokeLyrics, props.seekCounter, props.karaokeAnimation]);
 
+	const glowAnimationRef = useRef(null);
+	const glowAnimationTiming = useRef({});
+	// init glow animation
+	useEffect(() => {
+		if (!props.line?.dynamicLyric) return;
+		let glowTarget = null;
+		for (let i = props.line.dynamicLyric.length - 1; i >= 0; i--) {
+			// special chars and punctuation
+			if (props.line.dynamicLyric[i].word.match(/[\p{P}\p{S}]/gu)) {
+				continue;
+			}
+			// space
+			if (props.line.dynamicLyric[i].word.match(/^\s*$/)) {
+				continue;
+			}
+			glowTarget = i;
+			break;
+		}
+		if (glowTarget == null) return;
+		if (props.line.dynamicLyric[glowTarget].duration < 1000) return;
+		console.log(karaokeLineRef.current?.children, glowTarget, props.line.dynamicLyric[glowTarget]);
+		if (!karaokeLineRef.current?.children[glowTarget]) return;
+		const fadeIn = props.line.dynamicLyric[glowTarget].duration * 0.6;
+		const keep = props.line.dynamicLyric[glowTarget].duration * 0.4;
+		const fadeAway = 500;
+		const duration = fadeIn + keep + fadeAway;
+		glowAnimationTiming.current = {
+			fadeIn: fadeIn,
+			keep: keep,
+			fadeAway: fadeAway,
+			duration: duration,
+			wordTime: props.line.dynamicLyric[glowTarget].time,
+			wordDuration: props.line.dynamicLyric[glowTarget].duration
+		};
+		glowTarget = karaokeLineRef.current?.children[glowTarget];
+		console.log(glowTarget);
+		glowAnimationRef.current = glowTarget.animate([
+			{textShadow: '0 0 0px rgba(var(--rnp-accent-color-shade-2-rgb), 0)'},
+			{textShadow: '0 0 20px rgba(var(--rnp-accent-color-shade-2-rgb), 1)', offset: fadeIn / duration},
+			{textShadow: '0 0 20px rgba(var(--rnp-accent-color-shade-2-rgb), 1)', offset: (fadeIn + keep) / duration},
+			{textShadow: '0 0 0px rgba(var(--rnp-accent-color-shade-2-rgb), 0)', offset: 1}
+		], {
+			duration: duration,
+			fill: 'forwards',
+			delay: 0
+		});
+		glowAnimationRef.current.pause();
+		glowAnimationRef.current.currentTime = 0;
+	}, [props.line, props.useKaraokeLyrics, props.outOfRangeKaraoke]);
+
+	// update glow animation
+	useEffect(() => {
+		if (!glowAnimationRef.current) return;
+		if (props.currentLine != props.id) {
+			if (props.currentLine > props.id) {
+				if (glowAnimationRef.current.playState == 'running') {
+					return;
+				}
+				glowAnimationRef.current.currentTime = glowAnimationTiming.current.duration;
+			} else {
+				glowAnimationRef.current.currentTime = 0;
+				glowAnimationRef.current.pause();
+			}
+			return;
+		}
+		if (props.playState == false) {
+			glowAnimationRef.current.pause();
+			console.log(glowAnimationRef.current.currentTime);
+			glowAnimationRef.current.currentTime = props.currentTime - glowAnimationTiming.current.wordTime;
+			console.log(props.currentTime, glowAnimationTiming.current.wordTime, props.currentTime - glowAnimationTiming.current.wordTime);
+			return;
+		}
+		glowAnimationRef.current.play();
+		glowAnimationRef.current.currentTime = props.currentTime - glowAnimationTiming.current.wordTime;
+		console.log(props.currentTime, glowAnimationTiming.current.wordTime, props.currentTime - glowAnimationTiming.current.wordTime);
+	}, [props.currentLine, props.useKaraokeLyrics, props.seekCounter, props.karaokeAnimation, props.playState]);
+
+
 	return (
 		<div
 			className={`rnp-lyrics-line ${offset < 0 ? 'passed' : ''} ${props.line.isInterlude ? 'rnp-interlude' : ''}`}
@@ -1003,6 +1081,7 @@ function Line(props) {
 				{props.line.dynamicLyric.map((word, index) => {
 					return <div
 						key={`${props.karaokeAnimation} ${index}`}
+						ref={karaokeLineRef.current?.children[index]}
 						className={`rnp-karaoke-word ${word?.isCJK ? 'is-cjk' : ''} ${word?.endsWithSpace ? 'end-with-space' : ''}`}
 						style={getKaraokeAnimation(word)}>
 							<span>{word.word}</span>

@@ -1,6 +1,9 @@
 import './progressbar-preview.scss';
 import { getSetting } from './utils.js';
 
+const isFMSession = () => {
+	return !document.querySelector(".m-player-fm").classList.contains("f-dn");
+}
 
 if (getSetting('enable-progressbar-preview', true)) {
 	document.body.classList.add('enable-progressbar-preview');
@@ -37,13 +40,17 @@ function formatTime(time) {
 }
 
 export function ProgressbarPreview(props) {
+	const isCurrentModeSession = () => { // 判断是否在当前模式播放 (普通/FM)
+		return props.isFM ? isFMSession() : !isFMSession();
+	}
+
 	const [visible, setVisible] = useState(false);
 
 	const xRef = useRef(0), yRef = useRef(0);
 
 	const progressBarRef = useRef(null);
 	useEffect(() => {
-		progressBarRef.current = document.querySelector('#main-player .prg');
+		progressBarRef.current = props.dom;
 	}, []);
 
 	const [_lyrics, lyrics, setLyrics] = useRefState(null);
@@ -61,6 +68,9 @@ export function ProgressbarPreview(props) {
 	const subprogressbarInnerRef = useRef(null);
 
 	const onLyricsUpdate = (e) => {
+		if (!isCurrentModeSession()) {
+			return;
+		}
 		if (!e.detail) {
 			return;
 		}
@@ -69,6 +79,9 @@ export function ProgressbarPreview(props) {
 	}
 	useEffect(() => {
 		if (window.currentLyrics) {
+			if (!isCurrentModeSession()) {
+				return;
+			}
 			const currentLyrics = window.currentLyrics.lyrics;
 			setLyrics(currentLyrics);
 			setNonInterludeCount(currentLyrics.filter(l => l.originalLyric).length);
@@ -185,7 +198,8 @@ export function ProgressbarPreview(props) {
 	
 	const isPureMusic = lyrics && (
 		lyrics.length === 1 ||
-		lyrics.length <= 10 && lyrics.some((x) => (x.originalLyric ?? '').includes('纯音乐'))
+		lyrics.length <= 10 && lyrics.some((x) => (x.originalLyric ?? '').includes('纯音乐')) ||
+		document.querySelector('#main-player').getAttribute('data-log')?.includes('"s_ctype":"voice"')
 	);
 
 	return (

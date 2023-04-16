@@ -849,7 +849,14 @@ plugin.onLoad(async (p) => {
 	waitForElement('#main-player .prg', (dom) => {
 		const progressbarPreview = document.createElement('div');
 		progressbarPreview.classList.add('rnp-progressbar-preview');
-		ReactDOM.render(<ProgressbarPreview />, progressbarPreview);
+		ReactDOM.render(<ProgressbarPreview dom={dom}/>, progressbarPreview);
+		document.body.appendChild(progressbarPreview);
+	});
+	waitForElement('.m-player-fm .prg', (dom) => {
+		const progressbarPreview = document.createElement('div');
+		progressbarPreview.classList.add('rnp-progressbar-preview');
+		progressbarPreview.classList.add('rnp-progressbar-preview-fm');
+		ReactDOM.render(<ProgressbarPreview dom={dom} isFM/>, progressbarPreview);
 		document.body.appendChild(progressbarPreview);
 	});
 
