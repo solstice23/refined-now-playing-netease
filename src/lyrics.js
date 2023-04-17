@@ -937,81 +937,98 @@ function Line(props) {
 		}, 6);
 	}, [props.useKaraokeLyrics, props.seekCounter, props.karaokeAnimation]);
 
-	const glowAnimationRef = useRef(null);
-	const glowAnimationTiming = useRef({});
-	// init glow animation
+
+	const glowAnimationsRef = useRef([]);
 	useEffect(() => {
 		if (!props.line?.dynamicLyric) return;
-		let glowTarget = null;
-		for (let i = props.line.dynamicLyric.length - 1; i >= 0; i--) {
-			// special chars and punctuation
-			if (props.line.dynamicLyric[i].word.match(/[\p{P}\p{S}]/gu)) {
-				continue;
+
+		const trailingIndexes = [];
+		for (let i = 0; i < props.line.dynamicLyric.length; i++) {
+			if (props.line.dynamicLyric[i]?.trailing) {
+				trailingIndexes.push(i);
 			}
-			// space
-			if (props.line.dynamicLyric[i].word.match(/^\s*$/)) {
-				continue;
-			}
-			glowTarget = i;
-			break;
 		}
-		if (glowTarget == null) return;
-		if (props.line.dynamicLyric[glowTarget].duration < 1000) return;
-		console.log(karaokeLineRef.current?.children, glowTarget, props.line.dynamicLyric[glowTarget]);
-		if (!karaokeLineRef.current?.children[glowTarget]) return;
-		const fadeIn = props.line.dynamicLyric[glowTarget].duration * 0.6;
-		const keep = props.line.dynamicLyric[glowTarget].duration * 0.4;
-		const fadeAway = 500;
-		const duration = fadeIn + keep + fadeAway;
-		glowAnimationTiming.current = {
-			fadeIn: fadeIn,
-			keep: keep,
-			fadeAway: fadeAway,
-			duration: duration,
-			wordTime: props.line.dynamicLyric[glowTarget].time,
-			wordDuration: props.line.dynamicLyric[glowTarget].duration
+		if (trailingIndexes.length == 0) return;
+
+		const glowAnimation = (index) => {
+			if (!karaokeLineRef.current?.children[index]) return null;
+			const fadeIn = props.line.dynamicLyric[index].duration * 0.6;
+			const keep = props.line.dynamicLyric[index].duration * 0.4;
+			const fadeAway = 500;
+			const duration = fadeIn + keep + fadeAway;
+			const glowAnimationTiming = {
+				fadeIn: fadeIn,
+				keep: keep,
+				fadeAway: fadeAway,
+				duration: duration,
+				wordTime: props.line.dynamicLyric[index].time,
+				wordDuration: props.line.dynamicLyric[index].duration
+			};
+
+			const glowTarget = karaokeLineRef.current?.children[index];
+			const glowAnimation = glowTarget.animate([
+				{filter: 'drop-shadow(0 0 0px rgba(var(--rnp-accent-color-shade-2-rgb), 0)) drop-shadow(0 0 0px rgba(var(--rnp-accent-color-shade-2-rgb), 0))'},
+				{filter: 'drop-shadow(0 0 15px rgba(var(--rnp-accent-color-shade-2-rgb), 1)) drop-shadow(0 0 10px rgba(var(--rnp-accent-color-shade-2-rgb), 0.5))', offset: fadeIn / duration},
+				{filter: 'drop-shadow(0 0 15px rgba(var(--rnp-accent-color-shade-2-rgb), 1)) drop-shadow(0 0 10px rgba(var(--rnp-accent-color-shade-2-rgb), 0.5))', offset: (fadeIn + keep) / duration},
+				{filter: 'drop-shadow(0 0 0px rgba(var(--rnp-accent-color-shade-2-rgb), 0)) drop-shadow(0 0 0px rgba(var(--rnp-accent-color-shade-2-rgb), 0))', offset: 1}
+			], {
+				duration: duration,
+				fill: 'forwards',
+				delay: 0
+			});
+			glowAnimation.pause();
+			glowAnimation.currentTime = 0;
+			return {
+				animation: glowAnimation,
+				timing: glowAnimationTiming
+			}
+		}
+
+		glowAnimationsRef.current = [];
+		for (let i = 0; i < trailingIndexes.length; i++) {
+			const tmp = glowAnimation(trailingIndexes[i]);
+			if (tmp) glowAnimationsRef.current.push(tmp);
+		}
+
+		return () => {
+			for (let i = 0; i < glowAnimationsRef.current.length; i++) {
+				glowAnimationsRef.current[i].animation.cancel();
+			}
+			glowAnimationsRef.current = [];
 		};
-		glowTarget = karaokeLineRef.current?.children[glowTarget];
-		console.log(glowTarget);
-		glowAnimationRef.current = glowTarget.animate([
-			{textShadow: '0 0 0px rgba(var(--rnp-accent-color-shade-2-rgb), 0)'},
-			{textShadow: '0 0 20px rgba(var(--rnp-accent-color-shade-2-rgb), 1)', offset: fadeIn / duration},
-			{textShadow: '0 0 20px rgba(var(--rnp-accent-color-shade-2-rgb), 1)', offset: (fadeIn + keep) / duration},
-			{textShadow: '0 0 0px rgba(var(--rnp-accent-color-shade-2-rgb), 0)', offset: 1}
-		], {
-			duration: duration,
-			fill: 'forwards',
-			delay: 0
-		});
-		glowAnimationRef.current.pause();
-		glowAnimationRef.current.currentTime = 0;
-	}, [props.line, props.useKaraokeLyrics, props.outOfRangeKaraoke]);
+	}, [props.line, props.useKaraokeLyrics, props.outOfRangeKaraoke, props.karaokeAnimation]);
 
 	// update glow animation
 	useEffect(() => {
-		if (!glowAnimationRef.current) return;
-		if (props.currentLine != props.id) {
-			if (props.currentLine > props.id) {
-				if (glowAnimationRef.current.playState == 'running') {
-					return;
+		for (let glowAnimation of glowAnimationsRef.current) {
+			//console.log(glowAnimation, glowAnimationsRef.current);
+			const animation = glowAnimation.animation;
+			const timing = glowAnimation.timing;
+
+			if (props.currentLine != props.id) {
+				if (props.currentLine > props.id) { 
+					if (animation.playState == 'running') {
+						continue;
+					}
+					animation.currentTime = timing.duration;
+				} else {
+					animation.currentTime = 0;
+					animation.pause();
 				}
-				glowAnimationRef.current.currentTime = glowAnimationTiming.current.duration;
-			} else {
-				glowAnimationRef.current.currentTime = 0;
-				glowAnimationRef.current.pause();
+				continue;
 			}
-			return;
+			if (props.playState == false) {
+				animation.pause();
+				//console.log(animation.currentTime);
+				animation.currentTime = props.currentTime - timing.wordTime;
+				//console.log(props.currentTime, timing.wordTime, props.currentTime - timing.wordTime);
+				continue;
+			}
+			animation.play();
+			animation.currentTime = props.currentTime - timing.wordTime;
+			//console.log(props.currentTime, timing.wordTime, props.currentTime - timing.wordTime);
 		}
-		if (props.playState == false) {
-			glowAnimationRef.current.pause();
-			console.log(glowAnimationRef.current.currentTime);
-			glowAnimationRef.current.currentTime = props.currentTime - glowAnimationTiming.current.wordTime;
-			console.log(props.currentTime, glowAnimationTiming.current.wordTime, props.currentTime - glowAnimationTiming.current.wordTime);
-			return;
-		}
-		glowAnimationRef.current.play();
-		glowAnimationRef.current.currentTime = props.currentTime - glowAnimationTiming.current.wordTime;
-		console.log(props.currentTime, glowAnimationTiming.current.wordTime, props.currentTime - glowAnimationTiming.current.wordTime);
+
 	}, [props.currentLine, props.useKaraokeLyrics, props.seekCounter, props.karaokeAnimation, props.playState]);
 
 

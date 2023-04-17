@@ -7,6 +7,7 @@ export interface DynamicLyricWord {
 	word: string;
 	isCJK?: boolean;
 	endsWithSpace?: boolean;
+	trailing?: boolean;
 }
 
 export interface LyricLine {
@@ -290,6 +291,45 @@ export function parseLyric(
 				}
 				if (dynamic[j]?.word?.match(/\s$/)) {
 					dynamic[j].endsWithSpace = true;
+				}
+			}
+		}
+
+		// 标记尾部拖长音
+		// 尾部或每个空格之前的第一个非特殊符号字符，长度超过 1 秒
+		for (let i = 0; i < processed.length; i++) {
+			const thisLine = processed[i];
+			const dynamic = thisLine.dynamicLyric || [];
+			
+			const searchIndexes: number[] = [-1];
+			for (let j = 0; j < dynamic.length - 1; j++) {
+				if (dynamic[j]?.endsWithSpace) {
+					searchIndexes.push(j);
+				}
+			}
+			searchIndexes.push(dynamic.length - 1);
+
+			for (let j = searchIndexes.length - 1; j >= 1; j--) {
+				let targetIndex: number | null = null;
+				for (let k = searchIndexes[j]; k > searchIndexes[j - 1]; k--) {
+					const word = dynamic[k].word.trim();
+					// special chars and punctuations
+					if (word.match(/[\p{P}\p{S}]/gu)) {
+						continue;
+					}
+					// space
+					if (word.match(/^\s*$/)) {
+						continue;
+					}
+					targetIndex = k;
+					break;
+				}
+				if (targetIndex === null) {
+					continue;
+				}
+				const target = dynamic[targetIndex];
+				if (target.duration >= 1000) {
+					target.trailing = true;
 				}
 			}
 		}
