@@ -144,7 +144,6 @@ export function parseLyric(
 
 			//console.log(JSON.parse(JSON.stringify(originalLyrics)), JSON.parse(JSON.stringify(lyric)));
 			originalLyrics.forEach((line) => {
-				console.log(line.time);
 				//let target = findLast(lyric, (v) => v.time === line.time);
 				let target: LyricPureLine | null = null;
 				if (attachMatchingMode === 'equal') {
@@ -425,7 +424,7 @@ export function parseUnsyncedLyrics(lyric: string): LyricPureLine[] {
 			unsynced: true,
 		});
 	}
-	console.log(JSON.parse(JSON.stringify(result)));
+	//console.log(JSON.parse(JSON.stringify(result)));
 	// insert to the head
 	if (result.length) {
 		result.unshift({
