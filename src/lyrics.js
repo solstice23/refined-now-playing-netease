@@ -208,7 +208,7 @@ export function Lyrics(props) {
 		//console.log('heightOfItems', heightOfItems.current);
 	}, [lyrics, containerWidth, fontSize, showTranslation, showRomaji, useKaraokeLyrics, karaokeAnimation, recalcCounter]);
 
-	/*const recalcHeightOfItems = () => {
+	const recalcHeightOfItems = () => {
 		if (!lyrics) return;
 		const container = containerRef.current;
 		const items = container.children;
@@ -218,7 +218,7 @@ export function Lyrics(props) {
 		}
 		heightOfItems.current = heights;
 		//console.log('heightOfItems', heightOfItems.current);
-	}*/
+	}
 	
 	const onResize = () => {
 		shouldTransit.current = false;
@@ -334,7 +334,7 @@ export function Lyrics(props) {
 			current = Math.min(Math.max(scrollingFocusLine ?? 0, 0), lyrics.length - 1);
 		}
 
-	//	if (!scrollingMode) recalcHeightOfItems();
+		if (!scrollingMode) recalcHeightOfItems();
 		//console.log(currentLine, current);
 		//transforms[current].top = containerHeight / 2 - heightOfItems.current[current] / 2;
 		transforms[current].top = 
@@ -377,6 +377,9 @@ export function Lyrics(props) {
 			transforms[lyrics.length].top = transforms[lyrics.length - 1].top + previousScaledHeight + Math.min(space * 1.5, 90);
 		} else {
 			transforms[lyrics.length].top = containerHeight / 2 - heightOfItems.current[lyrics.length] / 2;
+			transforms[lyrics.length].blur = blurByOffset(0);
+			transforms[lyrics.length].scale = scaleByOffset(0);
+			transforms[lyrics.length].opacity = opacityByOffset(0);
 		}
 		transforms[lyrics.length].delay = delayByOffset(lyrics.length - current);
 		setRotateTransform(transforms[lyrics.length], transforms[current].top - transforms[lyrics.length].top, heightOfItems.current[lyrics.length] * transforms[lyrics.length].scale);

@@ -133,9 +133,37 @@ export function parseLyric(
 		const originalLyrics = parsePureLyric(original);
 
 		const attachOriginalLyric = (lyric: LyricPureLine[]) => {
+			let attachMatchingMode = 'equal';
+
+			const lyricTimeSet = new Set(lyric.map((v) => v.time));
+			const originalLyricTimeSet = new Set(originalLyrics.map((v) => v.time));
+			const intersection = new Set([...lyricTimeSet].filter((v) => originalLyricTimeSet.has(v)));
+			if (intersection.size / lyricTimeSet.size < 0.1) {
+				attachMatchingMode = 'closest';
+			}
+
 			//console.log(JSON.parse(JSON.stringify(originalLyrics)), JSON.parse(JSON.stringify(lyric)));
 			originalLyrics.forEach((line) => {
-				let target = findLast(lyric, (v) => v.time === line.time);
+				console.log(line.time);
+				//let target = findLast(lyric, (v) => v.time === line.time);
+				let target: LyricPureLine | null = null;
+				if (attachMatchingMode === 'equal') {
+					//target = findLast(lyric, (v) => v.time === line.time);
+					target = findLast(lyric, (v) => Math.abs(v.time - line.time) < 20)
+				} else {
+					lyric.forEach((v) => {
+						if (target) {
+							if (
+								Math.abs(target.time - line.time) > Math.abs(v.time - line.time)
+							) {
+								target = v;
+							}
+						} else {
+							target = v;
+						}
+					});
+				}
+					
 				//console.log(line, target);
 				/*if (!target) {
 					lyric.forEach((v) => {
@@ -303,8 +331,10 @@ export function parseLyric(
 			
 			const searchIndexes: number[] = [-1];
 			for (let j = 0; j < dynamic.length - 1; j++) {
-				if (dynamic[j]?.endsWithSpace) {
-					searchIndexes.push(j);
+				if (dynamic[j]?.endsWithSpace || dynamic[j]?.word?.match(/[\,\.\，\。\!\?\？\、\；\：\…\—\~\～\·\‘\’\“\”\ﾞ]/)) {
+					if (!dynamic[j]?.word?.match(/[a-zA-Z]+(\'\‘\’)*[a-zA-Z]*/)) {
+						searchIndexes.push(j);
+					}
 				}
 			}
 			searchIndexes.push(dynamic.length - 1);
