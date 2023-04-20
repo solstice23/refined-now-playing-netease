@@ -1051,7 +1051,10 @@ body.rnp-light, body.rnp-auto.rnp-system-light {
 	}
 }
 
-body.rnp-shadow {
+body.rnp-shadow, body.rnp-text-glow {
+	&.rnp-text-glow > * {
+		--rnp-drop-shadow: drop-shadow(0px 4px 5px rgba(var(--rnp-accent-color-shade-2-rgb), 0.27)) !important;
+	}
 	.rnp-lyrics-line > div,
 	.rnp-lyrics-overview-line > div,
 	.rnp-contributors > div,

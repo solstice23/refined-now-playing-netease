@@ -8,6 +8,7 @@ import { argb2Rgb, rgb2Argb } from './color-utils.js';
 import { waitForElement, waitForElementAsync, getSetting, setSetting, chunk, copyTextToClipboard } from './utils.js';
 import './refined-control-bar.js';
 import { Background } from './background.js';
+import { CoverShadow } from './cover-shadow.js';
 import { Lyrics } from './lyrics.js';
 import { themeFromSourceColor, QuantizerCelebi, Hct, Score } from "@importantimport/material-color-utilities";
 import { compatibilityWizard } from './compatibility-check.js';
@@ -397,6 +398,7 @@ const addSettingsMenu = async (isFM = false) => {
 		const colorScheme = getOptionDom('#color-scheme');
 		const accentColorVariant = getOptionDom('#accent-color-variant');
 		const textShadow = getOptionDom('#text-shadow');
+		const textGlow = getOptionDom('#text-glow');
 		const refinedControlBar = getOptionDom('#refined-control-bar');
 		const alwaysShowBottomBar = getOptionDom('#always-show-bottombar');
 		const bottomProgressBar = getOptionDom('#bottom-progressbar');
@@ -414,7 +416,19 @@ const addSettingsMenu = async (isFM = false) => {
 			window.accentColorVariant = (x == 'off') ? 'primary' : x;
 			recalcAccentColor();
 		});
-		bindCheckboxToClass(textShadow, 'rnp-shadow', false);
+		// text shadow, text glow, are mutually exclusive
+		bindCheckboxToClass(textShadow, 'rnp-shadow', false, (x) => {
+			if (x) {
+				textGlow.checked = false;
+				textGlow.dispatchEvent(new Event('change'));
+			}
+		});
+		bindCheckboxToClass(textGlow, 'rnp-text-glow', false, (x) => {
+			if (x) {
+				textShadow.checked = false;
+				textShadow.dispatchEvent(new Event('change'));
+			}
+		});
 		bindCheckboxToClass(refinedControlBar, 'refined-control-bar', true);
 		bindCheckboxToClass(alwaysShowBottomBar, 'always-show-bottombar', false);
 		bindCheckboxToClass(bottomProgressBar, 'rnp-bottom-progressbar', false);
@@ -426,6 +440,7 @@ const addSettingsMenu = async (isFM = false) => {
 		const verticalAlign = getOptionDom('#vertical-align');
 		const rectangleCover = getOptionDom('#rectangle-cover');
 		const albumSize = getOptionDom('#album-size');
+		const coverBlurryShadow = getOptionDom('#cover-blurry-shadow');
 		bindSelectGroupToClasses(horizontalAlign, 'left', (x) => { return `horizontal-align-${x}` }, () => { recalculateTitleSize();});
 		bindSelectGroupToClasses(verticalAlign, 'bottom', (x) => { return `vertical-align-${x}` }, () => { recalculateTitleSize();});
 		bindCheckboxToClass(rectangleCover, 'rectangle-cover', true);
@@ -439,6 +454,9 @@ const addSettingsMenu = async (isFM = false) => {
 				img.src = newSrc;
 			}
 		}, 200, 'change', (x) => { return x === 200 ? 210 : x });
+		bindCheckboxToClass(coverBlurryShadow, 'cover-blurry-shadow', true, (x) => {
+			document.dispatchEvent(new CustomEvent('rnp-cover-shadow-type', { detail: { type: x ? 'colorful' : 'black' } }));
+		});
 
 		// 背景
 		const backgroundType = getOptionDom('#background-type');const bgBlur = getOptionDom('#bg-blur');
@@ -810,6 +828,12 @@ plugin.onLoad(async (p) => {
 				/>
 			, background);
 			document.querySelector('.g-single').appendChild(background);
+
+			const coverShadowController = document.createElement('div');
+			coverShadowController.classList.add('rnp-cover-shadow-controller');
+			ReactDOM.render(<CoverShadow image={ await waitForElementAsync('.n-single .cdimg img') }/>, coverShadowController);
+			document.body.appendChild(coverShadowController);
+
 
 			waitForElement('.g-single-track .g-singlec-ct .n-single .mn .lyric', (oldLyrics) => {
 				oldLyrics.remove();

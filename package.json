@@ -38,6 +38,7 @@
     "@mui/material": "^5.11.10",
     "colorthief": "^2.3.2",
     "compare-versions": "^6.0.0-rc.1",
+    "fast-average-color": "^9.3.0",
     "lodash": "^4.17.21",
     "path-browserify": "^1.0.1",
     "react": "^18.2.0",
