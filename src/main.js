@@ -416,7 +416,6 @@ const addSettingsMenu = async (isFM = false) => {
 			window.accentColorVariant = (x == 'off') ? 'primary' : x;
 			recalcAccentColor();
 		});
-		// text shadow, text glow, are mutually exclusive
 		bindCheckboxToClass(textShadow, 'rnp-shadow', false, (x) => {
 			if (x) {
 				textGlow.checked = false;
@@ -492,6 +491,7 @@ const addSettingsMenu = async (isFM = false) => {
 		const currentLyricAlignmentPercentage = getOptionDom('#current-lyric-alignment-percentage');
 		const lyricStagger = getOptionDom('#lyric-stagger');
 		const lyricAnimationTiming = getOptionDom('#lyric-animation-timing');
+		const lyricGlow = getOptionDom('#lyric-glow');
 		const lyricContributorsDisplay = getOptionDom('#lyric-contributors-display');
 		
 		bindSliderToFunction(lyricFontSize, (x) => {
@@ -531,6 +531,9 @@ const addSettingsMenu = async (isFM = false) => {
 			document.dispatchEvent(new CustomEvent('rnp-lyric-stagger', { detail: x }));
 		}, true);
 		bindSelectGroupToClasses(lyricAnimationTiming, 'smooth', (x) => `rnp-lyric-animation-timing-${x}`);
+		bindCheckboxToFunction(lyricGlow, (x) => {
+			document.dispatchEvent(new CustomEvent('rnp-lyric-glow', { detail: x }));
+		}, true);
 		bindSelectGroupToClasses(lyricContributorsDisplay, 'hover', (x) => `rnp-lyric-contributors-${x}`);
 
 		const lyricOffsetSlider = getOptionDom('#rnp-lyric-offset-slider');

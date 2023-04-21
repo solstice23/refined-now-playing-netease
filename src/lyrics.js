@@ -91,6 +91,7 @@ export function Lyrics(props) {
 	const [karaokeAnimation, setKaraokeAnimation] = useState(getSetting('karaoke-animation', 'float'));
 	const [currentLyricAlignmentPercentage, setCurrentLyricAlignmentPercentage] = useState(parseInt(getSetting('current-lyric-alignment-percentage', 50)));
 	const [lyricStagger, setLyricStagger] = useState(getSetting('lyric-stagger', true));
+	const [lyricGlow, setLyricGlow] = useState(getSetting('lyric-glow', true));
 
 	const [overviewMode, setOverviewMode] = useState(false);
 	const [overviewModeScrolling, setOverviewModeScrolling] = useState(false);
@@ -635,6 +636,9 @@ export function Lyrics(props) {
 		const onLyricStaggerChange = (e) => {
 			setLyricStagger(e.detail ?? true);
 		}
+		const onLyricGlowChange = (e) => {
+			setLyricGlow(e.detail ?? true);
+		}
 		document.addEventListener("rnp-lyric-font-size", onLyricFontSizeChange);
 		document.addEventListener("rnp-lyric-fade", onLyricFadeChange);
 		document.addEventListener("rnp-lyric-zoom", onLyricZoomChange);
@@ -644,6 +648,7 @@ export function Lyrics(props) {
 		document.addEventListener("rnp-karaoke-animation", onKaraokeAnimationChange);
 		document.addEventListener("rnp-current-lyric-alignment-percentage", onCurrentLyricAlignmentPercentageChange);
 		document.addEventListener("rnp-lyric-stagger", onLyricStaggerChange);
+		document.addEventListener("rnp-lyric-glow", onLyricGlowChange);
 		return () => {
 			document.removeEventListener("rnp-lyric-font-size", onLyricFontSizeChange);
 			document.removeEventListener("rnp-lyric-fade", onLyricFadeChange);
@@ -654,6 +659,7 @@ export function Lyrics(props) {
 			document.removeEventListener("rnp-karaoke-animation", onKaraokeAnimationChange);
 			document.removeEventListener("rnp-current-lyric-alignment-percentage", onCurrentLyricAlignmentPercentageChange);
 			document.removeEventListener("rnp-lyric-stagger", onLyricStaggerChange);
+			document.removeEventListener("rnp-lyric-glow", onLyricGlowChange);
 		}
 	}, []);
 
@@ -742,6 +748,7 @@ export function Lyrics(props) {
 						karaokeAnimation={karaokeAnimation}
 						outOfRangeScrolling={scrollingMode && length > 100 && Math.abs(index - scrollingFocusLine) > 20}
 						outOfRangeKaraoke={/*length > 100 && */Math.abs(index - currentLine) > 10}
+						lyricGlow={lyricGlow}
 					/>
 				})}
 				<Contributors
@@ -943,6 +950,8 @@ function Line(props) {
 
 	const glowAnimationsRef = useRef([]);
 	useEffect(() => {
+		if (!props.lyricGlow) return;
+
 		if (!props.line?.dynamicLyric) return;
 
 		const trailingIndexes = [];
@@ -999,7 +1008,7 @@ function Line(props) {
 			}
 			glowAnimationsRef.current = [];
 		};
-	}, [props.line, props.useKaraokeLyrics, props.outOfRangeKaraoke, props.karaokeAnimation]);
+	}, [props.line, props.useKaraokeLyrics, props.outOfRangeKaraoke, props.karaokeAnimation, props.lyricGlow]);
 
 	// update glow animation
 	useEffect(() => {
@@ -1032,7 +1041,7 @@ function Line(props) {
 			//console.log(props.currentTime, timing.wordTime, props.currentTime - timing.wordTime);
 		}
 
-	}, [props.currentLine, props.useKaraokeLyrics, props.seekCounter, props.karaokeAnimation, props.playState]);
+	}, [props.currentLine, props.useKaraokeLyrics, props.seekCounter, props.karaokeAnimation, props.playState, props.lyricGlow]);
 
 
 	return (
