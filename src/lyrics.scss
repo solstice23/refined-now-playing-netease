@@ -85,11 +85,18 @@ body.rnp-lyric-animation-timing-lazy .rnp-lyrics:not(.scrolling){
 	transition: transform 0.5s var(--lyric-timing-function), filter 0.5s ease, opacity 0.5s ease;
 	will-change: transform, filter, opacity;
 }
+body.original-lyric-bold {
+	.rnp-lyrics-line {
+		.rnp-lyrics-line-karaoke, .rnp-lyrics-line-original {
+			font-weight: bold;
+		}
+	}
+}
 .rnp-lyrics-line {
 	line-height: 1.2;
-	.rnp-lyrics-line-karaoke, .rnp-lyrics-line-original {
+	/*.rnp-lyrics-line-karaoke, .rnp-lyrics-line-original {
 		font-weight: 600;
-	}
+	}*/
     max-width: calc(100% - 60px);
 	$idle-opacity: 0.4;
 	&[offset='0'] > div{ 
