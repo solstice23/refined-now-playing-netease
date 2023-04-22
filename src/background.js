@@ -11,7 +11,7 @@ const colorThief = new ColorThief();
 export function Background(props) {
 	const [type, setType] = useState(props.type ?? 'blur'); // blur, gradient, fluid , solid
 	const [url, setUrl] = useState('');
-	const [staticFluid, setStaticFluid] = useState(false);
+	const [staticFluid, setStaticFluid] = useState(true);
 	const image = props.image;
 
 	

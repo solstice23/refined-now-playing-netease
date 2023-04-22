@@ -474,7 +474,7 @@ const addSettingsMenu = async (isFM = false) => {
 		bindSliderToCSSVariable(bgDimForFluidBg, '--bg-dim-for-fluid-bg', 30, 'change', (x) => { return x / 100 });
 		bindSliderToCSSVariable(bgOpacity, '--bg-opacity', 0, 'change', (x) => { return 1 - x / 100 });
 		bindCheckboxToClass(gradientBgDynamic, 'gradient-bg-dynamic', true);
-		bindCheckboxToClass(staticFluid, 'static-fluid', false, (x) => {
+		bindCheckboxToClass(staticFluid, 'static-fluid', true, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-static-fluid', { detail: x }));
 		});
 
