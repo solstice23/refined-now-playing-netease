@@ -84,6 +84,25 @@ function calcSimularity(a: string, b: string) {
 	return d[m][n];
 }
 
+
+const isEnglishSentense = (str: string) => {
+	if (str.replace(/[\p{P}\p{S}]/gu, '').match(/^[\s\w\u00C0-\u024F]+$/u)) {
+		return true;
+	}
+	return false;
+}
+const replaceChineseSymbolsToEnglish = (str: string) => {
+	return str.replace(/[‘’′]/g, '\'')
+			 .replace(/[“”″]/g, '"')
+			 .replace(/（/g, '(')
+			 .replace(/）/g, ')')
+			 .replace(/，/g, ',')
+			 .replace(/！/g, '!')
+			 .replace(/？/g, '?')
+			 .replace(/：/g, ':')
+			 .replace(/；/g, ';');
+}
+
 export function parseLyric(
 	original: string,
 	translated: string = "",
@@ -557,6 +576,22 @@ export function processLyric(lyric: LyricLine[]): LyricLine[] {
 			duration: result[0]?.time - 500,
 			originalLyric: "",
 		});
+	}
+
+	// 在英文句子中转化中文引号到英文分割号，中文标点到英文标点
+	for (let i = 0; i < result.length; i++) {
+		const thisLine = result[i];
+		if (!isEnglishSentense(thisLine?.originalLyric)) {
+			continue;
+		}
+		if (thisLine?.dynamicLyric) {
+			for (let j = 0; j < thisLine.dynamicLyric.length; j++) {
+				thisLine.dynamicLyric[j].word = replaceChineseSymbolsToEnglish(thisLine.dynamicLyric[j].word);
+			}
+		}
+		if (thisLine?.originalLyric) {
+			thisLine.originalLyric = replaceChineseSymbolsToEnglish(thisLine.originalLyric);
+		}
 	}
 
 	return result;
