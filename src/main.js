@@ -458,23 +458,24 @@ const addSettingsMenu = async (isFM = false) => {
 		});
 
 		// 背景
-		const backgroundType = getOptionDom('#background-type');const bgBlur = getOptionDom('#bg-blur');
+		const backgroundType = getOptionDom('#background-type');
+		const bgBlur = getOptionDom('#bg-blur');
 		const bgDim = getOptionDom('#bg-dim');
 		const bgDimForGradientBg = getOptionDom('#bg-dim-for-gradient-bg');
 		const bgDimForFluidBg = getOptionDom('#bg-dim-for-fluid-bg');
 		const bgOpacity = getOptionDom('#bg-opacity');
 		const gradientBgDynamic = getOptionDom('#gradient-bg-dynamic');
 		const staticFluid = getOptionDom('#static-fluid');
-		bindSelectGroupToClasses(backgroundType, 'fluid', (x) => `rnp-bg-${x}`, (x) => {
+		bindSelectGroupToClasses(backgroundType, 'blur', (x) => `rnp-bg-${x}`, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-background-type', { detail: { type: x } }));
 		});
-		bindSliderToCSSVariable(bgBlur, '--bg-blur', 36, 'change', (x) => { return `${x}px` });
+		bindSliderToCSSVariable(bgBlur, '--bg-blur', 90, 'change', (x) => { return `${x}px` });
 		bindSliderToCSSVariable(bgDim, '--bg-dim', 55, 'change', (x) => { return x / 100 });
 		bindSliderToCSSVariable(bgDimForGradientBg, '--bg-dim-for-gradient-bg', 45, 'change', (x) => { return x / 100 });
 		bindSliderToCSSVariable(bgDimForFluidBg, '--bg-dim-for-fluid-bg', 30, 'change', (x) => { return x / 100 });
 		bindSliderToCSSVariable(bgOpacity, '--bg-opacity', 0, 'change', (x) => { return 1 - x / 100 });
 		bindCheckboxToClass(gradientBgDynamic, 'gradient-bg-dynamic', true);
-		bindCheckboxToClass(staticFluid, 'static-fluid', true, (x) => {
+		bindCheckboxToClass(staticFluid, 'static-fluid', false, (x) => {
 			document.dispatchEvent(new CustomEvent('rnp-static-fluid', { detail: x }));
 		});
 

@@ -199,7 +199,8 @@ export function ProgressbarPreview(props) {
 	const isPureMusic = lyrics && (
 		lyrics.length === 1 ||
 		lyrics.length <= 10 && lyrics.some((x) => (x.originalLyric ?? '').includes('纯音乐')) ||
-		document.querySelector('#main-player').getAttribute('data-log')?.includes('"s_ctype":"voice"')
+		document.querySelector('#main-player').getAttribute('data-log')?.includes('"s_ctype":"voice"') ||
+		lyrics[0]?.unsynced
 	);
 
 	return (
