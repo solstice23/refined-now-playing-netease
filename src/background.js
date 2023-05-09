@@ -77,17 +77,20 @@ export function Background(props) {
 				<SolidBackground />
 			)}
 			{type === 'none' && (
-				<style>
-					{`
-						body.mq-playing .g-single {
-							background: transparent !important;
-						}
-						body.mq-playing .g-sd,
-						body.mq-playing .g-mn {
-							opacity: 0;
-						}
-					`}
-				</style>
+				<>
+					<div className="rnp-background-none"></div>
+					<style>
+						{`
+							body.mq-playing .g-single {
+								background: transparent !important;
+							}
+							body.mq-playing .g-sd,
+							body.mq-playing .g-mn {
+								opacity: 0;
+							}
+						`}
+					</style>
+				</>
 			)}
 		</>
 	);

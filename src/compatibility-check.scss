@@ -90,3 +90,39 @@
 		color: #fff;
 	}
 }
+
+#refined-now-playing-hijack-failure-notice {
+	.hijack-failure-notice {
+		position: fixed;
+		right: 50px;
+		top: 100px;
+		background: #0006;
+		backdrop-filter: blur(32px);
+		z-index: 10000;
+		border-radius: 12px;
+		padding: 15px;
+		font-size: 15px;
+		width: 400px;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+	
+		.info > div:first-child {
+			font-size: 1.2em;
+			margin-bottom: 0.5em;
+		}
+		.info > div:last-child {
+			line-height: 1.5;
+			strong {
+				color: #fc2;
+			}
+		}
+		.action > button {
+			margin-left: 10px;
+			border: none;
+			background: none;
+			font-size: 25px;
+		}
+	}
+}
+    

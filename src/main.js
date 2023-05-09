@@ -11,7 +11,7 @@ import { Background } from './background.js';
 import { CoverShadow } from './cover-shadow.js';
 import { Lyrics } from './lyrics.js';
 import { themeFromSourceColor, QuantizerCelebi, Hct, Score } from "@importantimport/material-color-utilities";
-import { compatibilityWizard } from './compatibility-check.js';
+import { compatibilityWizard, hijackFailureNoticeCheck } from './compatibility-check.js';
 import { whatsNew } from './whats-new.js';
 import { showContextMenu } from './context-menu.js';
 import { MiniSongInfo } from './mini-song-info.js';
@@ -463,6 +463,8 @@ const addSettingsMenu = async (isFM = false) => {
 		const bgDim = getOptionDom('#bg-dim');
 		const bgDimForGradientBg = getOptionDom('#bg-dim-for-gradient-bg');
 		const bgDimForFluidBg = getOptionDom('#bg-dim-for-fluid-bg');
+		const bgBlurForNoneBgMask = getOptionDom('#bg-blur-for-none-bg-mask');
+		const bgDimForNoneBgMask = getOptionDom('#bg-dim-for-none-bg-mask');
 		const bgOpacity = getOptionDom('#bg-opacity');
 		const gradientBgDynamic = getOptionDom('#gradient-bg-dynamic');
 		const staticFluid = getOptionDom('#static-fluid');
@@ -473,6 +475,8 @@ const addSettingsMenu = async (isFM = false) => {
 		bindSliderToCSSVariable(bgDim, '--bg-dim', 55, 'change', (x) => { return x / 100 });
 		bindSliderToCSSVariable(bgDimForGradientBg, '--bg-dim-for-gradient-bg', 45, 'change', (x) => { return x / 100 });
 		bindSliderToCSSVariable(bgDimForFluidBg, '--bg-dim-for-fluid-bg', 30, 'change', (x) => { return x / 100 });
+		bindSliderToCSSVariable(bgBlurForNoneBgMask, '--bg-blur-for-none-bg-mask', 0, 'change', (x) => { return `${x}px` });
+		bindSliderToCSSVariable(bgDimForNoneBgMask, '--bg-dim-for-none-bg-mask', 0, 'change', (x) => { return x / 100 });
 		bindSliderToCSSVariable(bgOpacity, '--bg-opacity', 0, 'change', (x) => { return 1 - x / 100 });
 		bindCheckboxToClass(gradientBgDynamic, 'gradient-bg-dynamic', true);
 		bindCheckboxToClass(staticFluid, 'static-fluid', false, (x) => {
@@ -671,6 +675,7 @@ const addSettingsMenu = async (isFM = false) => {
 	else document.querySelector('#page_pc_userfm_songplay').appendChild(settingsMenu);
 	initSettings();
 	initTabs(settingsMenu);
+	hijackFailureNoticeCheck();
 	/*channel.call(
 		"app.getLocalConfig", 
 		(GpuAccelerationEnabled) => {

@@ -234,3 +234,37 @@ export function compatibilityWizard(force = false) {
 	document.body.appendChild(wizard);
 	ReactDOM.render(<Wizard />, wizard);
 }
+
+function HijackFailureNotice() {
+	const [clicked, setClicked] = useState(false);
+
+	if (clicked) {
+		return null;
+	}
+
+	return (
+		<div className="hijack-failure-notice">
+			<div className='info'>
+				<div>Hijack 错误</div>
+				<div>Refined Now Playing 无法正常工作，可能导致歌词无法显示。<strong>请重启网易云以修复此问题。</strong></div>
+			</div>
+			<div className="action">
+				<button onClick={() => {
+					setClicked(true);
+				}}>×</button>
+			</div>
+		</div>
+	);
+}
+
+
+export async function hijackFailureNoticeCheck() {
+	if ((await betterncm.app.getSucceededHijacks()).filter(x => x.includes('RefinedNowPlaying')).length > 0) {
+		return;
+	}
+
+	const notice = document.createElement("div");
+	notice.id = "refined-now-playing-hijack-failure-notice";
+	document.body.appendChild(notice);
+	ReactDOM.render(<HijackFailureNotice />, notice);
+}

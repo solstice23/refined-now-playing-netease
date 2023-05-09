@@ -137,6 +137,30 @@
 		background-color: var(--rnp-accent-color-bg);
 		transition: background-color 1s ease;
 	}
+
+	.rnp-background-none {
+		&::after {
+			content: '';
+			position: absolute;
+			display: block;
+			width: 100%;
+			height: 100%;
+			left: 0;
+			top: 0;
+			z-index: 1;
+			backdrop-filter: blur(var(--bg-blur-for-none-bg-mask, 0px));
+		}
+		&::before {
+			content: "";
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			background: var(--rnp-accent-color-overlay);
+			opacity: var(--bg-dim-for-none-bg-mask, 0);
+			z-index: 1;
+			pointer-events: none;
+		}
+	}
 }
 
 
