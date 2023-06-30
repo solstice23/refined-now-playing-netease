@@ -706,7 +706,6 @@ const toggleFullScreen = (force = null) => {
 			}
 			document.body.classList.remove('rnp-full-screen');
 			document.querySelector('.rnp-full-screen-button').title = '全屏';
-			console.log("退出全屏");
 		}
 	}
 }
