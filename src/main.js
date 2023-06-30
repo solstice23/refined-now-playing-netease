@@ -696,6 +696,7 @@ const toggleFullScreen = (force = null) => {
 		}
 		document.body.classList.add('rnp-full-screen');
 		document.querySelector('.rnp-full-screen-button').title = '退出全屏';
+		
 	} else {
 		if (document.exitFullscreen) {
 			if (force === true) return;
@@ -705,6 +706,7 @@ const toggleFullScreen = (force = null) => {
 			}
 			document.body.classList.remove('rnp-full-screen');
 			document.querySelector('.rnp-full-screen-button').title = '全屏';
+			console.log("退出全屏");
 		}
 	}
 }
@@ -715,6 +717,22 @@ const addFullScreenButton = () => {
 	fullScreenButton.title = '全屏';
 	fullScreenButton.addEventListener('click', () => {toggleFullScreen()});
 	document.body.appendChild(fullScreenButton); 
+	//Full Screen Clock
+	var fullScreenClock = document.createElement('div');
+	fullScreenClock.classList.add('rnp-full-screen-clock');
+	function updateClock() {
+		var currentTime = new Date();
+		var hours = currentTime.getHours();
+		var minutes = currentTime.getMinutes();
+	  
+		// 格式化小时和分钟，确保是两位数
+		hours = ('0' + hours).slice(-2);
+		minutes = ('0' + minutes).slice(-2);
+		fullScreenClock.textContent = hours + ':' + minutes;
+	  }
+	updateClock();
+	setInterval(updateClock, 1000);
+	document.body.appendChild(fullScreenClock);
 };
 
 new MutationObserver(() => {
