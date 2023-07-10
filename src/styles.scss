@@ -1180,10 +1180,16 @@ body.rnp-full-screen{
 	}
 	
 }
+body:not(.rnp-full-screen)	{
+	.rnp-full-screen-clock {
+		display: none;
+	}
+}
+
 body:not(.rnp-idle),
 body.always-show-bottombar {
 	.rnp-full-screen-clock {
-		left: 50px;
+		left: 60px;
 	}
 }
 body:not(.mq-playing) .rnp-full-screen-button {
