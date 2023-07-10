@@ -1138,6 +1138,8 @@ body:not(.rnp-idle) .rnp-full-screen-button,
 body.always-show-bottombar .rnp-full-screen-button  {
 	opacity: 1;
 }
+
+
 body.rnp-full-screen{
 	.rnp-full-screen-button {
 		-webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3C!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --%3E%3Cpath d='M160 64c0-17.7-14.3-32-32-32s-32 14.3-32 32v64H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32V64zM32 320c-17.7 0-32 14.3-32 32s14.3 32 32 32H96v64c0 17.7 14.3 32 32 32s32-14.3 32-32V352c0-17.7-14.3-32-32-32H32zM352 64c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H352V64zM320 320c-17.7 0-32 14.3-32 32v96c0 17.7 14.3 32 32 32s32-14.3 32-32V384h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H320z'/%3E%3C/svg%3E");
@@ -1161,6 +1163,33 @@ body.rnp-full-screen{
 	}
 	&.mq-playing.rnp-idle * {
 		cursor: none;
+	}
+	.rnp-full-screen-clock {
+		position: fixed;
+		left: 20px;
+		top: 18.5px;
+		color: var(--rnp-accent-color-shade-2);
+		width: 60px;
+		height: 25px;
+		transition: left .3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+		font-size: 20px;
+		font-weight: bold;
+		cursor: default;
+		z-index: 200;
+		opacity: 1;
+	}
+	
+}
+body:not(.rnp-full-screen)	{
+	.rnp-full-screen-clock {
+		display: none;
+	}
+}
+
+body:not(.rnp-idle),
+body.always-show-bottombar {
+	.rnp-full-screen-clock {
+		left: 60px;
 	}
 }
 body:not(.mq-playing) .rnp-full-screen-button {
